@@ -64,9 +64,6 @@ public class Clustering<T extends MLSolutionSet<MLSolution<MLElement>, MLElement
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-        for (MLSolution<MLElement> solution : resultFront) {
-            this.resultFront.add(solution);
-        }
 
         this.algorithm = algorithm;
 
