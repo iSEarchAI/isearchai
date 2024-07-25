@@ -32,4 +32,6 @@ public interface MLSolution<T extends MLElement> {
 
     public List<T> findElementByNumberId(Double id);
     public <E extends Serializable> E getProblem();
+
+    boolean getEvaluatedByUser();
 }
