@@ -1,4 +1,4 @@
-package interactive;
+package br.otimizes.isearchai.interactive;
 
 import br.otimizes.isearchai.learning.*;
 import com.rits.cloning.Cloner;

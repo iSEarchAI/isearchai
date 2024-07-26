@@ -1,4 +1,4 @@
-package interactive;
+package br.otimizes.isearchai.interactive;
 
 import br.otimizes.isearchai.learning.MLElement;
 import br.otimizes.isearchai.learning.MLSolution;
