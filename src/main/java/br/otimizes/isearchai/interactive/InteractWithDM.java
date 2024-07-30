@@ -25,7 +25,7 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
 
     public synchronized int interactWithDM(int generation, T solutionSet, int maxInteractions,
                                            int firstInteraction,
-                                           int intervalInteraction, InteractiveFunction<T, E> interactiveFunction,
+                                           int intervalInteraction, InteractiveFunction<T> interactiveFunction,
                                            int currentInteraction, HashSet<E> bestOfUserEvaluation) throws Exception {
         for (E solution : solutionSet) {
             solution.setEvaluation(0);
@@ -71,9 +71,15 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
     }
 
     private T getMlSolutionSet(T solutionSet, List<E> solutions) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-        T newS = (T) clazz(solutionSet).getConstructors()[0].newInstance(solutions.size());
-        newS.setSolutions(solutions);
-        return newS;
+        try {
+            T newS = (T) clazz(solutionSet).getConstructors()[0].newInstance(solutions.size());
+            newS.setSolutions(solutions);
+            return newS;
+        } catch (RuntimeException ex) {
+            T newS = (T) clazz(solutionSet).getConstructors()[1].newInstance(solutions.size());
+            newS.setSolutions(solutions);
+            return newS;
+        }
     }
 
     public SubjectiveAnalyzeAlgorithm getSubjectiveAnalyzeAlgorithm() {

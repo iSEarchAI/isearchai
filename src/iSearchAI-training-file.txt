@@ -1,0 +1,3092 @@
+Project Java maven
+
+Structure of packages and classes:
+br/otimizes/isearchai/interactive/InteractiveFunction.java
+br/otimizes/isearchai/interactive/InteractiveHandler.java
+br/otimizes/isearchai/interactive/InteractWithDM.java
+br/otimizes/isearchai/learning/ArchitecturalElementType.java
+br/otimizes/isearchai/learning/ArffExecution.java
+br/otimizes/isearchai/learning/ClassifierAlgorithm.java
+br/otimizes/isearchai/learning/Clustering.java
+br/otimizes/isearchai/learning/ClusteringAlgorithm.java
+br/otimizes/isearchai/learning/DistributeUserEvaluation.java
+br/otimizes/isearchai/learning/EvaluationModels.java
+br/otimizes/isearchai/learning/MLElement.java
+br/otimizes/isearchai/learning/MLSolution.java
+br/otimizes/isearchai/learning/MLSolutionSet.java
+br/otimizes/isearchai/learning/Moment.java
+br/otimizes/isearchai/learning/SilhouetteIndex.java
+br/otimizes/isearchai/learning/SubjectiveAnalyzeAlgorithm.java
+br/otimizes/isearchai/learning/Utils.java
+br/otimizes/isearchai/simulator/DataSet.java
+br/otimizes/isearchai/simulator/HumanSimulator.java
+br/otimizes/isearchai/simulator/InstanceReader.java
+br/otimizes/isearchai/simulator/ResultsWriter.java
+
+
+package br.otimizes.isearchai.interactive;
+
+import br.otimizes.isearchai.learning.MLElement;
+import br.otimizes.isearchai.learning.MLSolution;
+import br.otimizes.isearchai.learning.MLSolutionSet;
+
+/**
+ * Interface that allows to adapt the method of interaction with the user
+ */
+public interface InteractiveFunction<T extends MLSolutionSet<S, MLElement>, S extends MLSolution<MLElement>> {
+
+    T run(T solutionSet) throws Exception;
+}
+
+package br.otimizes.isearchai.interactive;
+
+import br.otimizes.isearchai.learning.MLElement;
+import br.otimizes.isearchai.learning.MLSolution;
+import br.otimizes.isearchai.learning.MLSolutionSet;
+import br.otimizes.isearchai.learning.SubjectiveAnalyzeAlgorithm;
+
+import java.util.HashSet;
+
+/*
+ * Helper class which holds options related to interactivity.
+ * @author Lucas
+ */
+public class InteractiveHandler<T extends MLSolutionSet<E, MLElement>, E extends MLSolution<MLElement>> {
+    public class InteractiveConfig {
+        private int maxInteractions;
+        private int firstInteraction;
+        private int intervalInteraction;
+        private InteractiveFunction<T, E> interactiveFunction;
+
+        public InteractiveConfig() {
+        }
+
+        public int getMaxInteractions() {
+            return maxInteractions;
+        }
+
+        public InteractiveConfig setMaxInteractions(int maxInteractions) {
+            this.maxInteractions = maxInteractions;
+            return this;
+        }
+
+        public int getFirstInteraction() {
+            return firstInteraction;
+        }
+
+        public InteractiveConfig setFirstInteraction(int firstInteraction) {
+            this.firstInteraction = firstInteraction;
+            return this;
+        }
+
+        public int getIntervalInteraction() {
+            return intervalInteraction;
+        }
+
+        public InteractiveConfig setIntervalInteraction(int intervalInteraction) {
+            this.intervalInteraction = intervalInteraction;
+            return this;
+        }
+
+        public InteractiveFunction<T,E> getInteractiveFunction() {
+            return interactiveFunction;
+        }
+
+        public InteractiveConfig setInteractiveFunction(InteractiveFunction<T,E> interactiveFunction) {
+            this.interactiveFunction = interactiveFunction;
+            return this;
+        }
+    }
+
+    public static class InteractionData {
+        private int currentInteraction = 0;
+        private HashSet<MLSolution<MLElement>> bestOfUserEvaluation = new HashSet<>();
+
+        public int getCurrentInteraction() {
+            return currentInteraction;
+        }
+
+        public InteractionData setCurrentInteraction(int currentInteraction) {
+            this.currentInteraction = currentInteraction;
+            return this;
+        }
+
+        public HashSet<MLSolution<MLElement>> getBestOfUserEvaluation() {
+            return bestOfUserEvaluation;
+        }
+
+        public InteractionData setBestOfUserEvaluation(HashSet<MLSolution<MLElement>> bestOfUserEvaluation) {
+            this.bestOfUserEvaluation = bestOfUserEvaluation;
+            return this;
+        }
+    }
+
+    ;
+
+    private InteractiveConfig config;
+    private InteractionData data;
+    private InteractWithDM interaction;
+
+    private SubjectiveAnalyzeAlgorithm subjectiveAnalyzeAlgorithm;
+
+    public InteractiveHandler() {
+        this.data = new InteractionData();
+        this.interaction = new InteractWithDM();
+    }
+
+    public InteractiveHandler setInteractiveConfig(InteractiveConfig config) {
+        this.config = config;
+        return this;
+    }
+
+    public boolean checkAndInteract(int generation, MLSolutionSet offspringPopulation) throws Exception {
+        int currentInteraction = interaction.interactWithDM(
+            generation,
+            offspringPopulation,
+            config.getMaxInteractions(),
+            config.getFirstInteraction(),
+            config.getIntervalInteraction(),
+            config.getInteractiveFunction(),
+            data.getCurrentInteraction(),
+            data.getBestOfUserEvaluation());
+        if (data.getCurrentInteraction() != currentInteraction) {
+            data.setCurrentInteraction(currentInteraction);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void subjectiveAnalyzeSolutionSet(MLSolutionSet population) throws Exception {
+        subjectiveAnalyzeAlgorithm = interaction.getSubjectiveAnalyzeAlgorithm();
+        if (subjectiveAnalyzeAlgorithm != null && subjectiveAnalyzeAlgorithm.isTrained())
+            subjectiveAnalyzeAlgorithm.evaluateSolutionSetScoreAndArchitecturalAlgorithm(population, false);
+    }
+
+    public void resetInteractionData() {
+        data = new InteractionData();
+    }
+
+    public SubjectiveAnalyzeAlgorithm getSubjectiveAnalyzeAlgorithm() {
+        return subjectiveAnalyzeAlgorithm;
+    }
+
+    public void setSubjectiveAnalyzeAlgorithm(SubjectiveAnalyzeAlgorithm subjectiveAnalyzeAlgorithm) {
+        this.subjectiveAnalyzeAlgorithm = subjectiveAnalyzeAlgorithm;
+    }
+}
+
+
+package br.otimizes.isearchai.interactive;
+
+import br.otimizes.isearchai.learning.*;
+import com.rits.cloning.Cloner;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Class containing DM interactivity procedures
+ */
+public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLSolution<MLElement>> {
+    private SubjectiveAnalyzeAlgorithm subjectiveAnalyzeAlgorithm = null;
+
+    public InteractWithDM() {
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<T> clazz(T resultFront) {
+        return (Class<T>) resultFront.getClass();
+    }
+
+
+    public synchronized int interactWithDM(int generation, T solutionSet, int maxInteractions,
+                                           int firstInteraction,
+                                           int intervalInteraction, InteractiveFunction<T, E> interactiveFunction,
+                                           int currentInteraction, HashSet<E> bestOfUserEvaluation) throws Exception {
+        for (E solution : solutionSet) {
+            solution.setEvaluation(0);
+        }
+        boolean isOnInteraction = (generation % intervalInteraction == 0 && generation >= firstInteraction)
+            || generation == firstInteraction;
+        boolean inTrainingDuring = currentInteraction < maxInteractions && isOnInteraction;
+        if (inTrainingDuring) {
+            Cloner cloner = new Cloner();
+            List<E> solutions = cloner.shallowClone(solutionSet.getSolutions());
+            T newS = getMlSolutionSet(solutionSet, solutions);
+            solutionSet = interactiveFunction.run(newS);
+            if (subjectiveAnalyzeAlgorithm == null) {
+                subjectiveAnalyzeAlgorithm = new SubjectiveAnalyzeAlgorithm(getMlSolutionSet(solutionSet, solutionSet.getSolutions()),
+                    ClassifierAlgorithm.CLUSTERING_MLP);
+                subjectiveAnalyzeAlgorithm.run(null, false);
+            } else {
+                subjectiveAnalyzeAlgorithm.run(getMlSolutionSet(solutionSet, solutionSet.getSolutions()), false);
+            }
+            bestOfUserEvaluation.addAll(solutionSet.getSolutions().stream().filter(p -> (p.getEvaluation() >= 5
+                    && p.getEvaluatedByUser()) || (p.containsArchitecturalEvaluation() && p.getEvaluatedByUser()))
+                .collect(Collectors.toList()));
+            currentInteraction++;
+        }
+
+        boolean inTrainingAPosteriori = currentInteraction < maxInteractions && Math.abs((currentInteraction
+            * intervalInteraction) + (intervalInteraction / 2)) == generation && generation > firstInteraction;
+        if (inTrainingAPosteriori) {
+            subjectiveAnalyzeAlgorithm.run(getMlSolutionSet(solutionSet, solutionSet.getSolutions()), true);
+        }
+
+        if (subjectiveAnalyzeAlgorithm != null) {
+            subjectiveAnalyzeAlgorithm.setTrained(!subjectiveAnalyzeAlgorithm.isTrained()
+                && currentInteraction >= maxInteractions);
+            boolean isTrainFinished = subjectiveAnalyzeAlgorithm.isTrained() &&
+                currentInteraction >= maxInteractions && isOnInteraction;
+            if (isTrainFinished) {
+                subjectiveAnalyzeAlgorithm
+                    .evaluateSolutionSetScoreAndArchitecturalAlgorithm(getMlSolutionSet(solutionSet, solutionSet.getSolutions()), true);
+            }
+        }
+        return currentInteraction;
+    }
+
+    private T getMlSolutionSet(T solutionSet, List<E> solutions) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+        T newS = (T) clazz(solutionSet).getConstructors()[0].newInstance(solutions.size());
+        newS.setSolutions(solutions);
+        return newS;
+    }
+
+    public SubjectiveAnalyzeAlgorithm getSubjectiveAnalyzeAlgorithm() {
+        return subjectiveAnalyzeAlgorithm;
+    }
+
+    public void setSubjectiveAnalyzeAlgorithm(SubjectiveAnalyzeAlgorithm subjectiveAnalyzeAlgorithm) {
+        this.subjectiveAnalyzeAlgorithm = subjectiveAnalyzeAlgorithm;
+    }
+}
+
+package br.otimizes.isearchai.learning;
+
+/**
+ * Architectural element type used in machine learning
+ */
+public enum ArchitecturalElementType {
+    PACKAGE, KLASS, INTERFACE, ATTRIBUTE, METHOD;
+
+    public static double getTypeId(String value) {
+        switch (value.toUpperCase()) {
+            case "PACKAGE":
+                return 1.0;
+            case "KLASS":
+                return 0.8;
+            case "INTERFACE":
+                return 0.6;
+            case "ATTRIBUTE":
+                return 0.4;
+            case "METHOD":
+                return 0.2;
+        }
+        return 0;
+    }
+
+    public static ArchitecturalElementType getTypeById(double id) {
+        if (id == 1.0) {
+            return ArchitecturalElementType.PACKAGE;
+        } else if (id == 0.8) {
+            return ArchitecturalElementType.KLASS;
+        } else if (id == 0.6) {
+            return ArchitecturalElementType.INTERFACE;
+        } else if (id == 0.4) {
+            return ArchitecturalElementType.ATTRIBUTE;
+        } else if (id == 0.2) {
+            return ArchitecturalElementType.METHOD;
+        }
+        return null;
+    }
+}
+
+package br.otimizes.isearchai.learning;
+
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instances;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+/**
+ * Attribute-Relation File Format Object used in Machine Learnings presents in Weka
+ */
+public class ArffExecution {
+
+    private ArrayList<Attribute> listOfAttributes = new ArrayList<>();
+    private ArrayList<Attribute> listOfValues = new ArrayList<>();
+    private Instances data;
+    private double[] values;
+    private int attrIndices;
+    private double[][] attributes;
+    private boolean binary = false;
+
+    /**
+     * To use it, instantiate the class by passing a list of function values Objective
+     *
+     * @param attributes Function Values Objective
+     */
+    public ArffExecution(double[][] attributes) {
+        newInstance(attributes, null, null);
+    }
+
+    /**
+     * To use it, instantiate the class by passing a list of function values Objective and descriptions for the same
+     *
+     * @param attributes    Function Values Objective
+     * @param objectivesDescriptions Objectives Description
+     */
+    public ArffExecution(double[][] attributes, double[] classes, String[] objectivesDescriptions) {
+        newInstance(attributes, classes, objectivesDescriptions);
+    }
+
+    /**
+     * To use it, instantiate the class by passing a list of function values Objective and descriptions for the same
+     *
+     * @param attributes    Function Values Objective
+     * @param objectivesDescriptions Objectives Description
+     */
+    public ArffExecution(double[][] attributes, double[] classes, String[] objectivesDescriptions, boolean binary) {
+        this.binary = binary;
+        newInstance(attributes, classes, objectivesDescriptions);
+    }
+
+    private void newInstance(double[][] attributes, double[] classes, String[] objectivesDescriptions) {
+        if (attributes.length <= 0) return;
+        attrIndices = attributes[0].length;
+        this.attributes = attributes;
+        setNumericValues(attributes, objectivesDescriptions);
+        setStringValues();
+        data = new Instances("MyRelation", listOfAttributes, 0);
+
+        for (int i = 0; i < attributes.length; i++) {
+            values = new double[data.numAttributes()];
+            System.arraycopy(attributes[i], 0, values, 0, attributes[0].length);
+            if (classes != null)
+                values[attributes[0].length] = classes[i];
+            else
+                values[attributes[0].length] = 0;
+            data.add(new DenseInstance(1.0, values));
+        }
+    }
+
+    private void setNumericValues(double[][] attributes, String[] objectivesDescriptions) {
+        if (objectivesDescriptions != null) {
+            for (String description : objectivesDescriptions) {
+                listOfAttributes.add(new Attribute(description));
+            }
+        } else {
+            for (int j = 0; j < attributes[0].length; j++) {
+                listOfAttributes.add(new Attribute("obj" + (j + 1)));
+            }
+        }
+    }
+
+    private void setStringValues() {
+        if (binary) {
+            listOfAttributes.add(new Attribute("class", Arrays.asList("0", "1")));
+        } else {
+            listOfAttributes.add(new Attribute("class", Arrays.asList("0", "1", "2", "3", "4", "5")));
+        }
+    }
+
+    public ArrayList<Attribute> getListOfAttributes() {
+        return listOfAttributes;
+    }
+
+    public void setListOfAttributes(ArrayList<Attribute> listOfAttributes) {
+        this.listOfAttributes = listOfAttributes;
+    }
+
+    public ArrayList<Attribute> getListOfValues() {
+        return listOfValues;
+    }
+
+    public void setListOfValues(ArrayList<Attribute> listOfValues) {
+        this.listOfValues = listOfValues;
+    }
+
+    public Instances getData() {
+        return data;
+    }
+
+    public void setData(Instances data) {
+        this.data = data;
+    }
+
+    public double[] getValues() {
+        return values;
+    }
+
+    public void setValues(double[] values) {
+        this.values = values;
+    }
+
+
+    @Override
+    public String toString() {
+        return "ArffExecution{" +
+                "atts=" + listOfAttributes +
+                ", attVals=" + listOfValues +
+                ", data=" + data +
+                ", vals=" + Arrays.toString(values) +
+                '}';
+    }
+
+    public int getAttrIndices() {
+        return attrIndices;
+    }
+
+    public void setAttrIndices(int attrIndices) {
+        this.attrIndices = attrIndices;
+    }
+
+    public double[][] getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(double[][] attributes) {
+        this.attributes = attributes;
+    }
+
+    /**
+     * Used to get Instances withod last column that indentify the class of object
+     *
+     * @return Instances without class
+     */
+    public Instances getDataWithoutClass() {
+        Instances newIn = new Instances(this.getData());
+        newIn.setClassIndex(-1);
+        newIn.deleteAttributeAt(attrIndices);
+        return newIn;
+    }
+}
+
+
+package br.otimizes.isearchai.learning;
+
+/**
+ * OPLA machine learning algorithms adaptations
+ */
+public enum ClassifierAlgorithm {
+    MLP, CLUSTERING_MLP
+}
+
+package br.otimizes.isearchai.learning;
+
+import weka.clusterers.*;
+import weka.core.DistanceFunction;
+import weka.core.Instance;
+import weka.core.Instances;
+
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * @author WmfSystem
+ * Class that encompasses the methods of clustering, such as K-Means, DBSCAN and OPTICS
+ */
+public class Clustering<T extends MLSolutionSet<MLSolution<MLElement>, MLElement>>  implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private T resultFront;
+    private ClusteringAlgorithm algorithm;
+    private AbstractClusterer clusterer;
+    private ArffExecution arffExecution;
+    private DistanceFunction distanceFunction;
+    private List<MLSolution> filteredMLSolutions = new ArrayList<>();
+    private List<Integer> idsFilteredSolutions = new ArrayList<>();
+    private Double indexToFilter = 1.0;
+    private List<MLSolution> allMLSolutions = new ArrayList<>();
+    private int numObjectives;
+    private double[] min;
+    private double[] max;
+
+    /**
+     * K-Means Parameters
+     */
+    private Integer numClusters;
+
+    /**
+     * DBSCAN and OPTICS Parameters
+     */
+    private Double epsilon = 0.3;
+    private Integer minPoints = 3;
+    private Integer maxIterations;
+
+    public Clustering() {
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<T> clazz(T resultFront) {
+        return (Class<T>) resultFront.getClass();
+    }
+
+    public Clustering(T resultFront, ClusteringAlgorithm algorithm) {
+//        TODO Willian
+        if (resultFront.size() == 0)
+            return;
+        try {
+            this.resultFront = (T) clazz(resultFront).getConstructors()[0].newInstance(resultFront.size());
+            this.resultFront.setSolutions(resultFront.getSolutions());
+            this.resultFront.setSolutions(resultFront.getSolutions());
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+
+        this.algorithm = algorithm;
+
+        this.arffExecution = new ArffExecution(resultFront.writeObjectivesToMatrix());
+        this.numObjectives = this.resultFront.get(0).numberOfObjectives();
+        min = new double[this.numObjectives];
+        max = new double[this.numObjectives];
+        for (int i = 0; i < numObjectives; i++) {
+            min[i] = Double.MAX_VALUE;
+            max[i] = Double.MIN_VALUE;
+        }
+
+        resultFront.forEach(r -> {
+            for (int i = 0; i < this.numObjectives; i++) {
+                if (r.getObjective(i) < min[i]) min[i] = r.getObjective(i);
+                if (r.getObjective(i) > max[i]) max[i] = r.getObjective(i);
+            }
+        });
+    }
+
+    public Double np(Integer num) {
+        return (-Math.log(1 - num)) / num;
+    }
+
+    /**
+     * Execution Method
+     *
+     * @return Solution Set - Best performing cluster with another solutions (filteredSolutions)
+     * @throws Exception Default Exception
+     */
+    public MLSolutionSet run() throws Exception {
+        switch (algorithm) {
+            case KMEANS:
+                return kMeans();
+            case DBSCAN:
+                return dbscan();
+            case OPTICS:
+                return optics();
+        }
+        return null;
+    }
+
+    /**
+     * K-Means Execution Method
+     *
+     * @return Solution Set
+     * @throws Exception Default Exception
+     */
+    public MLSolutionSet kMeans() throws Exception {
+        clusterer = new SimpleKMeans();
+        getKMeans().setSeed(arffExecution.getAttributes().length);
+        getKMeans().setPreserveInstancesOrder(true);
+        if (distanceFunction != null)
+            getKMeans().setDistanceFunction(distanceFunction);
+        getKMeans().setNumClusters(getNumClusters());
+        if (maxIterations != null)
+            getKMeans().setMaxIterations(maxIterations);
+        getKMeans().buildClusterer(arffExecution.getDataWithoutClass());
+
+        return getFilteredSolutionSet();
+    }
+
+    /**
+     * DBSCAN Execution Method
+     * - Observations:
+     * The only measure that changes the solution is as follows:
+     * getDBSCAN().setOptions(new String[]{"-A", "weka.core.ManhattanDistance"});
+     *
+     * @return Solution Set
+     * @throws Exception
+     */
+    public MLSolutionSet dbscan() throws Exception {
+        clusterer = new DBSCAN();
+        getDBSCAN().setMinPoints(getMinPoints());
+        getDBSCAN().setEpsilon(getEpsilon());
+        getDBSCAN().buildClusterer(arffExecution.getDataWithoutClass());
+
+        return getFilteredSolutionSet();
+    }
+
+    /**
+     * Method not completed, because in the current version of Weka, the OPTICS does not present br.otimizes.oplatool.core.jmetal4.results
+     *
+     * @return Nothing
+     * @throws Exception Default Exception
+     */
+    public MLSolutionSet optics() throws Exception {
+        clusterer = new OPTICS();
+        getOPTICS().setShowGUI(false);
+        getOPTICS().buildClusterer(arffExecution.getDataWithoutClass());
+        return getFilteredSolutionSet();
+    }
+
+    private Double[] doubleArray(double[] doubles) {
+        Double[] d = {};
+        for (int i = 0; i < doubles.length; i++) {
+            d[i] = doubles[i];
+        }
+        return d;
+    }
+
+    /**
+     * Filtered Solution Set by attribute indexToFilter
+     *
+     * @return Solution Set Filtered
+     * @throws Exception Default Exception
+     */
+    private MLSolutionSet getFilteredSolutionSet() throws Exception {
+        if (clusterer instanceof SimpleKMeans) {
+            getKMeans().getClusterCentroids().sort((o1, o2) -> {
+                double[] doubles1 = o1.toDoubleArray();
+                double[] doubles2 = o2.toDoubleArray();
+                return compareEuclidianDistance(doubles2, doubles1);
+            });
+        }
+
+
+        double[] assignments = getClusterEvaluation().getClusterAssignments();
+
+        ArrayList<MLSolution> selected = new ArrayList<>();
+        for (int i = 0; i < assignments.length; i++) {
+            resultFront.get(i).setClusterId(assignments[i]);
+            allMLSolutions.add(resultFront.get(i));
+            if (assignments[i] < getIndexToFilter() && assignments[i] >= 0) {
+                selected.add(resultFront.get(i));
+            }
+        }
+
+        for (int i = 0; i < this.resultFront.size(); i++) {
+            if (!selected.contains(this.resultFront.get(i))) {
+                if (assignments[i] == -1) {
+                    resultFront.get(i).setClusterNoise(true);
+                }
+                idsFilteredSolutions.add(i);
+                filteredMLSolutions.add(resultFront.get(i));
+            }
+        }
+
+        Collections.reverse(idsFilteredSolutions);
+        idsFilteredSolutions.forEach(resultFront::remove);
+        return resultFront;
+    }
+
+    private int compareEuclidianDistance(double[] doubles1, double[] doubles2) {
+        Double dist1 = 0.0;
+        Double dist2 = 0.0;
+        for (int i = 0; i < doubles1.length; i++) {
+            dist1 += Math.pow(doubles1[i] - min[i], 2);
+            dist2 += Math.pow(doubles2[i] - min[i], 2);
+        }
+        return dist2.compareTo(dist1);
+    }
+
+    public double euclidianDistance(double[] doubles1, double[] doubles2) {
+
+        Double somatorio = 0.0;
+        for (int i = 0; i < doubles1.length; i++) {
+            somatorio += Math.pow(doubles1[i] - doubles2[i], 2);
+        }
+        return Math.sqrt(somatorio);
+    }
+
+    public double euclidianDistance(MLSolution MLSolution) {
+        return euclidianDistance(MLSolution.getObjectives(), min);
+    }
+
+    /**
+     * Cluster Evaluation Object for analysis of br.otimizes.oplatool.core.jmetal4.results
+     *
+     * @return Clustes Evaluation Objetc
+     * @throws Exception Default Exception
+     */
+    public ClusterEvaluation getClusterEvaluation() throws Exception {
+        ClusterEvaluation clusterEvaluation = new ClusterEvaluation();
+        clusterEvaluation.setClusterer(clusterer);
+        clusterEvaluation.evaluateClusterer(arffExecution.getDataWithoutClass());
+        return clusterEvaluation;
+    }
+
+
+    public SilhouetteIndex getSilhouetteIndex() throws Exception {
+        SilhouetteIndex silhouetteIndex = new SilhouetteIndex();
+        silhouetteIndex.evaluate(this.getClusterer(), ((SimpleKMeans) this.getClusterer()).getClusterCentroids(),
+                this.getArffExecution().getDataWithoutClass(), this.distanceFunction);
+        return silhouetteIndex;
+    }
+
+    /**
+     * Cast the Clusterer to SimpleKMeans Object
+     *
+     * @return SimpleKMeans Object
+     */
+    public SimpleKMeans getKMeans() {
+        return ((SimpleKMeans) clusterer);
+    }
+
+    /**
+     * Cast the Clusterer to DBSCAN Object
+     *
+     * @return DBSCAN Object
+     */
+    public DBSCAN getDBSCAN() {
+        return ((DBSCAN) clusterer);
+    }
+
+    /**
+     * Cast the Clusterer to OPTICS Object
+     *
+     * @return OPTICS Object
+     */
+    public OPTICS getOPTICS() {
+        return ((OPTICS) clusterer);
+    }
+
+    public MLSolutionSet getResultFront() {
+        return resultFront;
+    }
+
+    public void setResultFront(T resultFront) {
+        this.resultFront = resultFront;
+    }
+
+    public ClusteringAlgorithm getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(ClusteringAlgorithm algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public AbstractClusterer getClusterer() {
+        return clusterer;
+    }
+
+    public void setClusterer(AbstractClusterer clusterer) {
+        this.clusterer = clusterer;
+    }
+
+    public ArffExecution getArffExecution() {
+        return arffExecution;
+    }
+
+    public void setArffExecution(ArffExecution arffExecution) {
+        this.arffExecution = arffExecution;
+    }
+
+    /**
+     * https://stats.stackexchange.com/questions/55215/way-to-determine-best-number-of-clusters-weka
+     * https://en.wikipedia.org/wiki/Determining_the_number_of_clusters_in_a_data_set
+     *
+     * @return number of clusters
+     */
+    public int getNumClusters() {
+        int i = numClusters != null ? numClusters : Math.toIntExact(Math.round(Math.pow((resultFront.size() / 2), 0.6)));
+        if (i == 0) return 1;
+        return i;
+    }
+
+    public int getGeneratedClusters() throws Exception {
+        if (getClusterer() instanceof SimpleKMeans) return ((SimpleKMeans) getClusterer()).getNumClusters();
+        else return getClusterer().numberOfClusters();
+    }
+
+    public void setNumClusters(Integer numClusters) {
+        this.numClusters = numClusters;
+    }
+
+    public Integer getMinPoints() {
+        return minPoints;
+    }
+
+    public void setMinPoints(Integer minPoints) {
+        this.minPoints = minPoints;
+    }
+
+    public Double getEpsilon() {
+        return epsilon;
+    }
+
+    public void setEpsilon(Double epsilon) {
+        this.epsilon = epsilon;
+    }
+
+    public List<MLSolution> getFilteredSolutions() {
+        return filteredMLSolutions;
+    }
+
+
+
+    public void setFilteredSolutions(List<MLSolution> filteredMLSolutions) {
+        this.filteredMLSolutions = filteredMLSolutions;
+    }
+
+    /**
+     * Get Index to Filter
+     * Set by default: 1 -> K-Means, 2 -> DBSCAN and OPTICS
+     *
+     * @return Index to Filter Value
+     */
+    public double getIndexToFilter() {
+        return indexToFilter;
+    }
+
+    public void setIndexToFilter(double indexToFilter) {
+        this.indexToFilter = indexToFilter;
+    }
+
+    public List<Integer> getIdsFilteredSolutions() {
+        return idsFilteredSolutions;
+    }
+
+    public void setIdsFilteredSolutions(List<Integer> idsFilteredSolutions) {
+        this.idsFilteredSolutions = idsFilteredSolutions;
+    }
+
+
+    public DistanceFunction getDistanceFunction() {
+        return distanceFunction;
+    }
+
+    public void setDistanceFunction(DistanceFunction distanceFunction) {
+        this.distanceFunction = distanceFunction;
+    }
+
+    public List<MLSolution> getAllSolutions() {
+        return allMLSolutions;
+    }
+
+    public void setAllSolutions(List<MLSolution> allMLSolutions) {
+        this.allMLSolutions = allMLSolutions;
+    }
+
+    public List<MLSolution> getSolutionsByClusterWithMinObjective(int objectiveIndex) {
+        return getSolutionsByClusterId(getMinClusterByObjective(objectiveIndex));
+    }
+
+    public List<MLSolution> getSolutionsByClusterId(double clusterId) {
+        return allMLSolutions.stream().filter(s -> s.getClusterId() == clusterId).collect(Collectors.toList());
+    }
+
+    /**
+     * If SimpleKMeans, returns the min centroid value by objective index, else, in case of DBSCAN that dont have
+     * Centroid values, is verified the min value in the solutions
+     * On DBSCAN, the clusterId -1 indicates noise
+     *
+     * @param objectiveIndex Objective array index
+     * @return Min value by objective
+     */
+    public double getMinClusterByObjective(int objectiveIndex) {
+        double min = Double.MAX_VALUE;
+        double minCluster = 0.0;
+
+        if (clusterer instanceof SimpleKMeans) {
+            Instances clusterCentroids = getKMeans().getClusterCentroids();
+            for (int i = 0; i < clusterCentroids.size(); i++) {
+                Instance instance = clusterCentroids.get(i);
+                if (instance.toDoubleArray()[objectiveIndex] <= min) {
+                    min = instance.toDoubleArray()[objectiveIndex];
+                    minCluster = i;
+                }
+            }
+        } else {
+            for (MLSolution allMLSolution : allMLSolutions) {
+                if (allMLSolution.getObjective(objectiveIndex) <= min
+                        && allMLSolution.getClusterId() != -1) {
+                    min = allMLSolution.getObjective(objectiveIndex);
+                    minCluster = allMLSolution.getClusterId();
+                }
+            }
+        }
+        return minCluster;
+    }
+
+    public int getNumObjectives() {
+        return numObjectives;
+    }
+
+    public void setNumObjectives(int numObjectives) {
+        this.numObjectives = numObjectives;
+    }
+
+    public double[] getMin() {
+        return min;
+    }
+
+    public void setMin(double[] min) {
+        this.min = min;
+    }
+
+    public double[] getMax() {
+        return max;
+    }
+
+    public void setMax(double[] max) {
+        this.max = max;
+    }
+
+    public Integer getMaxIterations() {
+        return maxIterations;
+    }
+
+    public void setMaxIterations(Integer maxIterations) {
+        this.maxIterations = maxIterations;
+    }
+}
+
+package br.otimizes.isearchai.learning;
+
+/**
+ * Enumeration of the used Clustering Algorithms
+ */
+public enum ClusteringAlgorithm {
+    KMEANS, DBSCAN, OPTICS
+}
+
+
+package br.otimizes.isearchai.learning;
+
+/**
+ * Distribution evaluation on cluster, approach by Bindewald, 2019
+ */
+public enum DistributeUserEvaluation {
+    NONE, MIDDLE, ALL
+}
+
+package br.otimizes.isearchai.learning;
+
+/**
+ * Evaluation models
+ */
+public enum EvaluationModels {
+    TRAINING_SET, SUPPLIED_TEST, CROSS_VALIDATION, PERCENTAGE_SPLIT
+}
+
+package br.otimizes.isearchai.learning;
+
+public interface MLElement {
+    public boolean setFreezeFromDM(double v);
+
+    public boolean setFreezeFromDM();
+
+    public boolean isFreezeByDM();
+
+    public void setFreezedByCluster();
+
+    public <E extends MLElement> boolean totalyEquals(E e);
+
+    public float getNumberId();
+}
+
+package br.otimizes.isearchai.learning;
+
+import java.io.Serializable;
+import java.util.List;
+
+public interface MLSolution<T extends MLElement> {
+    public double[] getObjectives();
+
+    public int numberOfObjectives();
+
+    public double getObjective(int i);
+
+    public void setClusterId(Double assignment);
+
+    public String getSolutionName();
+
+    public void setClusterNoise(Boolean b);
+
+    public Double getClusterId();
+
+    public void setEvaluation(int i);
+
+    public List<T> getElements();
+
+    public boolean containsArchitecturalEvaluation();
+
+    public int getEvaluation();
+
+    public List<T> getFreezedElements();
+
+    public List<T> getAllElements();
+
+    public List<T> findElementByNumberId(Double id);
+    public <E extends Serializable> E getProblem();
+
+    boolean getEvaluatedByUser();
+}
+
+package br.otimizes.isearchai.learning;
+
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement> implements Serializable, Iterable<T> {
+
+    protected List<T> solutions = new ArrayList<>();
+
+    /**
+     * Copies the objectives and Elements Number of the solution set to a matrix
+     * Objectives, nrClasses, nrConcerns, nrInterfaces, nrPackages, nrVariationPoints, nrVariants, nrVariabilities, nrConcerns,
+     * nrAbstractions, nrAggregation, nrAssociations, nrCompositions, nrDependencies, nrGeneralizations, nrRealizations, nrUsage
+     *
+     * @return matrix containing the objectives
+     */
+    public double[][] writeObjectivesAndElementsNumberToMatrix() {
+        return null;
+    }
+
+    /**
+     * Copies the objectives and Elements Number of the solution set to a matrix
+     * Objectives, nrClasses, nrConcerns, nrInterfaces, nrPackages, nrVariationPoints, nrVariants, nrVariabilities, nrConcerns,
+     * nrAbstractions, nrAggregations, nrAssociations, nrCompositions, nrDependencies, nrGeneralizations, nrRealizations, nrUsage
+     *
+     * @return matrix containing the objectives
+     */
+    public double[][] writeObjectivesAndArchitecturalElementsNumberToMatrix() {
+        return reduceThreeDimensionalArray(getSolutionsWithArchitecturalEvaluations().stream()
+            .map(this::writeObjectiveWithAllElementsFromSolution).toArray(double[][][]::new));
+    }
+
+    /**
+     * Copies the objectives and All Elements of a specific set to a matrix
+     *
+     * @param solution specific solution
+     * @return Matrix with values
+     */
+    private double[][] writeObjectiveWithAllElementsFromSolution(T solution) {
+        double[] objectives = solution.getObjectives();
+        double[][] values = writeAllElementsFromSolution(solution);
+        double[][] newValues = new double[values.length][];
+        int i = 0;
+        for (double[] value : values) {
+            double[] newArray = new double[objectives.length + value.length];
+            System.arraycopy(objectives, 0, newArray, 0, objectives.length);
+            System.arraycopy(value, 0, newArray, objectives.length, value.length);
+            newValues[i] = newArray;
+            i++;
+        }
+        return newValues;
+    }
+
+    /**
+     * Generate the Solution from elements and get the objective values
+     *
+     * @param element  specific element to add in solution
+     * @param solution specific solution
+     * @return list of objectives
+     */
+
+    /**
+     * Copies the objectives and Elements Number of the solution set to a matrix
+     * Objectives, nrClasses, nrConcerns, nrInterfaces, nrPackages, nrVariationPoints, nrVariants, nrVariabilities, nrConcerns,
+     * nrAbstractions, nrAggregations, nrAssociations, nrCompositions, nrDependencies, nrGeneralizations, nrRealizations, nrUsage
+     *
+     * @return A matrix containing the objectives
+     */
+    public double[] writeArchitecturalEvaluationsToMatrix() {
+        double[][] doubles = getSolutionsWithArchitecturalEvaluations().stream().map(solution -> {
+            List<E> allElementsFromSolution = getAllElementsFromSolution(solution);
+            return allElementsFromSolution.stream().mapToDouble(MLElement -> MLElement.isFreezeByDM() ? 1.0 : 0.0).toArray();
+        }).toArray(double[][]::new);
+        return reduceBiDimensionalArray(doubles);
+    }
+
+    /**
+     * Reduce one dimensional in three dimensional array
+     *
+     * @param treeDimensionalArray array of objectives
+     * @return bi-dimensional array of objectives
+     */
+    public double[][] reduceThreeDimensionalArray(double[][][] treeDimensionalArray) {
+        if (treeDimensionalArray.length <= 0) return new double[][]{};
+        double[][] twoDimensionalArray = treeDimensionalArray[0];
+        for (int i = 1; i < treeDimensionalArray.length; i++) {
+            twoDimensionalArray = (double[][]) ArrayUtils.addAll(twoDimensionalArray, treeDimensionalArray[i]);
+        }
+        return twoDimensionalArray;
+    }
+
+    /**
+     * Reduce one dimension from bi dimensional array
+     *
+     * @param biDimensionalArray array of objectives
+     * @return one-dimensional array of objectives
+     */
+    public double[] reduceBiDimensionalArray(double[][] biDimensionalArray) {
+        if (biDimensionalArray.length <= 0) return new double[]{};
+        double[] oneDimensionalArray = biDimensionalArray[0];
+        for (int i = 1; i < biDimensionalArray.length; i++) {
+            oneDimensionalArray = ArrayUtils.addAll(oneDimensionalArray, biDimensionalArray[i]);
+        }
+        return oneDimensionalArray;
+    }
+
+    /**
+     * Get all elements from solutions
+     *
+     * @param solution specific solution
+     * @return array of elements
+     */
+    public double[][] writeAllElementsFromSolution(T solution) {
+        List<E> allElementsFromSolution = getAllElementsFromSolution(solution);
+        return allElementsFromSolution.stream().map(s -> this.writeCharacteristicsFromElement(s, solution)).toArray(double[][]::new);
+    }
+
+    /**
+     * Get characteristics from element in a solution (number id, element type, nr of classes, interfaces, attrs and methods, objectives, user evaluation)
+     *
+     * @param element  specific in a solution
+     * @param solution specific solution
+     * @return array of characteristics
+     */
+
+    /**
+     * Get all elements from solution
+     *
+     * @param solution specific solution
+     * @return list of elements
+     */
+
+    /**
+     * Method to get a string of objectives and elements number. Used to create CSV files
+     *
+     * @param startFrom Number of objectives
+     * @return List of elements. If startFrom > 0, then specify the objectives number
+     */
+    public String toStringObjectivesAndElementsNumber(int startFrom) {
+        return Arrays.stream(writeObjectivesAndElementsNumberToMatrix()).map(p -> Arrays
+            .asList(ArrayUtils.toObject(Arrays.copyOfRange(p, startFrom, p.length))).toString()
+            .replace("]", "\n").replace("[", "").replaceAll("\\.0", "")
+            .replaceAll(" ", "")).collect(Collectors.joining());
+    }
+
+    /**
+     * Create a list from objectives. Used to create CSV Files
+     *
+     * @param interaction interaction Number
+     * @return list of objectives
+     */
+    public String toStringObjectives(String interaction) {
+        return Arrays.stream(writeObjectivesToMatrix()).map(p -> Arrays.asList(ArrayUtils.toObject(p))
+            .toString().replace("]", interaction + "," + interaction + "\n").replace(",", "|")
+            .replace("[", interaction + "," + interaction + ",").replaceAll("\\.0", "")
+            .replaceAll(" ", "")).collect(Collectors.joining());
+    }
+
+
+    /**
+     * Get objectives and elements number with evaluation
+     *
+     * @return array of objectives with elements and user evaluation
+     */
+    public double[][] writeObjectivesAndElementsNumberEvaluationToMatrix() {
+        double[][] doubles = writeObjectivesAndElementsNumberToMatrix();
+        for (int i = 0; i < doubles.length; i++) {
+            doubles[i] = Arrays.copyOf(doubles[i], doubles[i].length + 1);
+            doubles[i][doubles[i].length - 1] = solutions.get(i).getEvaluation();
+        }
+        return doubles;
+    }
+
+    /**
+     * Get user evaluations list
+     *
+     * @return array of user evaluations
+     */
+    public double[] writeUserEvaluationsToMatrix() {
+        double[] doubles = new double[solutions.size()];
+        for (int i = 0; i < solutions.size(); i++) {
+            doubles[i] = solutions.get(i).getEvaluation();
+        }
+        return doubles;
+    }
+
+    /**
+     * Verify if has user evaluation
+     *
+     * @return true if has. false if has'nt
+     */
+    public boolean hasUserEvaluation() {
+        double[] doubles = writeUserEvaluationsToMatrix();
+        for (double aDouble : doubles) {
+            if (aDouble > 0) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Get list of cluster ids
+     *
+     * @return array of cluster ids
+     */
+    public Map<Double, Set<Integer>> getClusterIds() {
+        Map<Double, Set<Integer>> clusters = new HashMap<>();
+        for (T solution : solutions) {
+            if (solution.getClusterId() != null) {
+                Set<Integer> clusterId = clusters.getOrDefault(solution.getClusterId(), new HashSet<>());
+                clusterId.add(solution.getEvaluation());
+                clusters.put(solution.getClusterId(), clusterId);
+            }
+        }
+        return clusters;
+    }
+
+    /**
+     * Get average of values
+     *
+     * @param values values
+     * @return average of values
+     */
+    public int getMedia(Set<Integer> values) {
+        if (values == null) return 0;
+        values = values.stream().filter(v -> v > 0).collect(Collectors.toSet());
+        if (values.size() == 0) return 0;
+        if (values.size() == 1) return values.stream().findFirst().get();
+        int soma = 0;
+        for (Integer value : values) {
+            soma += value;
+        }
+        return soma / values.size();
+    }
+
+    /**
+     * Get solutions that have architectural evaluations
+     *
+     * @return solutions with architectural evaluations
+     */
+    public List<T> getSolutionsWithArchitecturalEvaluations() {
+        return solutions.stream().filter(MLSolution::containsArchitecturalEvaluation).collect(Collectors.toList());
+    }
+
+    /**
+     * Get architectural elements evaluated in a cluster
+     *
+     * @param clusterId cluster id
+     * @return list of elements
+     */
+
+    /**
+     * Get solutions with architectural elements evaluated in a cluster
+     *
+     * @param clusterId cluster id
+     * @return list of solutions with architectural elements
+     */
+    public List<T> getSolutionWithArchitecturalElementsEvaluatedByClusterId(Double clusterId) {
+        return getSolutionsWithArchitecturalEvaluations().stream()
+            .filter(solution -> clusterId.equals(solution.getClusterId())).collect(Collectors.toList());
+    }
+
+    /**
+     * Generalize the evaluatios in a cluster (see approaches in Bindewald, 2020)
+     *
+     * @param distributeUserEvaluation Approach
+     */
+    public void distributeUserEvaluation(DistributeUserEvaluation distributeUserEvaluation) {
+        if (DistributeUserEvaluation.NONE.equals(distributeUserEvaluation)) return;
+        Map<Double, Set<Integer>> clusterIds = getClusterIds();
+        if (hasUserEvaluation() && clusterIds.size() > 0) {
+            List<T> solutionsList_ = solutions;
+            if (DistributeUserEvaluation.MIDDLE.equals(distributeUserEvaluation))
+                solutionsList_ = solutionsList_.subList(0, Math.abs(solutionsList_.size() / 2));
+            for (T solution : solutionsList_) {
+                if (solution.getEvaluation() == 0) {
+                    int media = Math.abs(getMedia(clusterIds.get(solution.getClusterId())));
+                    solution.setEvaluation(media);
+                }
+            }
+        }
+    }
+
+    /**
+     * freeze solutions according the clusters in a solution
+     *
+     * @param solution specific solution
+     * @return solution with elements
+     */
+    private T freezeArchitecturalElementsAccordingCluster(T solution) {
+        if (!solution.containsArchitecturalEvaluation()) {
+            List<T> solutions
+                = getSolutionWithArchitecturalElementsEvaluatedByClusterId(solution.getClusterId());
+            if (solutions.size() > 0) {
+                solution = solutions.get(0);
+            }
+        }
+        return solution;
+    }
+
+    /**
+     * Freeze the architectural elements according the solution
+     *
+     * @param solution solution with elements
+     */
+    public abstract void freezeArchitecturalElementsAccordingSolution(T solution);
+
+    /**
+     * Find elements with a id
+     *
+     * @param id hash id
+     * @return filtered elements
+     */
+    public abstract List<E> findElementWithNumberId(Double id);
+
+    public double[] getNormalizedSolution(int i) {
+        T solution = solutions.get(i);
+        T max = getMax();
+        T min = getMin();
+        double[] doubles = new double[solution.getObjectives().length];
+        if (solutions.size() == 1) return doubles;
+        for (int j = 0; j < solution.getObjectives().length; j++) {
+            doubles[j] = (max.getObjective(j) - min.getObjective(j)) == 0 ? 0 :
+                (solution.getObjective(j) - min.getObjective(j)) / (max.getObjective(j) - min.getObjective(j));
+            if (doubles[j] == -0.0) doubles[j] = 0.0;
+        }
+        return doubles;
+    }
+
+    public T getMin() {
+        T solution = solutions.get(0);
+        for (int i = 0; i < solution.getObjectives().length; i++) {
+            for (T otherMLSolution : solutions) {
+                if (otherMLSolution.getObjective(i) <= solution.getObjective(i)) {
+                    solution = otherMLSolution;
+                }
+            }
+        }
+        return solution;
+    }
+
+    public T getMax() {
+        T solution = solutions.get(0);
+        for (int i = 0; i < solution.getObjectives().length; i++) {
+            for (T otherMLSolution : solutions) {
+                if (otherMLSolution.getObjective(i) >= solution.getObjective(i)) {
+                    solution = otherMLSolution;
+                }
+            }
+        }
+        return solution;
+    }
+
+    public T get(int i) {
+        return this.solutions.get(i);
+    }
+
+    public List<T> getSolutions() {
+        return solutions;
+    }
+
+    public void setSolutions(List<T> MLSolutions) {
+        this.solutions = MLSolutions;
+    }
+
+    public int size() {
+        return this.solutions.size();
+    }
+
+    public void remove(Integer integer) {
+        this.solutions.remove(integer);
+    }
+
+    public void addAll(MLSolutionSet<T, E> MLSolutionSet) {
+        this.solutions.addAll(MLSolutionSet.getSolutions());
+    }
+
+
+    public abstract double[] writeObjectiveFromElementsAndObjectives(E MLElement, T MLSolution);
+
+    public abstract double[] writeCharacteristicsFromElement(E MLElement, T MLSolution);
+
+    public abstract List<E> getAllElementsFromSolution(T MLSolution);
+
+    public abstract double[][] writeObjectivesToMatrix();
+
+    public abstract List<E> getArchitecturalElementsEvaluatedByClusterId(Double clusterId);
+
+    public boolean add(T solution) {
+        return this.solutions.add(solution);
+    }
+}
+
+package br.otimizes.isearchai.learning;
+
+/**
+ * Enumeration of interaction moments
+ */
+public enum Moment {
+    APRIORI, INTERACTIVE, POSTERIORI, ALL, NONE
+}
+
+package br.otimizes.isearchai.learning;
+
+import weka.clusterers.AbstractClusterer;
+import weka.core.DistanceFunction;
+import weka.core.Instance;
+import weka.core.Instances;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Locale;
+
+/**
+ * It measures the quality of a clustering. Determines how well each object lies within its cluster.
+ * A high average silhouette width indicates a good clustering.
+ * Computes the average silhouette of observations for different values f k. The Optimal number of clusters k is one
+ * that maximize the average silhouette over a range of possible values
+ * Kaufman and Rousseauw in 1990
+ * Compute clustering algorithm (e.g., k-means clustering) for different values of k. For instance, by varying k from 1 to 10 clusters.
+ * For each k, calculate the average silhouette of observations (avg.sil).
+ * Plot the curve of avg.sil according to the number of clusters k.
+ * The location of the maximum is considered as the appropriate number of clusters.
+ */
+public class SilhouetteIndex implements Serializable{
+
+    /** Serialization */
+    static final long serialVersionUID = -305533168492651330L;
+
+    /** Clusters SI. */
+    protected ArrayList<Double> m_clustersSilhouette;
+
+    /** Global SI. */
+    protected double m_globalSilhouette;
+
+    /** Default constructor. */
+    public SilhouetteIndex() {
+        m_clustersSilhouette = new ArrayList<Double>();
+        m_globalSilhouette = 0.0;
+    }
+
+    /**
+     * Evaluates the clusterer quality, using the Silhouette-Index
+     * algorithm.
+     *
+     * @param clusterer given clusterer.
+     * @param instances dataset.
+     */
+    @SuppressWarnings("unchecked")
+    public void evaluate(AbstractClusterer clusterer, Instances centroids,
+                         Instances instances, DistanceFunction distanceFunction) throws Exception {
+
+        if (clusterer == null || instances == null)
+            throw new Exception("SilhouetteIndex: the clusterer or instances are null!");
+
+        /*
+         * Attributes each instance to your centroid.
+         *
+         * Note that this is not the right way to do, because there's
+         * one way to get the instances already classified instead
+         * of classify again. As long as I do not know how to accomplish
+         * that, I'll classify again.
+         */
+        ArrayList<Instance>[] clusteredInstances =
+                (ArrayList<Instance>[]) new ArrayList<?>[centroids.size()];
+
+        /* Initialize. */
+        for (int i = 0; i < centroids.size(); i++)
+            clusteredInstances[i] = new ArrayList<>();
+
+        /* Fills. */
+        for (int i = 0; i < instances.size(); i++)
+            clusteredInstances[ clusterer.clusterInstance( instances.get(i) ) ]
+                    .add( instances.get(i) );
+
+        /* For each centroid. */
+        for (int i = 0; i < clusteredInstances.length; i++) {
+            double centroidSilhouetteIndex = 0.0;
+
+            /*
+             * Calculate the distance between a given point to the others
+             * within the same centroid.
+             */
+            for (int j = 0; j < clusteredInstances[i].size(); j++) {
+                double pointSilhouetteIndex = 0.0;
+                double meanDistSameC  = 0.0;
+                double meanDistOtherC = 0.0;
+
+                /* My reference point. */
+                Instance i1 = clusteredInstances[i].get(j);
+
+                /* For each other point, in the same centroid.. */
+                for (int k = 0; k < clusteredInstances[i].size(); k++) {
+                    /* Different point. */
+                    if (k == j)
+                        continue;
+
+                    /* Gets the distance between p1 and p2. */
+                    Instance i2 = clusteredInstances[i].get(k);
+                    meanDistSameC += distanceFunction.distance(i1, i2);
+                }
+
+                /* Mean. */
+                meanDistSameC /= (clusteredInstances[i].size() - 1) == 0 ? 1 : (clusteredInstances[i].size() - 1);
+
+                /* Get the nearest cluster to the point j. */
+                double minDistance = Double.MAX_VALUE;
+                int minCentroid = 0;
+
+                for (int k = 0; k < centroids.size(); k++) {
+                    /* Other clusters, ;-). */
+                    if (k == i)
+                        continue;
+
+                    /* Distance. */
+                    Instance i2 = centroids.get(k);
+                    double distance = distanceFunction.distance(i1, i2);
+
+                    /* Checks if is lower. */
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        minCentroid = k;
+                    }
+                }
+
+                /*
+                 * We already know which cluster is closest, so now we have to go
+                 * through this cluster and get the average distance from all points
+                 * to point p1.
+                 */
+                for (int k = 0; k < clusteredInstances[minCentroid].size(); k++) {
+                    /* Gets the distance between p1 and p2. */
+                    Instance i2 = clusteredInstances[minCentroid].get(k);
+
+                    /* Distance. */
+                    meanDistOtherC += distanceFunction.distance(i1, i2);
+                }
+
+                /* Mean. */
+                meanDistOtherC /= (clusteredInstances[minCentroid].size() - 1) == 0 ? 1 : (clusteredInstances[minCentroid].size() - 1);
+
+                /* Now, we calculate the silhouette index, \o/. */
+                pointSilhouetteIndex = (meanDistOtherC - meanDistSameC) /
+                        Math.max( meanDistSameC, meanDistOtherC );
+
+                /* Sum to the centroid silhouette. */
+                centroidSilhouetteIndex += pointSilhouetteIndex;
+            }
+
+            centroidSilhouetteIndex /= (clusteredInstances[i].size() - 1) == 0 ? 1 : (clusteredInstances[i].size() - 1);
+            m_globalSilhouette += centroidSilhouetteIndex;
+
+            m_clustersSilhouette.add( centroidSilhouetteIndex );
+        }
+
+        m_globalSilhouette /= (m_clustersSilhouette.size() == 0) ? 1 : m_clustersSilhouette.size();
+    }
+
+    /**
+     * Gets the silhouetteIndex for all clusters.
+     *
+     * @return Returns the clusters Silhouette-Index.
+     */
+    public ArrayList<Double> getClustersSilhouette() {
+        return m_clustersSilhouette;
+    }
+
+    /**
+     * Gets the global silhouette, i.e: the mean silhouette of
+     * all points.
+     *
+     * @return Returns the mean silhouette of all points.
+     */
+    public double getGlobalSilhouette() {
+        return m_globalSilhouette;
+    }
+
+    /**
+     * Evaluates a given silhouette index result.
+     *
+     * @param si Silhouette-Index.
+     */
+    public String evalSilhouette(double si) {
+        String eval = "";
+
+        if (si > 0.70)
+            eval = "strong structure!";
+        else if (si >  0.50 && si <= 0.70)
+            eval = "reasonably structure!";
+        else if (si >  0.25 && si <= 0.50)
+            eval = "weak structure!";
+        else if (si <= 0.25)
+            eval = "a non substancial structure was found!";
+
+        return eval;
+    }
+
+    /**
+     * Returns a string describing the br.otimizes.oplatool.core.jmetal4.results.
+     *
+     * @return a string describing the clusterer.
+     */
+    @Override
+    public String toString() {
+        StringBuffer description = new StringBuffer();
+
+        /* Clusters. */
+        for (int i = 0; i < m_clustersSilhouette.size(); i++) {
+            double si = m_clustersSilhouette.get(i);
+            description.append("   Cluster " + i + ": " + String.format(Locale.US, "%.4f", si)
+                    + ", veredict: " + evalSilhouette(si) + "\n");
+        }
+
+        description.append("   Mean: " + String.format(Locale.US, "%.4f", m_globalSilhouette)
+                + ", veredict: " + evalSilhouette(m_globalSilhouette));
+
+        return description.toString();
+    }
+}
+
+package br.otimizes.isearchai.learning;
+
+import org.apache.commons.lang3.ArrayUtils;
+import weka.classifiers.AbstractClassifier;
+import weka.classifiers.Evaluation;
+import weka.classifiers.functions.MultilayerPerceptron;
+import weka.core.DenseInstance;
+import weka.core.Instances;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
+/**
+ * Subjective analyze algorithm by Freire and Bindewald (2020)
+ */
+public class SubjectiveAnalyzeAlgorithm {
+    //https://stackoverflow.com/questions/28694971/using-neural-network-class-in-weka-in-java-code
+    private static final long serialVersionUID = 1L;
+
+    private MLSolutionSet resultFront;
+    private ClassifierAlgorithm algorithm;
+    private int numObjectives;
+    private ArffExecution scoreArffExecution;
+    private AbstractClassifier scoreAlgorithm;
+    private Evaluation scoreEvaluation;
+    private ArffExecution architecturalArffExecution;
+    private AbstractClassifier architecturalAlgorithm;
+    private Evaluation architectureEvaluation;
+    private int trainingTime = 2500;
+    private DistributeUserEvaluation distributeUserEvaluation = DistributeUserEvaluation.ALL;
+    private EvaluationModels evaluationModel = EvaluationModels.CROSS_VALIDATION;
+    private double momentum = 0.2;
+    private double learningRate = 0.3;
+    private String hiddenLayers;
+    private List<MLElement> evaluatedMLElements;
+    private List<MLSolutionSet> interactions = new ArrayList<>();
+    private boolean trained = false;
+    public static int currentEvaluation = 0;
+    List<MLElement> freezedMLElements = new ArrayList<>();
+    List<MLElement> notFreezedMLElements = new ArrayList<>();
+
+    public SubjectiveAnalyzeAlgorithm() {
+    }
+
+    public SubjectiveAnalyzeAlgorithm(MLSolutionSet resultFront, ClassifierAlgorithm algorithm, DistributeUserEvaluation distributeUserEvaluation) {
+        this.distributeUserEvaluation = distributeUserEvaluation;
+        this.resultFront = resultFront;
+        this.algorithm = algorithm;
+        distributeUserEvaluations(resultFront);
+        this.scoreArffExecution = new ArffExecution(resultFront.writeObjectivesAndElementsNumberToMatrix(),
+            resultFront.writeUserEvaluationsToMatrix(), null);
+        this.architecturalArffExecution = new ArffExecution(resultFront.writeObjectivesAndArchitecturalElementsNumberToMatrix(),
+            resultFront.writeArchitecturalEvaluationsToMatrix(), null, true);
+        this.numObjectives = this.resultFront.get(0).numberOfObjectives();
+    }
+
+    public SubjectiveAnalyzeAlgorithm(MLSolutionSet resultFront, ClassifierAlgorithm algorithm) {
+        this.resultFront = resultFront;
+        this.algorithm = algorithm;
+        distributeUserEvaluations(resultFront);
+        this.scoreArffExecution = new ArffExecution(resultFront.writeObjectivesAndElementsNumberToMatrix(),
+            resultFront.writeUserEvaluationsToMatrix(), null);
+        this.architecturalArffExecution = new ArffExecution(resultFront.writeObjectivesAndArchitecturalElementsNumberToMatrix(),
+            resultFront.writeArchitecturalEvaluationsToMatrix(), null, true);
+        this.numObjectives = this.resultFront.get(0).numberOfObjectives();
+    }
+
+    private void distributeUserEvaluations(MLSolutionSet resultFront) {
+        if (ClassifierAlgorithm.CLUSTERING_MLP.equals(this.algorithm)) {
+            resultFront.distributeUserEvaluation(distributeUserEvaluation);
+        }
+    }
+
+    /**
+     * Execution Method
+     *
+     * @return Solution Set - Best performing cluster with another solutions (filteredSolutions)
+     */
+    public MLSolutionSet run(MLSolutionSet MLSolutionSet, boolean middle) {
+        try {
+            return getAlgorithm(MLSolutionSet, middle);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void run() throws Exception {
+        run(null, false);
+        for (MLSolutionSet interaction : interactions) {
+            run(interaction, false);
+        }
+    }
+
+    /**
+     * Algorithm Execution Method
+     *
+     * @return Solution Set
+     */
+    public MLSolutionSet getAlgorithm(MLSolutionSet MLSolutionSet, boolean inOnMiddle) {
+        currentEvaluation++;
+        long startsIn = new Date().getTime();
+        if (scoreAlgorithm == null) {
+            scoreAlgorithm = newScoreAlgorithm();
+            architecturalAlgorithm = newArchitecturalAlgorithm();
+        }
+
+        if (MLSolutionSet != null) {
+            joinSolutionSet(MLSolutionSet, inOnMiddle);
+        }
+        setArffExecutionClassIndex(scoreArffExecution);
+        setArffExecutionClassIndex(architecturalArffExecution);
+        startAlgorithms(inOnMiddle);
+
+        return resultFront;
+    }
+
+
+    private MultilayerPerceptron newScoreAlgorithm() {
+        MultilayerPerceptron scoreAlgorithm = new MultilayerPerceptron();
+        scoreAlgorithm.setHiddenLayers(getHiddenLayers());
+        scoreAlgorithm.setTrainingTime(getTrainingTime());
+        scoreAlgorithm.setLearningRate(getLearningRate());
+        scoreAlgorithm.setMomentum(getMomentum());
+        return scoreAlgorithm;
+    }
+
+    private MultilayerPerceptron newArchitecturalAlgorithm() {
+        MultilayerPerceptron architecturalAlgorithm = new MultilayerPerceptron();
+        architecturalAlgorithm.setHiddenLayers(getArchitecturalAlgorithmHiddenLayers());
+        architecturalAlgorithm.setTrainingTime(getTrainingTime());
+        architecturalAlgorithm.setLearningRate(getLearningRate());
+        architecturalAlgorithm.setMomentum(getMomentum());
+        return architecturalAlgorithm;
+    }
+
+    private void joinSolutionSet(MLSolutionSet MLSolutionSet, boolean inOnMiddle) {
+        if (!MLSolutionSet.hasUserEvaluation()) {
+            evaluateSolutionSetScoreAlgorithm(MLSolutionSet);
+        } else {
+            distributeUserEvaluations(MLSolutionSet);
+        }
+        if (!inOnMiddle) {
+            ArffExecution newArffArchitectureAlgorithm = new ArffExecution(resultFront.writeObjectivesAndArchitecturalElementsNumberToMatrix(),
+                resultFront.writeArchitecturalEvaluationsToMatrix(), null, true);
+            if (newArffArchitectureAlgorithm.getData() != null) {
+                newArffArchitectureAlgorithm.getData().setClassIndex(newArffArchitectureAlgorithm.getAttrIndices());
+                if (architecturalArffExecution.getData() == null)
+                    architecturalArffExecution = newArffArchitectureAlgorithm;
+                else architecturalArffExecution.getData().addAll(newArffArchitectureAlgorithm.getData());
+            }
+        }
+        ArffExecution newArffScoreAlgorithm = new ArffExecution(MLSolutionSet.writeObjectivesAndElementsNumberToMatrix(),
+            MLSolutionSet.writeUserEvaluationsToMatrix(), null);
+        newArffScoreAlgorithm.getData().setClassIndex(newArffScoreAlgorithm.getAttrIndices());
+        resultFront.addAll(MLSolutionSet);
+        scoreArffExecution.getData().addAll(newArffScoreAlgorithm.getData());
+    }
+
+    private void setArffExecutionClassIndex(ArffExecution subjectiveArffExecution) {
+        if (subjectiveArffExecution.getData() != null)
+            subjectiveArffExecution.getData().setClassIndex(subjectiveArffExecution.getAttrIndices());
+    }
+
+
+    private void startAlgorithms(boolean inOnMiddle) {
+        Thread threadScoreAlgorithm = new Thread(this::buildScoreAlgorithm);
+        threadScoreAlgorithm.start();
+        Thread threadArchitecturalAlgorithm = null;
+        if (!inOnMiddle) {
+            threadArchitecturalAlgorithm = new Thread(this::buildArchitecturalAlgorithm);
+            threadArchitecturalAlgorithm.start();
+        }
+
+        try {
+            threadScoreAlgorithm.join();
+            if (threadArchitecturalAlgorithm != null) {
+                threadArchitecturalAlgorithm.join();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void evaluateSolutionSetScoreAlgorithm(MLSolutionSet MLSolutionSet) {
+        for (int i = 0; i < MLSolutionSet.size(); i++) {
+            try {
+                MLSolutionSet.get(i).setEvaluation((int) scoreAlgorithm
+                    .classifyInstance(new DenseInstance(1.0, MLSolutionSet.writeObjectivesAndElementsNumberEvaluationToMatrix()[i])));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Evaluate subjectively using Likert score and architectural elements evaluation
+     *
+     * @param MLSolutionSet solution set
+     * @param subjective  assign or not the Likert score
+     * @throws Exception default exception
+     */
+    public void evaluateSolutionSetScoreAndArchitecturalAlgorithm(MLSolutionSet MLSolutionSet, boolean subjective) throws Exception {
+        for (int i = 0; i < MLSolutionSet.size(); i++) {
+            MLSolution MLSolution = MLSolutionSet.get(i);
+            double[] solutionMatrix = MLSolutionSet.writeObjectivesAndElementsNumberEvaluationToMatrix()[i];
+            if (subjective) {
+                MLSolution.setEvaluation((int) scoreAlgorithm.classifyInstance(new DenseInstance(1.0, solutionMatrix)));
+            }
+            List<MLElement> elementsWithPackages = MLSolution.getElements();
+            elementsWithPackages.parallelStream().forEach(element -> {
+                double[] data = getDataSet(MLSolutionSet, MLSolution, element);
+                if (architecturalArffExecution.getData() != null) {
+                    DenseInstance denseInstance = new DenseInstance(1.0, data);
+                    denseInstance.setDataset(architecturalArffExecution.getData());
+                    try {
+                        element.setFreezeFromDM(architecturalAlgorithm.classifyInstance(denseInstance));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (element.isFreezeByDM()) {
+                        this.freezedMLElements.add(element);
+                    } else {
+                        this.notFreezedMLElements.add(element);
+                    }
+                }
+            });
+        }
+    }
+
+    private double[] getDataSet(MLSolutionSet MLSolutionSet, MLSolution MLSolution, MLElement MLElement) {
+        double[] data = MLSolution.getObjectives();
+        double[] objectives = MLSolutionSet.writeObjectiveFromElementsAndObjectives(MLElement, MLSolution);
+        double[] characteristics = MLSolutionSet.writeCharacteristicsFromElement(MLElement, MLSolution);
+
+        data = ArrayUtils.addAll(data, characteristics);
+        data = ArrayUtils.addAll(data, objectives);
+        data = ArrayUtils.addAll(data, new double[]{
+            MLSolution.containsArchitecturalEvaluation() ? 1 : 0,
+            MLElement.isFreezeByDM() ? 1 : 0
+        });
+        return data;
+    }
+
+    private void buildArchitecturalAlgorithm() {
+        if (architecturalArffExecution.getData() == null) return;
+        try {
+            Instances data = architecturalArffExecution.getData();
+            int trainSize = Math.toIntExact(Math.round(data.numInstances() * getRatioTest()));
+            int testSize = data.numInstances() - trainSize;
+            Instances train = new Instances(data, 0, trainSize);
+            Instances test = new Instances(data, trainSize, testSize);
+
+            architecturalAlgorithm.buildClassifier(train);
+            architectureEvaluation = new Evaluation(test);
+            switch (evaluationModel) {
+                case TRAINING_SET:
+                    architectureEvaluation.evaluateModel(architecturalAlgorithm, test);
+                    break;
+                case CROSS_VALIDATION:
+                    architectureEvaluation.crossValidateModel(architecturalAlgorithm, test, 10, new Random(1));
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Double getRatioTest() {
+        return 0.66;
+    }
+
+
+    private void buildScoreAlgorithm() {
+        if (scoreArffExecution.getData() == null) return;
+        try {
+            scoreAlgorithm.buildClassifier(scoreArffExecution.getData());
+            scoreEvaluation = new Evaluation(scoreArffExecution.getData());
+            switch (evaluationModel) {
+                case TRAINING_SET:
+                    scoreEvaluation.evaluateModel(scoreAlgorithm, scoreArffExecution.getData());
+                    break;
+                case CROSS_VALIDATION:
+                    scoreEvaluation.crossValidateModel(scoreAlgorithm, scoreArffExecution.getData(), 5, new Random(1));
+                    break;
+            }
+            logSubjectiveModelEvaluation();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void logSubjectiveModelEvaluation() {
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+
+    public MLSolutionSet getResultFront() {
+        return resultFront;
+    }
+
+    public void setResultFront(MLSolutionSet resultFront) {
+        this.resultFront = resultFront;
+    }
+
+    public ClassifierAlgorithm getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(ClassifierAlgorithm algorithm) {
+        this.algorithm = algorithm;
+    }
+
+    public ArffExecution getScoreArffExecution() {
+        return scoreArffExecution;
+    }
+
+    public void setScoreArffExecution(ArffExecution scoreArffExecution) {
+        this.scoreArffExecution = scoreArffExecution;
+    }
+
+    public int getNumObjectives() {
+        return numObjectives;
+    }
+
+    public void setNumObjectives(int numObjectives) {
+        this.numObjectives = numObjectives;
+    }
+
+
+    public AbstractClassifier getScoreAlgorithm() {
+        return scoreAlgorithm;
+    }
+
+    public void setScoreAlgorithm(AbstractClassifier scoreAlgorithm) {
+        this.scoreAlgorithm = scoreAlgorithm;
+    }
+
+    public int getTrainingTime() {
+        return trainingTime;
+    }
+
+    public void setTrainingTime(int trainingTime) {
+        this.trainingTime = trainingTime;
+    }
+
+    public DistributeUserEvaluation getDistributeUserEvaluation() {
+        return distributeUserEvaluation;
+    }
+
+    public void setDistributeUserEvaluation(DistributeUserEvaluation distributeUserEvaluation) {
+        this.distributeUserEvaluation = distributeUserEvaluation;
+    }
+
+    public EvaluationModels getEvaluationModel() {
+        return evaluationModel;
+    }
+
+    public void setEvaluationModel(EvaluationModels evaluationModel) {
+        this.evaluationModel = evaluationModel;
+    }
+
+    public double getMomentum() {
+        return momentum;
+    }
+
+    public void setMomentum(double momentum) {
+        this.momentum = momentum;
+    }
+
+    public double getLearningRate() {
+        return learningRate;
+    }
+
+    public void setLearningRate(double learningRate) {
+        this.learningRate = learningRate;
+    }
+
+    public String getHiddenLayers() {
+        return hiddenLayers == null ? String.valueOf(Math.round(scoreArffExecution.getAttrIndices())) : hiddenLayers;
+    }
+
+    public String getArchitecturalAlgorithmHiddenLayers() {
+        return hiddenLayers == null ? String.valueOf(Math.round(architecturalArffExecution.getAttrIndices())) : hiddenLayers;
+    }
+
+    public void setHiddenLayers(String hiddenLayers) {
+        this.hiddenLayers = hiddenLayers;
+    }
+
+    public ArffExecution getArchitecturalArffExecution() {
+        return architecturalArffExecution;
+    }
+
+    public void setArchitecturalArffExecution(ArffExecution architecturalArffExecution) {
+        this.architecturalArffExecution = architecturalArffExecution;
+    }
+
+    public List<MLElement> getEvaluatedElements() {
+        return evaluatedMLElements;
+    }
+
+    public void setEvaluatedElements(List<MLElement> evaluatedMLElements) {
+        this.evaluatedMLElements = evaluatedMLElements;
+    }
+
+    public void addInteraction(MLSolutionSet offspringPopulation) {
+        interactions.add(offspringPopulation);
+    }
+
+    public AbstractClassifier getArchitecturalAlgorithm() {
+        return architecturalAlgorithm;
+    }
+
+    public void setArchitecturalAlgorithm(MultilayerPerceptron architecturalAlgorithm) {
+        this.architecturalAlgorithm = architecturalAlgorithm;
+    }
+
+    public List<MLSolutionSet> getInteractions() {
+        return interactions;
+    }
+
+    public void setInteractions(List<MLSolutionSet> interactions) {
+        this.interactions = interactions;
+    }
+
+    public boolean isTrained() {
+        return trained;
+    }
+
+    public void setTrained(boolean trained) {
+        this.trained = trained;
+    }
+
+    public Evaluation getScoreEvaluation() {
+        return scoreEvaluation;
+    }
+
+    public void setScoreEvaluation(Evaluation scoreEvaluation) {
+        this.scoreEvaluation = scoreEvaluation;
+    }
+
+    public Evaluation getArchitectureEvaluation() {
+        return architectureEvaluation;
+    }
+
+    public void setArchitectureEvaluation(Evaluation architectureEvaluation) {
+        this.architectureEvaluation = architectureEvaluation;
+    }
+
+    public List<MLElement> getFreezedElements() {
+        return freezedMLElements;
+    }
+
+    public void setFreezedElements(List<MLElement> freezedMLElements) {
+        this.freezedMLElements = freezedMLElements;
+    }
+
+    public List<MLElement> getNotFreezedElements() {
+        return notFreezedMLElements;
+    }
+
+    public void setNotFreezedElements(List<MLElement> notFreezedMLElements) {
+        this.notFreezedMLElements = notFreezedMLElements;
+    }
+}
+
+package br.otimizes.isearchai.learning;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.net.URL;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class Utils {
+
+    public static List<Field> getAllFields(Class c) {
+        ArrayList<Field> arrayList = new ArrayList<Field>();
+        if (c.getSuperclass() != Object.class) {
+            arrayList.addAll(getAllFields(c.getSuperclass()));
+        }
+        arrayList.addAll(Arrays.asList(c.getDeclaredFields()));
+        return arrayList;
+    }
+
+    public static String removeNotNumbers(String numero) {
+        if (numero == null) {
+            return null;
+        }
+        return numero.replaceAll("[\\D]", "");
+    }
+
+    public static void removeNumbersFromAtrributes(Object obj, String... atributos) {
+        Class clazz = obj.getClass();
+        for (String attr : atributos) {
+            try {
+                Field att = clazz.getDeclaredField(attr);
+                att.setAccessible(true);
+                att.set(obj, removeNotNumbers((String) att.get(obj)));
+            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
+                Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }
+
+    public static Class<?> inferGenericType(Class<?> clazz) {
+        return inferGenericType(clazz, 0);
+    }
+
+    public static Class<?> inferGenericType(Class<?> clazz, int index) {
+        Type superClass = clazz.getGenericSuperclass();
+        return (Class<?>) ((ParameterizedType) superClass).getActualTypeArguments()[index];
+    }
+
+    public static String firstTiny(String s) {
+        String first = s.substring(0, 1).toLowerCase();
+        return first + s.substring(1);
+
+    }
+
+    public static String windowsSafe(String s) {
+        return s.replaceAll("\\\\", "/");
+    }
+
+    public static List<Class> scanClasses() throws IOException {
+        List<Class> toReturn = new ArrayList<>();
+        Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources("");
+        while (resources.hasMoreElements()) {
+            File file = new File(resources.nextElement().getFile());
+            toReturn.addAll(scanFolder(file, file));
+        }
+        return toReturn;
+    }
+
+    private static String getClassName(File f, File baseFolder) {
+        String compleName = Utils.windowsSafe(f.getAbsolutePath());
+        String baseFolderName = Utils.windowsSafe(baseFolder.getAbsolutePath());
+        return compleName.replaceFirst(baseFolderName, "").replace(".class", "").replaceAll("/", ".").replaceFirst(".", "");
+    }
+
+    public static List<Class> scanFolder(File folder, File baseFolder) {
+        List<Class> toReturn = new ArrayList<>();
+        File[] fs = folder.listFiles();
+        if (fs == null) {
+            return toReturn;
+        }
+        for (File f : fs) {
+            if (f.isDirectory()) {
+                toReturn.addAll(scanFolder(f, baseFolder));
+            } else {
+                String name = f.getName();
+                if (name.endsWith(".class")) {
+                    String className = getClassName(f, baseFolder);
+                    try {
+                        toReturn.add(Class.forName(className));
+                    } catch (ClassNotFoundException ex) {
+                        Logger.getLogger(Utils.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        }
+        return toReturn;
+    }
+
+    public static void fillColectionsWithEmpty(Object obj) {
+        try {
+            List<Field> fields = getAllFields(obj.getClass());
+            for (Field f : fields) {
+                if (List.class.isAssignableFrom(f.getType())) {
+                    f.setAccessible(true);
+                    if (f.get(obj) == null) {
+                        f.set(obj, Collections.EMPTY_LIST);
+                    }
+                } else if (Set.class.isAssignableFrom(f.getType())) {
+                    f.setAccessible(true);
+                    if (f.get(obj) == null) {
+                        f.set(obj, Collections.EMPTY_SET);
+                    }
+                } else if (Map.class.isAssignableFrom(f.getType())) {
+                    f.setAccessible(true);
+                    if (f.get(obj) == null) {
+                        f.set(obj, Collections.EMPTY_MAP);
+                    }
+                }
+
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+    /**
+     * @return null safe set
+     */
+    public static Set<Field> findFields(Class<?> classs, Class<? extends Annotation> ann) {
+        Set<Field> set = new HashSet<>();
+        Class<?> c = classs;
+        while (c != null) {
+            for (Field field : c.getDeclaredFields()) {
+                if (field.isAnnotationPresent(ann)) {
+                    set.add(field);
+                }
+            }
+            c = c.getSuperclass();
+        }
+        return set;
+    }
+
+    public static String firstCapital(String s) {
+        String first = s.substring(0, 1).toUpperCase();
+        return first + s.substring(1);
+    }
+}
+
+package br.otimizes.isearchai.simulator;
+
+import weka.core.*;
+
+/**
+ *
+ * This class is a platform that stores the individuals and their respective human evaluations.
+ * Thus, a dataSet (Type Instances) is available for training the classifiers in WEKA API.
+ *
+ * @since 03-31-2015
+ * @author --
+ *
+ */
+public class DataSet {
+
+	public Instances dataSet;
+	FastVector featureVector;
+	int numberOfAttributes;
+	/**
+	 *
+	 * @param maxOfEvaluations
+	 * @param numberOfAttributes
+	 */
+	public DataSet(int maxOfEvaluations, int numberOfAttributes) {
+
+		this.numberOfAttributes = numberOfAttributes;
+		Attribute[] labelAttributes = new Attribute[numberOfAttributes];
+
+		for (int i = 0; i < numberOfAttributes; i++) {
+			labelAttributes[i] = new Attribute("r"+(i+1));
+		}
+
+		Attribute classifier = new Attribute("evaluation");
+
+		featureVector = new FastVector(numberOfAttributes +1);
+		for (int i = 0; i < numberOfAttributes; i++) {
+			featureVector.addElement(labelAttributes[i]);
+		}
+
+		featureVector.addElement(classifier);
+
+		dataSet = new Instances ("trainingSet", featureVector, maxOfEvaluations);
+		dataSet.setClassIndex(numberOfAttributes);
+	}
+	/**
+	 * Method used to store a solution with its respective subjective evaluation
+	 * @param individual
+	 * @param she
+	 */
+	public void insert(int[] individual, int she) {
+		Instance aux = new DenseInstance(numberOfAttributes +1);
+		for (int i = 0; i < individual.length; i++) {
+			aux.setValue((Attribute)featureVector.elementAt(i), individual[i]);
+		}
+		aux.setValue((Attribute)featureVector.elementAt(numberOfAttributes), she);
+		dataSet.add(aux);
+	}
+	/**
+	 *
+	 * @return A dataset used by Classifiers in WEKA
+	 */
+	public Instances getDataSet() {
+		return dataSet;
+	}
+	/**
+	 *
+	 * @param individual
+	 * @return Convert a given solution in instance
+	 */
+	public Instance getInstance(int [] individual) {
+		Instance instance = new DenseInstance(numberOfAttributes + 1);
+		for (int i = 0; i < individual.length; i++) {
+			instance.setValue((Attribute)featureVector.elementAt(i), individual[i]);
+		}
+		return instance;
+	}
+}
+
+package br.otimizes.isearchai.simulator;
+import java.util.Random;
+/**
+ * This Class is used as a simulator of different types of profile for evaluating solutions.
+ * This way, depending on the profile chosen, the evaluation of a  given  can  be different.
+ * The evaluation works on the following way: First of all one of the available profiles  is
+ * chosen. Then according to the chosen profile  the  attributes  will  be  added  in  the
+ * target-individual. The number of attributes to be added is set with a given  percentage.
+ * Thus, a solution is evaluated according to the  similarity between it and the target-individual.
+ *
+ * @since 03-31-2015
+ * @author --
+ *
+ */
+public class HumanSimulator {
+	/**
+	 * Maximum score the Human can give to a solution
+	 */
+	private double maxHumanEvaluation;
+	/**
+	 * Stores the number of attributes
+	 */
+	private int numberOfAttributes;
+	/**
+	 * Stores the attributes Scores of the attributes
+	 */
+	private double[] attributesScore;
+	/**
+	 * Stores attributes Costs
+	 */
+	private double[] attributesCost;
+	/**
+	 * Stores the number of attributes the target solutions has.
+	 */
+	private int targetSolutionPercentage;
+	/**
+	 * Stores Target Solution
+	 */
+	private int[] targetSolution;
+
+	private Random random;
+	/**
+	 * Constructor
+	 */
+	public HumanSimulator(){
+		random = new Random();
+		this.maxHumanEvaluation = 100;
+		targetSolutionPercentage = 50;
+	}
+	/**
+	 *
+	 * @param attributesScore
+	 */
+	public void setScoreValues (double[] attributesScore) {
+		this.attributesScore = attributesScore;
+		this.numberOfAttributes = attributesScore.length;
+	}
+	/**
+	 *
+	 * @param attributesCost
+	 */
+	public void setCostValues (double[] attributesCost) {
+		this.attributesCost = attributesCost;
+		this.numberOfAttributes = attributesCost.length;
+	}
+	/**
+	 * Set the Profile used to generate a target individual
+	 * @param human
+	 */
+	public void setHumanSimulatorProfile (String human) {
+
+		int nAttributesInSolution = getNumberOfAttributesInIndividual(targetSolutionPercentage);
+		/*
+		 * Generate individual RandomLy
+		 */
+		if(human == "RANDOM"){
+			this.targetSolution = getRandomlyTargetSolution(nAttributesInSolution);
+		}
+		/*
+		 * Order the attributes by score and return a solution with the higher score attributes
+		 */
+		else if (human == "HIGHER_SCORE") {
+			this.targetSolution = getHigherScoreTargetSolution(nAttributesInSolution);
+		}
+		/*
+		 * Order the attributes by score and return a solution with the lowest score attributes
+		 */
+		else if(human == "LOWER_SCORE") {
+			this.targetSolution = getLowerScoreTargetSolution(nAttributesInSolution);
+		}
+		/*
+		 * Order the attributes by cost and return a solution with the higher cost attributes
+		 */
+		else if (human == "HIGHER_COST") {
+			this.targetSolution = getHigherCostTargetSolution(nAttributesInSolution);
+		}
+		/*
+		 * Order the attributes by cost and return a solution with the lowest cost attributes
+		 */
+		else if (human == "LOWER_COST") {
+			this.targetSolution = getLowerCostTargetSolution(nAttributesInSolution);
+		}
+		/*
+		 * This method has a set of solutions generated manually
+		 */
+		else if (human == "MANUALLY") {
+			this.targetSolution = getManuallyTargetSolution();
+		}
+		/*
+		 *
+		 */
+		else {
+			System.out.println("Profile NOT FOUND!");
+			System.exit(0);
+		}
+	}
+	/**
+	 *
+	 * @return
+	 */
+	public double getMaxHumanEvaluation(){
+		return this.maxHumanEvaluation;
+	}
+	/**
+	 * Evaluate a given individual according to the target solution
+	 * @param individual
+	 * @return "subjective" evaluation
+	 */
+	public int getHumanEvaluation(int[] individual){
+		double humanEvaluation = 0;
+		double numberOfSimilaritiesInIndividual = getNumberOfSimilaritiesInIndividual(individual);
+
+		humanEvaluation = (maxHumanEvaluation * numberOfSimilaritiesInIndividual) / targetSolution.length;
+
+		return (int) Math.round(humanEvaluation);
+	}
+	/**
+	 *
+	 * @return the target solution
+	 */
+	public int[] getTargetSolution(){
+		return this.targetSolution;
+	}
+	/**
+	 *
+	 * @return
+	 */
+	private int[] getManuallyTargetSolution(){
+		int[] targetSolution = null;
+
+		if(50 == attributesCost.length) {
+			targetSolution = new int[] {1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0};
+		}
+
+		else if(100 == attributesCost.length){
+		targetSolution = new int[] {0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1};
+		}
+
+		else if(150 == attributesCost.length){
+			targetSolution = new int[] {0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0};
+		}
+
+		else if(200 == attributesCost.length){
+			targetSolution = new int[] {0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1};
+		}
+		else {
+			System.out.println("There is no TARGET for such size!");
+			System.exit(0);
+		}
+
+		return targetSolution;
+	}
+	/**
+	 *
+	 * @param attributesPercentage
+	 * @return
+	 */
+	private int getNumberOfAttributesInIndividual(int attributesPercentage){
+		return (int) Math.round((attributesPercentage / 100.0) * numberOfAttributes);
+	}
+	/**
+	 *
+	 * @param numberOfAttributesInSolution
+	 * @return
+	 */
+	private int[] getRandomlyTargetSolution(int numberOfAttributesInSolution){
+		int[] targetSolution = new int[numberOfAttributes];
+
+		for(int i = 0; i <= targetSolution.length - 1; i++){
+			targetSolution[i] = -1;
+		}
+
+		for(int i = 0; i <= numberOfAttributesInSolution - 1; i++){
+			int randomAttribute = random.nextInt(numberOfAttributes);
+
+			while(isAttributeInTargetSolution(randomAttribute, targetSolution) == true){
+				randomAttribute = random.nextInt(numberOfAttributes);
+			}
+
+			targetSolution[randomAttribute] = 1;
+		}
+
+		for(int i = 0; i <= targetSolution.length - 1; i++){
+			if(targetSolution[i] != 1){
+				targetSolution[i] = 0;
+			}
+		}
+
+		return targetSolution;
+	}
+	/**
+	 *
+	 * @param attribute
+	 * @param targetSolution
+	 * @return
+	 */
+	private boolean isAttributeInTargetSolution(int attribute, int[] targetSolution){
+		boolean result = false;
+
+		for(int i = 0; i <= targetSolution.length - 1; i++){
+			if(targetSolution[attribute] == 1){
+				result = true;
+				break;
+			}
+		}
+
+		return result;
+	}
+	/**
+	 *
+	 * @param numberOfAttributesInSolution
+	 * @return
+	 */
+	private int[] getHigherScoreTargetSolution(int numberOfAttributesInSolution){
+		int[] targetSolution = new int[numberOfAttributes];
+		int[] attributesSelectedFlags = new int[numberOfAttributes];
+		int higherScoreAttribute = 0;
+
+		for(int i = 0; i <= numberOfAttributesInSolution - 1; i++){
+			higherScoreAttribute = selectHigherScoreAttribute(attributesSelectedFlags);
+			attributesSelectedFlags[higherScoreAttribute] = 1;
+			targetSolution[higherScoreAttribute] = 1;
+		}
+
+		return targetSolution;
+	}
+	/**
+	 *
+	 * @param attributesSelectedFlags
+	 * @return
+	 */
+	private int selectHigherScoreAttribute(int[] attributesSelectedFlags){
+		int higherScoreAttribute = getFirstAttributeNotSelected(attributesSelectedFlags);
+
+		for(int i = 0; i <= attributesScore.length - 1; i++){
+			if(attributesScore[i] > attributesScore[higherScoreAttribute] && attributesSelectedFlags[i] == 0){
+				higherScoreAttribute = i;
+			}
+		}
+
+		return higherScoreAttribute;
+	}
+	/**
+	 *
+	 * @param attributesSelectedFlags
+	 * @return
+	 */
+	private int getFirstAttributeNotSelected(int[] attributesSelectedFlags){
+		int firstAttributeNotSelected = 0;
+
+		for(int i = 0; i <= attributesSelectedFlags.length - 1; i++){
+			if(attributesSelectedFlags[i] == 0){
+				firstAttributeNotSelected = i;
+				break;
+			}
+		}
+
+		return firstAttributeNotSelected;
+	}
+/**
+ *
+ * @param numberOfAttributesInSolution
+ * @return
+ */
+	private int[] getLowerScoreTargetSolution(int numberOfAttributesInSolution){
+		int[] targetSolution = new int[numberOfAttributes];
+		int[] attributesSelectedFlags = new int[numberOfAttributes];
+		int lowerScoreAttribute = 0;
+
+		for(int i = 0; i <= numberOfAttributesInSolution - 1; i++){
+			lowerScoreAttribute = selectLowerScoreAttribute(attributesSelectedFlags);
+			attributesSelectedFlags[lowerScoreAttribute] = 1;
+			targetSolution[lowerScoreAttribute] = 1;
+		}
+
+		return targetSolution;
+	}
+	/**
+	 *
+	 * @param attributesSelectedFlags
+	 * @return
+	 */
+	private int selectLowerScoreAttribute(int[] attributesSelectedFlags){
+		int lowerScoreAttribute = getFirstAttributeNotSelected(attributesSelectedFlags);
+
+		for(int i = 0; i <= attributesScore.length - 1; i++){
+			if(attributesScore[i] < attributesScore[lowerScoreAttribute] && attributesSelectedFlags[i] == 0){
+				lowerScoreAttribute = i;
+			}
+		}
+
+		return lowerScoreAttribute;
+	}
+	/**
+	 *
+	 * @param numberOfAttributesInSolution
+	 * @return
+	 */
+	private int[] getHigherCostTargetSolution(int numberOfAttributesInSolution){
+		int[] targetSolution = new int[numberOfAttributes];
+
+		int[] attributesSelectedFlags = new int[numberOfAttributes];
+		int higherCostAttribute = 0;
+
+		for(int i = 0; i <= numberOfAttributesInSolution - 1; i++){
+			higherCostAttribute = selectHigherCostAttribute(attributesSelectedFlags);
+			attributesSelectedFlags[higherCostAttribute] = 1;
+			targetSolution[higherCostAttribute] = 1;
+		}
+
+		return targetSolution;
+	}
+	/**
+	 *
+	 * @param attributesSelectedFlags
+	 * @return
+	 */
+	private int selectHigherCostAttribute(int[] attributesSelectedFlags){
+		int higherCostAttribute = getFirstAttributeNotSelected(attributesSelectedFlags);
+
+		for(int i = 0; i <= attributesCost.length - 1; i++){
+			if(attributesCost[i] > attributesCost[higherCostAttribute] && attributesSelectedFlags[i] == 0){
+				higherCostAttribute = i;
+			}
+		}
+
+		return higherCostAttribute;
+	}
+	/**
+	 *
+	 * @param numberOfAttributesInSolution
+	 * @return
+	 */
+	private int[] getLowerCostTargetSolution(int numberOfAttributesInSolution){
+		int[] targetSolution = new int[numberOfAttributes];
+
+		int[] attributesSelectedFlags = new int[numberOfAttributes];
+		int lowerCostAttribute = 0;
+
+		for(int i = 0; i <= numberOfAttributesInSolution - 1; i++){
+			lowerCostAttribute = selectLowerCostAttribute(attributesSelectedFlags);
+			attributesSelectedFlags[lowerCostAttribute] = 1;
+			targetSolution[lowerCostAttribute] = 1;
+		}
+
+		return targetSolution;
+	}
+	/**
+	 *
+	 * @param attributesSelectedFlags
+	 * @return
+	 */
+	private int selectLowerCostAttribute(int[] attributesSelectedFlags){
+		int lowerCostAttribute = getFirstAttributeNotSelected(attributesSelectedFlags);
+
+		for(int i = 0; i <= attributesCost.length - 1; i++){
+			if(attributesSelectedFlags[i] == 0)
+			if(attributesCost[i] < attributesCost[lowerCostAttribute] && attributesSelectedFlags[i] == 0){
+				lowerCostAttribute = i;
+			}
+		}
+
+		return lowerCostAttribute;
+	}
+	/**
+	 *
+	 * @param individual
+	 * @return
+	 */
+	public int getNumberOfSimilaritiesInIndividual(int[] individual){
+		int numberOfSimilaritiesInIndividual = 0;
+
+		for(int i = 0; i <= targetSolution.length - 1; i++){
+			if(targetSolution[i] == individual[i]){
+				numberOfSimilaritiesInIndividual++;
+			}
+		}
+
+		return numberOfSimilaritiesInIndividual;
+	}
+	/**
+	 *
+	 * @return
+	 */
+	public int getNumberOfAttributes(){
+		return numberOfAttributes;
+	}
+}
+
+package br.otimizes.isearchai.simulator;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+
+public class InstanceReader {
+
+	private BufferedReader reader;
+	/**
+	 * Constructor
+	 * @param instance
+	 */
+	public InstanceReader(File instance){
+		try{
+			this.reader = new BufferedReader(new FileReader(instance));
+			reader.mark(1);
+		}
+		catch(Exception e){
+			System.out.println("Instance reading error");
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * Get Number Of Clients
+	 * @return
+	 */
+	private int getNumberOfCustomers(){
+		String[] values = null;
+		int numberOfCustomers = 0;
+
+		try{
+			reader.reset();
+			values = reader.readLine().split(" ");
+			numberOfCustomers = Integer.parseInt(values[0]);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+
+		return numberOfCustomers;
+	}
+	/**
+	 * Get number of attributes from the specified instance
+	 * @return
+	 */
+	private int getNumberOfAttributes(){
+		String[] values = null;
+		int numberOfAttributes = 0;
+
+		try{
+			reader.reset();
+			values = reader.readLine().split(" ");
+			numberOfAttributes = Integer.parseInt(values[1]);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+
+		return numberOfAttributes;
+	}
+	/**
+	 * Get importance of the clients from the instance
+	 * @return
+	 */
+	public double[] getCustomersImportance(){
+		double[] customersImportance = new double[getNumberOfCustomers()];
+		String[] values = null;
+
+		try{
+			reader.reset();
+			reader.readLine();
+			reader.readLine();
+			values = reader.readLine().split(" ");
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+
+		for(int i = 0; i <= customersImportance.length - 1; i++){
+			customersImportance[i] = Double.parseDouble(values[i]);
+		}
+
+		return customersImportance;
+	}
+	/**
+	 * Get Importances of the attributes
+	 * @return
+	 */
+	public double[][] getAttributesImportances(){
+		double[][] attributesImportances = new double[getNumberOfCustomers()][getNumberOfAttributes()];
+		String[] values = null;
+
+		try{
+			reader.reset();
+			reader.readLine();
+			reader.readLine();
+			reader.readLine();
+			reader.readLine();
+
+			for(int i = 0; i <= attributesImportances.length - 1; i++){
+				values = reader.readLine().split(" ");
+
+				for(int j = 0; j <= attributesImportances[0].length - 1; j++){
+					attributesImportances[i][j] = Integer.parseInt(values[j]);
+				}
+			}
+
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+
+		return attributesImportances;
+	}
+	/**
+	 * Get attribute Cost from the instance
+	 * @return
+	 */
+	public double[] getAttributesCosts(){
+		double[] attributesCosts = new double[getNumberOfAttributes()];
+		int numberOfCustomers = getNumberOfCustomers();
+		String[] values = null;
+
+		try{
+			reader.reset();
+			for(int i = 0; i <= 5 + numberOfCustomers - 1; i++){
+				reader.readLine();
+			}
+
+			values = reader.readLine().split(" ");
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+
+		for(int i = 0; i <= attributesCosts.length - 1; i++){
+			attributesCosts[i] = Integer.parseInt(values[i]);
+		}
+
+		return attributesCosts;
+	}
+}
+
+package br.otimizes.isearchai.simulator;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class ResultsWriter {
+	/**
+	 * Stores a set Of results given by the evaluations
+	 */
+	ArrayList <HashMap<String, String>> listOfResults;
+	/**
+	 *
+	 */
+	HumanSimulator simulator;
+	/**
+	 *
+	 * @param listOfResults
+	 * @param simulator
+	 */
+	public void setResults(ArrayList <HashMap<String, String>> listOfResults, HumanSimulator simulator) {
+		this.listOfResults = listOfResults;
+		this.simulator = simulator;
+	}
+	/**
+	 * Write results
+	 */
+	public void writeResults(){
+		System.out.println("Number of executions: " + listOfResults.size());
+		System.out.println("Average of Similarities: " + getSimilaritiesStatistics());
+		System.out.println("Score: " + getIndividualsAverageScore() + " +/- " + getStandardDeviation(true));
+		System.out.println("Mean Relative Absolute Error: "+ getAverageMeanRelativeAbsoluteError()+"%");
+	}
+	/**
+	 *
+	 * @return Average Mean Relative Absolute Error
+	 */
+	private double getAverageMeanRelativeAbsoluteError() {
+		double averageError = 0;
+		for (int i = 0; i < listOfResults.size(); i++) {
+			averageError += Double.parseDouble(listOfResults.get(i).get("meanRelativeAbsoluteError"));
+		}
+		return averageError/listOfResults.size();
+	}
+
+
+	/**
+	 *
+	 * @return Mean Number Of Similarities of All solutions in List of Results
+	 */
+	public double getSimilaritiesStatistics(){
+		HashMap<String, String> results = null;
+		double meanNumberOfSimilaritiesInIndividual = 0;
+
+		for(int i = 0; i <= listOfResults.size() - 1; i++){
+			results = listOfResults.get(i);
+			meanNumberOfSimilaritiesInIndividual += simulator.getNumberOfSimilaritiesInIndividual(getIndividual(results.get("bestIndividual")));
+		}
+		meanNumberOfSimilaritiesInIndividual = (meanNumberOfSimilaritiesInIndividual/listOfResults.size())/simulator.getNumberOfAttributes();
+
+		return meanNumberOfSimilaritiesInIndividual;
+	}
+	/**
+	 *
+	 * @return The respective similarity of each solution in list of results
+	 */
+	public double[] getIndividualsSimilarities(){
+		HashMap<String, String> results = null;
+		double[] individualSimilarities = new double[listOfResults.size()];
+
+		for(int i = 0; i <= listOfResults.size() - 1; i++){
+			results = listOfResults.get(i);
+			individualSimilarities[i] =	(double) simulator.getNumberOfSimilaritiesInIndividual(getIndividual(results.get("bestIndividual")))/simulator.getNumberOfAttributes();
+		}
+
+		return individualSimilarities;
+	}
+	/**
+	 * Convert a string individual in a vector of integers
+	 * @param stringIndividual
+	 * @return
+	 */
+	private int[] getIndividual(String stringIndividual){
+		String[] values = stringIndividual.split(" ");
+		int[] individual = new int[values.length];
+
+		for(int i = 0; i <= individual.length - 1; i++){
+			individual[i] = Integer.parseInt(values[i]);
+		}
+
+		return individual;
+	}
+	/**
+	 *
+	 * @return The Individual Average Score in list of results
+	 */
+	public double getIndividualsAverageScore(){
+		double[] individualsScores = getIndividualsScores();
+		double scoresSum = 0;
+
+		for(int i = 0; i <= individualsScores.length - 1; i++){
+			scoresSum += individualsScores[i];
+		}
+		scoresSum = scoresSum / individualsScores.length;
+
+		return scoresSum;
+	}
+	/**
+	 *
+	 * @return A vector containing scores of all evaluations
+	 */
+	private double[] getIndividualsScores(){
+		double[] individualsScores = new double[listOfResults.size()];
+
+		for(int i = 0; i <= individualsScores.length - 1; i++){
+			individualsScores[i] = Double.parseDouble(listOfResults.get(i).get("bestIndividualScore"));
+		}
+
+		return individualsScores;
+	}
+
+
+	/**
+	 *
+	 * @param measure (If true return the standard deviation of the scores, else return the one of the Similarities)
+	 * @return The standard Deviation
+	 */
+	public double getStandardDeviation(boolean measure) {
+		double standardDeviation;
+
+		if(measure) { // Score
+			standardDeviation = getStandardDeviation(getIndividualsAverageScore(), getIndividualsScores());
+		}else { // Similarity
+			standardDeviation = getStandardDeviation(getSimilaritiesStatistics(), getIndividualsSimilarities());
+		}
+
+		return standardDeviation;
+	}
+	/**
+	 * Given a set of results this function return the standard Deviation.
+	 * @param average
+	 * @param values
+	 * @return
+	 */
+	private double getStandardDeviation(double average, double[] values){
+	      double[] deviances = getDeviances(average, values);
+	      double variance = getVariance(deviances);
+
+	      return Math.sqrt(variance);
+	}
+
+	/**
+	 *
+	 * @param mean
+	 * @param values
+	 * @return deviances of the fiven numerical vector
+	 */
+	private double[] getDeviances(double mean, double[] values){
+		double[] deviances = new double[values.length];
+
+		for(int i = 0; i <= deviances.length - 1; i++){
+			deviances[i] = mean - values[i];
+		}
+
+		return deviances;
+	}
+	/**
+	 *
+	 * @param deviances
+	 * @return Variances
+	 */
+	private double getVariance(double[] deviances){
+		double quadraticDeviancesSum = 0;
+
+		for(int i = 0; i <= deviances.length - 1; i++){
+			quadraticDeviancesSum += Math.pow(deviances[i], 2);
+		}
+
+		return quadraticDeviancesSum / deviances.length;
+	}
+}
