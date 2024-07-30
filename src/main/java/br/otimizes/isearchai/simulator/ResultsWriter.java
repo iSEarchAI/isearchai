@@ -54,7 +54,7 @@ public class ResultsWriter {
 			results = listOfResults.get(i);
 			meanNumberOfSimilaritiesInIndividual += simulator.getNumberOfSimilaritiesInIndividual(getIndividual(results.get("bestIndividual")));
 		}
-		meanNumberOfSimilaritiesInIndividual = (meanNumberOfSimilaritiesInIndividual/listOfResults.size())/simulator.getNumberOfRequirements();
+		meanNumberOfSimilaritiesInIndividual = (meanNumberOfSimilaritiesInIndividual/listOfResults.size())/simulator.getNumberOfAttributes();
 
 		return meanNumberOfSimilaritiesInIndividual;
 	}
@@ -68,7 +68,7 @@ public class ResultsWriter {
 
 		for(int i = 0; i <= listOfResults.size() - 1; i++){
 			results = listOfResults.get(i);
-			individualSimilarities[i] =	(double) simulator.getNumberOfSimilaritiesInIndividual(getIndividual(results.get("bestIndividual")))/simulator.getNumberOfRequirements();
+			individualSimilarities[i] =	(double) simulator.getNumberOfSimilaritiesInIndividual(getIndividual(results.get("bestIndividual")))/simulator.getNumberOfAttributes();
 		}
 
 		return individualSimilarities;

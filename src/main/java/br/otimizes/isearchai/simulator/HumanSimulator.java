@@ -4,8 +4,8 @@ import java.util.Random;
  * This Class is used as a simulator of different types of profile for evaluating solutions.
  * This way, depending on the profile chosen, the evaluation of a  given  can  be different.
  * The evaluation works on the following way: First of all one of the available profiles  is
- * chosen. Then according to the chosen profile  the  requirements  will  be  added  in  the
- * target-individual. The number of requirements to be added is set with a given  percentage.
+ * chosen. Then according to the chosen profile  the  attributes  will  be  added  in  the
+ * target-individual. The number of attributes to be added is set with a given  percentage.
  * Thus, a solution is evaluated according to the  similarity between it and the target-individual.
  *
  * @since 03-31-2015
@@ -18,19 +18,19 @@ public class HumanSimulator {
 	 */
 	private double maxHumanEvaluation;
 	/**
-	 * Stores the number of requirements
+	 * Stores the number of attributes
 	 */
-	private int numberOfRequirements;
+	private int numberOfAttributes;
 	/**
-	 * Stores the requirements Scores of the requirements
+	 * Stores the attributes Scores of the attributes
 	 */
-	private double[] requirementsScore;
+	private double[] attributesScore;
 	/**
-	 * Stores requirements Costs
+	 * Stores attributes Costs
 	 */
-	private double[] requirementsCost;
+	private double[] attributesCost;
 	/**
-	 * Stores the number of requirements the target solutions has.
+	 * Stores the number of attributes the target solutions has.
 	 */
 	private int targetSolutionPercentage;
 	/**
@@ -49,19 +49,19 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param requirementsScore
+	 * @param attributesScore
 	 */
-	public void setScoreValues (double[] requirementsScore) {
-		this.requirementsScore = requirementsScore;
-		this.numberOfRequirements = requirementsScore.length;
+	public void setScoreValues (double[] attributesScore) {
+		this.attributesScore = attributesScore;
+		this.numberOfAttributes = attributesScore.length;
 	}
 	/**
 	 *
-	 * @param requirementsCost
+	 * @param attributesCost
 	 */
-	public void setCostValues (double[] requirementsCost) {
-		this.requirementsCost = requirementsCost;
-		this.numberOfRequirements = requirementsCost.length;
+	public void setCostValues (double[] attributesCost) {
+		this.attributesCost = attributesCost;
+		this.numberOfAttributes = attributesCost.length;
 	}
 	/**
 	 * Set the Profile used to generate a target individual
@@ -69,36 +69,36 @@ public class HumanSimulator {
 	 */
 	public void setHumanSimulatorProfile (String human) {
 
-		int nRequirementsInSolution = getNumberOfRequirementsInIndividual(targetSolutionPercentage);
+		int nAttributesInSolution = getNumberOfAttributesInIndividual(targetSolutionPercentage);
 		/*
 		 * Generate individual RandomLy
 		 */
 		if(human == "RANDOM"){
-			this.targetSolution = getRandomlyTargetSolution(nRequirementsInSolution);
+			this.targetSolution = getRandomlyTargetSolution(nAttributesInSolution);
 		}
 		/*
-		 * Order the requirements by score and return a solution with the higher score requirements
+		 * Order the attributes by score and return a solution with the higher score attributes
 		 */
 		else if (human == "HIGHER_SCORE") {
-			this.targetSolution = getHigherScoreTargetSolution(nRequirementsInSolution);
+			this.targetSolution = getHigherScoreTargetSolution(nAttributesInSolution);
 		}
 		/*
-		 * Order the requirements by score and return a solution with the lowest score requirements
+		 * Order the attributes by score and return a solution with the lowest score attributes
 		 */
 		else if(human == "LOWER_SCORE") {
-			this.targetSolution = getLowerScoreTargetSolution(nRequirementsInSolution);
+			this.targetSolution = getLowerScoreTargetSolution(nAttributesInSolution);
 		}
 		/*
-		 * Order the requirements by cost and return a solution with the higher cost requirements
+		 * Order the attributes by cost and return a solution with the higher cost attributes
 		 */
 		else if (human == "HIGHER_COST") {
-			this.targetSolution = getHigherCostTargetSolution(nRequirementsInSolution);
+			this.targetSolution = getHigherCostTargetSolution(nAttributesInSolution);
 		}
 		/*
-		 * Order the requirements by cost and return a solution with the lowest cost requirements
+		 * Order the attributes by cost and return a solution with the lowest cost attributes
 		 */
 		else if (human == "LOWER_COST") {
-			this.targetSolution = getLowerCostTargetSolution(nRequirementsInSolution);
+			this.targetSolution = getLowerCostTargetSolution(nAttributesInSolution);
 		}
 		/*
 		 * This method has a set of solutions generated manually
@@ -148,19 +148,19 @@ public class HumanSimulator {
 	private int[] getManuallyTargetSolution(){
 		int[] targetSolution = null;
 
-		if(50 == requirementsCost.length) {
+		if(50 == attributesCost.length) {
 			targetSolution = new int[] {1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0};
 		}
 
-		else if(100 == requirementsCost.length){
+		else if(100 == attributesCost.length){
 		targetSolution = new int[] {0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1};
 		}
 
-		else if(150 == requirementsCost.length){
+		else if(150 == attributesCost.length){
 			targetSolution = new int[] {0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0};
 		}
 
-		else if(200 == requirementsCost.length){
+		else if(200 == attributesCost.length){
 			targetSolution = new int[] {0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1};
 		}
 		else {
@@ -172,32 +172,32 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param requirementsPercentage
+	 * @param attributesPercentage
 	 * @return
 	 */
-	private int getNumberOfRequirementsInIndividual(int requirementsPercentage){
-		return (int) Math.round((requirementsPercentage / 100.0) * numberOfRequirements);
+	private int getNumberOfAttributesInIndividual(int attributesPercentage){
+		return (int) Math.round((attributesPercentage / 100.0) * numberOfAttributes);
 	}
 	/**
 	 *
-	 * @param numberOfRequirementsInSolution
+	 * @param numberOfAttributesInSolution
 	 * @return
 	 */
-	private int[] getRandomlyTargetSolution(int numberOfRequirementsInSolution){
-		int[] targetSolution = new int[numberOfRequirements];
+	private int[] getRandomlyTargetSolution(int numberOfAttributesInSolution){
+		int[] targetSolution = new int[numberOfAttributes];
 
 		for(int i = 0; i <= targetSolution.length - 1; i++){
 			targetSolution[i] = -1;
 		}
 
-		for(int i = 0; i <= numberOfRequirementsInSolution - 1; i++){
-			int randomRequirement = random.nextInt(numberOfRequirements);
+		for(int i = 0; i <= numberOfAttributesInSolution - 1; i++){
+			int randomAttribute = random.nextInt(numberOfAttributes);
 
-			while(isRequirementInTargetSolution(randomRequirement, targetSolution) == true){
-				randomRequirement = random.nextInt(numberOfRequirements);
+			while(isAttributeInTargetSolution(randomAttribute, targetSolution) == true){
+				randomAttribute = random.nextInt(numberOfAttributes);
 			}
 
-			targetSolution[randomRequirement] = 1;
+			targetSolution[randomAttribute] = 1;
 		}
 
 		for(int i = 0; i <= targetSolution.length - 1; i++){
@@ -210,15 +210,15 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param requirement
+	 * @param attribute
 	 * @param targetSolution
 	 * @return
 	 */
-	private boolean isRequirementInTargetSolution(int requirement, int[] targetSolution){
+	private boolean isAttributeInTargetSolution(int attribute, int[] targetSolution){
 		boolean result = false;
 
 		for(int i = 0; i <= targetSolution.length - 1; i++){
-			if(targetSolution[requirement] == 1){
+			if(targetSolution[attribute] == 1){
 				result = true;
 				break;
 			}
@@ -228,159 +228,159 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param numberOfRequirementsInSolution
+	 * @param numberOfAttributesInSolution
 	 * @return
 	 */
-	private int[] getHigherScoreTargetSolution(int numberOfRequirementsInSolution){
-		int[] targetSolution = new int[numberOfRequirements];
-		int[] requirementsSelectedFlags = new int[numberOfRequirements];
-		int higherScoreRequirement = 0;
+	private int[] getHigherScoreTargetSolution(int numberOfAttributesInSolution){
+		int[] targetSolution = new int[numberOfAttributes];
+		int[] attributesSelectedFlags = new int[numberOfAttributes];
+		int higherScoreAttribute = 0;
 
-		for(int i = 0; i <= numberOfRequirementsInSolution - 1; i++){
-			higherScoreRequirement = selectHigherScoreRequirement(requirementsSelectedFlags);
-			requirementsSelectedFlags[higherScoreRequirement] = 1;
-			targetSolution[higherScoreRequirement] = 1;
+		for(int i = 0; i <= numberOfAttributesInSolution - 1; i++){
+			higherScoreAttribute = selectHigherScoreAttribute(attributesSelectedFlags);
+			attributesSelectedFlags[higherScoreAttribute] = 1;
+			targetSolution[higherScoreAttribute] = 1;
 		}
 
 		return targetSolution;
 	}
 	/**
 	 *
-	 * @param requirementsSelectedFlags
+	 * @param attributesSelectedFlags
 	 * @return
 	 */
-	private int selectHigherScoreRequirement(int[] requirementsSelectedFlags){
-		int higherScoreRequirement = getFirstRequirementNotSelected(requirementsSelectedFlags);
+	private int selectHigherScoreAttribute(int[] attributesSelectedFlags){
+		int higherScoreAttribute = getFirstAttributeNotSelected(attributesSelectedFlags);
 
-		for(int i = 0; i <= requirementsScore.length - 1; i++){
-			if(requirementsScore[i] > requirementsScore[higherScoreRequirement] && requirementsSelectedFlags[i] == 0){
-				higherScoreRequirement = i;
+		for(int i = 0; i <= attributesScore.length - 1; i++){
+			if(attributesScore[i] > attributesScore[higherScoreAttribute] && attributesSelectedFlags[i] == 0){
+				higherScoreAttribute = i;
 			}
 		}
 
-		return higherScoreRequirement;
+		return higherScoreAttribute;
 	}
 	/**
 	 *
-	 * @param requirementsSelectedFlags
+	 * @param attributesSelectedFlags
 	 * @return
 	 */
-	private int getFirstRequirementNotSelected(int[] requirementsSelectedFlags){
-		int firstRequirementNotSelected = 0;
+	private int getFirstAttributeNotSelected(int[] attributesSelectedFlags){
+		int firstAttributeNotSelected = 0;
 
-		for(int i = 0; i <= requirementsSelectedFlags.length - 1; i++){
-			if(requirementsSelectedFlags[i] == 0){
-				firstRequirementNotSelected = i;
+		for(int i = 0; i <= attributesSelectedFlags.length - 1; i++){
+			if(attributesSelectedFlags[i] == 0){
+				firstAttributeNotSelected = i;
 				break;
 			}
 		}
 
-		return firstRequirementNotSelected;
+		return firstAttributeNotSelected;
 	}
 /**
  *
- * @param numberOfRequirementsInSolution
+ * @param numberOfAttributesInSolution
  * @return
  */
-	private int[] getLowerScoreTargetSolution(int numberOfRequirementsInSolution){
-		int[] targetSolution = new int[numberOfRequirements];
-		int[] requirementsSelectedFlags = new int[numberOfRequirements];
-		int lowerScoreRequirement = 0;
+	private int[] getLowerScoreTargetSolution(int numberOfAttributesInSolution){
+		int[] targetSolution = new int[numberOfAttributes];
+		int[] attributesSelectedFlags = new int[numberOfAttributes];
+		int lowerScoreAttribute = 0;
 
-		for(int i = 0; i <= numberOfRequirementsInSolution - 1; i++){
-			lowerScoreRequirement = selectLowerScoreRequirement(requirementsSelectedFlags);
-			requirementsSelectedFlags[lowerScoreRequirement] = 1;
-			targetSolution[lowerScoreRequirement] = 1;
+		for(int i = 0; i <= numberOfAttributesInSolution - 1; i++){
+			lowerScoreAttribute = selectLowerScoreAttribute(attributesSelectedFlags);
+			attributesSelectedFlags[lowerScoreAttribute] = 1;
+			targetSolution[lowerScoreAttribute] = 1;
 		}
 
 		return targetSolution;
 	}
 	/**
 	 *
-	 * @param requirementsSelectedFlags
+	 * @param attributesSelectedFlags
 	 * @return
 	 */
-	private int selectLowerScoreRequirement(int[] requirementsSelectedFlags){
-		int lowerScoreRequirement = getFirstRequirementNotSelected(requirementsSelectedFlags);
+	private int selectLowerScoreAttribute(int[] attributesSelectedFlags){
+		int lowerScoreAttribute = getFirstAttributeNotSelected(attributesSelectedFlags);
 
-		for(int i = 0; i <= requirementsScore.length - 1; i++){
-			if(requirementsScore[i] < requirementsScore[lowerScoreRequirement] && requirementsSelectedFlags[i] == 0){
-				lowerScoreRequirement = i;
+		for(int i = 0; i <= attributesScore.length - 1; i++){
+			if(attributesScore[i] < attributesScore[lowerScoreAttribute] && attributesSelectedFlags[i] == 0){
+				lowerScoreAttribute = i;
 			}
 		}
 
-		return lowerScoreRequirement;
+		return lowerScoreAttribute;
 	}
 	/**
 	 *
-	 * @param numberOfRequirementsInSolution
+	 * @param numberOfAttributesInSolution
 	 * @return
 	 */
-	private int[] getHigherCostTargetSolution(int numberOfRequirementsInSolution){
-		int[] targetSolution = new int[numberOfRequirements];
+	private int[] getHigherCostTargetSolution(int numberOfAttributesInSolution){
+		int[] targetSolution = new int[numberOfAttributes];
 
-		int[] requirementsSelectedFlags = new int[numberOfRequirements];
-		int higherCostRequirement = 0;
+		int[] attributesSelectedFlags = new int[numberOfAttributes];
+		int higherCostAttribute = 0;
 
-		for(int i = 0; i <= numberOfRequirementsInSolution - 1; i++){
-			higherCostRequirement = selectHigherCostRequirement(requirementsSelectedFlags);
-			requirementsSelectedFlags[higherCostRequirement] = 1;
-			targetSolution[higherCostRequirement] = 1;
+		for(int i = 0; i <= numberOfAttributesInSolution - 1; i++){
+			higherCostAttribute = selectHigherCostAttribute(attributesSelectedFlags);
+			attributesSelectedFlags[higherCostAttribute] = 1;
+			targetSolution[higherCostAttribute] = 1;
 		}
 
 		return targetSolution;
 	}
 	/**
 	 *
-	 * @param requirementsSelectedFlags
+	 * @param attributesSelectedFlags
 	 * @return
 	 */
-	private int selectHigherCostRequirement(int[] requirementsSelectedFlags){
-		int higherCostRequirement = getFirstRequirementNotSelected(requirementsSelectedFlags);
+	private int selectHigherCostAttribute(int[] attributesSelectedFlags){
+		int higherCostAttribute = getFirstAttributeNotSelected(attributesSelectedFlags);
 
-		for(int i = 0; i <= requirementsCost.length - 1; i++){
-			if(requirementsCost[i] > requirementsCost[higherCostRequirement] && requirementsSelectedFlags[i] == 0){
-				higherCostRequirement = i;
+		for(int i = 0; i <= attributesCost.length - 1; i++){
+			if(attributesCost[i] > attributesCost[higherCostAttribute] && attributesSelectedFlags[i] == 0){
+				higherCostAttribute = i;
 			}
 		}
 
-		return higherCostRequirement;
+		return higherCostAttribute;
 	}
 	/**
 	 *
-	 * @param numberOfRequirementsInSolution
+	 * @param numberOfAttributesInSolution
 	 * @return
 	 */
-	private int[] getLowerCostTargetSolution(int numberOfRequirementsInSolution){
-		int[] targetSolution = new int[numberOfRequirements];
+	private int[] getLowerCostTargetSolution(int numberOfAttributesInSolution){
+		int[] targetSolution = new int[numberOfAttributes];
 
-		int[] requirementsSelectedFlags = new int[numberOfRequirements];
-		int lowerCostRequirement = 0;
+		int[] attributesSelectedFlags = new int[numberOfAttributes];
+		int lowerCostAttribute = 0;
 
-		for(int i = 0; i <= numberOfRequirementsInSolution - 1; i++){
-			lowerCostRequirement = selectLowerCostRequirement(requirementsSelectedFlags);
-			requirementsSelectedFlags[lowerCostRequirement] = 1;
-			targetSolution[lowerCostRequirement] = 1;
+		for(int i = 0; i <= numberOfAttributesInSolution - 1; i++){
+			lowerCostAttribute = selectLowerCostAttribute(attributesSelectedFlags);
+			attributesSelectedFlags[lowerCostAttribute] = 1;
+			targetSolution[lowerCostAttribute] = 1;
 		}
 
 		return targetSolution;
 	}
 	/**
 	 *
-	 * @param requirementsSelectedFlags
+	 * @param attributesSelectedFlags
 	 * @return
 	 */
-	private int selectLowerCostRequirement(int[] requirementsSelectedFlags){
-		int lowerCostRequirement = getFirstRequirementNotSelected(requirementsSelectedFlags);
+	private int selectLowerCostAttribute(int[] attributesSelectedFlags){
+		int lowerCostAttribute = getFirstAttributeNotSelected(attributesSelectedFlags);
 
-		for(int i = 0; i <= requirementsCost.length - 1; i++){
-			if(requirementsSelectedFlags[i] == 0)
-			if(requirementsCost[i] < requirementsCost[lowerCostRequirement] && requirementsSelectedFlags[i] == 0){
-				lowerCostRequirement = i;
+		for(int i = 0; i <= attributesCost.length - 1; i++){
+			if(attributesSelectedFlags[i] == 0)
+			if(attributesCost[i] < attributesCost[lowerCostAttribute] && attributesSelectedFlags[i] == 0){
+				lowerCostAttribute = i;
 			}
 		}
 
-		return lowerCostRequirement;
+		return lowerCostAttribute;
 	}
 	/**
 	 *
@@ -402,7 +402,7 @@ public class HumanSimulator {
 	 *
 	 * @return
 	 */
-	public int getNumberOfRequirements(){
-		return numberOfRequirements;
+	public int getNumberOfAttributes(){
+		return numberOfAttributes;
 	}
 }

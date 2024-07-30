@@ -15,32 +15,32 @@ public class DataSet {
 
 	public Instances dataSet;
 	FastVector featureVector;
-	int numberOfRequirements;
+	int numberOfAttributes;
 	/**
 	 *
 	 * @param maxOfEvaluations
-	 * @param numberOfRequirements
+	 * @param numberOfAttributes
 	 */
-	public DataSet(int maxOfEvaluations, int numberOfRequirements) {
+	public DataSet(int maxOfEvaluations, int numberOfAttributes) {
 
-		this.numberOfRequirements = numberOfRequirements;
-		Attribute[] labelRequirements = new Attribute[numberOfRequirements];
+		this.numberOfAttributes = numberOfAttributes;
+		Attribute[] labelAttributes = new Attribute[numberOfAttributes];
 
-		for (int i = 0; i < numberOfRequirements; i++) {
-			labelRequirements[i] = new Attribute("r"+(i+1));
+		for (int i = 0; i < numberOfAttributes; i++) {
+			labelAttributes[i] = new Attribute("r"+(i+1));
 		}
 
 		Attribute classifier = new Attribute("evaluation");
 
-		featureVector = new FastVector(numberOfRequirements+1);
-		for (int i = 0; i < numberOfRequirements; i++) {
-			featureVector.addElement(labelRequirements[i]);
+		featureVector = new FastVector(numberOfAttributes +1);
+		for (int i = 0; i < numberOfAttributes; i++) {
+			featureVector.addElement(labelAttributes[i]);
 		}
 
 		featureVector.addElement(classifier);
 
 		dataSet = new Instances ("trainingSet", featureVector, maxOfEvaluations);
-		dataSet.setClassIndex(numberOfRequirements);
+		dataSet.setClassIndex(numberOfAttributes);
 	}
 	/**
 	 * Method used to store a solution with its respective subjective evaluation
@@ -48,11 +48,11 @@ public class DataSet {
 	 * @param she
 	 */
 	public void insert(int[] individual, int she) {
-		Instance aux = new DenseInstance(numberOfRequirements+1);
+		Instance aux = new DenseInstance(numberOfAttributes +1);
 		for (int i = 0; i < individual.length; i++) {
 			aux.setValue((Attribute)featureVector.elementAt(i), individual[i]);
 		}
-		aux.setValue((Attribute)featureVector.elementAt(numberOfRequirements), she);
+		aux.setValue((Attribute)featureVector.elementAt(numberOfAttributes), she);
 		dataSet.add(aux);
 	}
 	/**
@@ -68,7 +68,7 @@ public class DataSet {
 	 * @return Convert a given solution in instance
 	 */
 	public Instance getInstance(int [] individual) {
-		Instance instance = new DenseInstance(numberOfRequirements);
+		Instance instance = new DenseInstance(numberOfAttributes + 1);
 		for (int i = 0; i < individual.length; i++) {
 			instance.setValue((Attribute)featureVector.elementAt(i), individual[i]);
 		}

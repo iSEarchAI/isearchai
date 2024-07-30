@@ -41,23 +41,23 @@ public class InstanceReader {
 		return numberOfCustomers;
 	}
 	/**
-	 * Get number of requirements from the specified instance
+	 * Get number of attributes from the specified instance
 	 * @return
 	 */
-	private int getNumberOfRequirements(){
+	private int getNumberOfAttributes(){
 		String[] values = null;
-		int numberOfRequirements = 0;
+		int numberOfAttributes = 0;
 
 		try{
 			reader.reset();
 			values = reader.readLine().split(" ");
-			numberOfRequirements = Integer.parseInt(values[1]);
+			numberOfAttributes = Integer.parseInt(values[1]);
 		}
 		catch(Exception e){
 			e.printStackTrace();
 		}
 
-		return numberOfRequirements;
+		return numberOfAttributes;
 	}
 	/**
 	 * Get importance of the clients from the instance
@@ -84,11 +84,11 @@ public class InstanceReader {
 		return customersImportance;
 	}
 	/**
-	 * Get Importances of the requirements
+	 * Get Importances of the attributes
 	 * @return
 	 */
-	public double[][] getRequirementsImportances(){
-		double[][] requirementsImportances = new double[getNumberOfCustomers()][getNumberOfRequirements()];
+	public double[][] getAttributesImportances(){
+		double[][] attributesImportances = new double[getNumberOfCustomers()][getNumberOfAttributes()];
 		String[] values = null;
 
 		try{
@@ -98,11 +98,11 @@ public class InstanceReader {
 			reader.readLine();
 			reader.readLine();
 
-			for(int i = 0; i <= requirementsImportances.length - 1; i++){
+			for(int i = 0; i <= attributesImportances.length - 1; i++){
 				values = reader.readLine().split(" ");
 
-				for(int j = 0; j <= requirementsImportances[0].length - 1; j++){
-					requirementsImportances[i][j] = Integer.parseInt(values[j]);
+				for(int j = 0; j <= attributesImportances[0].length - 1; j++){
+					attributesImportances[i][j] = Integer.parseInt(values[j]);
 				}
 			}
 
@@ -111,14 +111,14 @@ public class InstanceReader {
 			e.printStackTrace();
 		}
 
-		return requirementsImportances;
+		return attributesImportances;
 	}
 	/**
-	 * Get requirement Cost from the instance
+	 * Get attribute Cost from the instance
 	 * @return
 	 */
-	public double[] getRequirementsCosts(){
-		double[] requirementsCosts = new double[getNumberOfRequirements()];
+	public double[] getAttributesCosts(){
+		double[] attributesCosts = new double[getNumberOfAttributes()];
 		int numberOfCustomers = getNumberOfCustomers();
 		String[] values = null;
 
@@ -134,10 +134,10 @@ public class InstanceReader {
 			e.printStackTrace();
 		}
 
-		for(int i = 0; i <= requirementsCosts.length - 1; i++){
-			requirementsCosts[i] = Integer.parseInt(values[i]);
+		for(int i = 0; i <= attributesCosts.length - 1; i++){
+			attributesCosts[i] = Integer.parseInt(values[i]);
 		}
 
-		return requirementsCosts;
+		return attributesCosts;
 	}
 }
