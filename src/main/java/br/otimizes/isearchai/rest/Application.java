@@ -4,6 +4,7 @@ import br.otimizes.isearchai.generator.model.Generate;
 import br.otimizes.isearchai.generator.replacers.Generator;
 import br.otimizes.isearchai.util.ObjMapUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import spark.Spark;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import static spark.Spark.*;
 public class Application {
     public static void main(String[] args) {
         port(8080);
+        staticFileLocation("/public");
         get("/hello", (req, res) -> "Hello, World!");
         post("/generate", (req, res) -> {
             String body = req.body();
@@ -36,6 +38,7 @@ public class Application {
 
             return res.raw();
         });
+//        init();
     }
 
     public static ByteArrayOutputStream createByteArrayOutputStreamFromFile(String filePath) {
