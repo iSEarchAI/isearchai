@@ -1,59 +1,60 @@
 package org.nautilus.plugin.nrp.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.nautilus.plugin.nrp.encoding.model.Requirement;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GenerateRandomInstance {
 
-	protected static JMetalRandom random = JMetalRandom.getInstance();
+    protected static JMetalRandom random = JMetalRandom.getInstance();
 
-	public static String generate(int numberOfRequirements) {
+    public static String generate(int numberOfRequirements) {
 
-		StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
 
-		builder.append("# number of requirements").append("\n");
-		builder.append(numberOfRequirements).append("\n");
+        builder.append("# number of requirements").append("\n");
+        builder.append(numberOfRequirements).append("\n");
 
-		List<Requirement> requirements = new ArrayList<>(numberOfRequirements);
+        List<Requirement> requirements = new ArrayList<>(numberOfRequirements);
 
-		for (int i = 0; i < numberOfRequirements; i++) {
-			requirements.add(Requirement.getRandom());
-		}
+        for (int i = 0; i < numberOfRequirements; i++) {
+            requirements.add(Requirement.getRandom());
+        }
 
-		builder.append("# number of tasks").append("\n");
+        builder.append("# number of items").append("\n");
 
-		for (int i = 0; i < requirements.size(); i++) {
+        for (int i = 0; i < requirements.size(); i++) {
+			
+            builder.append(requirements.get(i).items.size());
 
-			builder.append(requirements.get(i).items.size());
+            if (i + 1 != requirements.size()) {
+                builder.append(" ");
+            }
+        }
 
-			if (i + 1 != requirements.size()) {
-				builder.append(" ");
-			}
-		}
+        builder.append("\n");
 
-		builder.append("\n");
+        for (int i = 0; i < requirements.size(); i++) {
 
-		for (int i = 0; i < requirements.size(); i++) {
+            builder.append("# requirement " + i).append("\n");
 
-			builder.append("# requirement " + i).append("\n");
+            Requirement requirement = requirements.get(i);
 
-			Requirement requirement = requirements.get(i);
+            for (int j = 0; j < requirement.items.size(); j++) {
 
-			for (int j = 0; j < requirement.items.size(); j++) {
+                builder.append(requirement.items.get(j).cost)
+                    .append(" ")
+                    .append(requirement.items.get(j).profit)
+                    .append(" ")
+                    .append(requirement.items.get(j).importance)
+                    .append("\n");
+            }
+        }
 
-				builder.append(requirement.items.get(j).cost)
-						.append(" ")
-						.append(requirement.items.get(j).profit)
-						.append(" ")
-						.append(requirement.items.get(j).importance)
-						.append("\n");
-			}
-		}
-
-		return builder.toString();
-	}
+        return builder.toString();
+    }
 
 }
+

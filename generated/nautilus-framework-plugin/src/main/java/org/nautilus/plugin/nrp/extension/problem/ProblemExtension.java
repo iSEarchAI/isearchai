@@ -9,7 +9,7 @@ import org.nautilus.core.model.Instance;
 import org.nautilus.core.objective.AbstractObjective;
 import org.nautilus.plugin.extension.problem.AbstractProblemExtension;
 import org.nautilus.plugin.nrp.encoding.instance.TXTInstance;
-import org.nautilus.plugin.nrp.encoding.SearchProblem.SearchProblem;
+import org.nautilus.plugin.nrp.encoding.problem.SearchProblem;
 import org.uma.jmetal.solution.BinarySolution;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.binarySet.BinarySet;

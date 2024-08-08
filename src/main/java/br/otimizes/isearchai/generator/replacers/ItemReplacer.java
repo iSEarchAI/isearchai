@@ -1,8 +1,9 @@
-package br.otimizes.isearchai.generator;
+package br.otimizes.isearchai.generator.replacers;
 
+import br.otimizes.isearchai.generator.model.Generate;
+import br.otimizes.isearchai.generator.model.Item;
+import br.otimizes.isearchai.util.ObjMapUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -12,21 +13,24 @@ import java.util.stream.Collectors;
 
 public class ItemReplacer {
     public static void main(String[] args) throws JsonProcessingException {
-        generate("nrp-generate.json");
+        generateForFile("nrp-generate.json");
     }
 
-    public static void generate(String file) throws JsonProcessingException {
+    public static void generateForFile(String file) throws JsonProcessingException {
         String jsonFile = readFileFromResources(file);
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode json = objectMapper.readTree(jsonFile);
-        JsonNode item = json.get("item");
-        String name = item.get("name").asText();
+        generate(ObjMapUtils.mapper().readValue(jsonFile, Generate.class));
+
+    }
+
+    public static void generate(Generate json) throws JsonProcessingException {
+        Item item = json.getItem();
+        String name = item.getName();
         String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/Item.java");
         fileClass = fileClass.replaceAll("\\$item\\.name", name);
 
         List<String> objectives = new ArrayList<>();
-        for (JsonNode jsonNode : item.get("objectives")) {
-            objectives.add(jsonNode.asText().toLowerCase());
+        for (String jsonNode : item.getObjectives()) {
+            objectives.add(jsonNode.toLowerCase());
         }
         String objectivesAttributes = objectives.stream().map(str -> "public double " + str + ";").collect(Collectors.joining("\n\t"));
         String objectivesParams = objectives.stream().map(str -> "double " + str).collect(Collectors.joining(","));
@@ -39,7 +43,6 @@ public class ItemReplacer {
         fileClass = fileClass.replace("$item.objectivesRandomParams", objectivesRandomParams);
         System.out.println(fileClass);
         writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/" + name + ".java", fileClass);
-
     }
 
     public static void writeFile(String filePath, String content) {

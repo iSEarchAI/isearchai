@@ -2,7 +2,7 @@ package org.nautilus.plugin.nrp.encoding.runner;
 
 import org.nautilus.core.model.Instance;
 import org.nautilus.core.objective.AbstractObjective;
-import org.nautilus.plugin.nrp.encoding.SearchProblem.SearchProblem;
+import org.nautilus.plugin.nrp.encoding.problem.SearchProblem;
 import org.nautilus.plugin.nrp.extension.problem.ProblemExtension;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
@@ -58,3 +58,4 @@ public class NSGAIIRunner {
         System.out.println("Done");
     }
 }
+

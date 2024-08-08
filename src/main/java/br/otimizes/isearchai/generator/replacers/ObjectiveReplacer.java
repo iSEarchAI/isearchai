@@ -1,48 +1,60 @@
-package br.otimizes.isearchai.generator;
+package br.otimizes.isearchai.generator.replacers;
 
+import br.otimizes.isearchai.generator.model.Generate;
+import br.otimizes.isearchai.generator.model.Objective;
+import br.otimizes.isearchai.util.ObjMapUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Objects;
 
 public class ObjectiveReplacer {
     public static void main(String[] args) throws JsonProcessingException {
-        generate("nrp-generate.json");
+        generateForFile("nrp-generate.json");
     }
 
-    public static void generate(String file) throws JsonProcessingException {
+    public static void generateForFile(String file) throws JsonProcessingException {
         String jsonFile = readFileFromResources(file);
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode json = objectMapper.readTree(jsonFile);
-        JsonNode objectives = json.get("objectives");
-        for (JsonNode objective : objectives) {
+        generate(ObjMapUtils.mapper().readValue(jsonFile, Generate.class));
+    }
+
+    public static void generate(Generate jsonFile) throws JsonProcessingException {
+        List<Objective> objectives = jsonFile.getObjectives();
+        for (Objective objective : objectives) {
             String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/objective/Objective.java");
-            String className = objective.get("name").asText();
+            String className = objective.getName();
             fileClass = fileClass.replace("$objective.name", className);
-            fileClass = fileClass.replace("$objective.type", objective.get("type").asText());
-            JsonNode incrementWithNode = objective.get("process").get("incrementWith");
-            String incrementWith = incrementWithNode.asText();
-            if (incrementWithNode.isTextual()) {
+            fileClass = fileClass.replace("$objective.type", objective.getType());
+            String incrementWith = objective.getProcess().getIncrementWith();
+
+            if (!isNumber(incrementWith)) {
                 incrementWith = "instance.getSumOf" + incrementWith + "()";
             }
             fileClass = fileClass.replace("$objective.process.incrementWith", incrementWith);
 
-            fileClass = fileClass.replace("$objective.calculate.type", objective.get("calculate").get("type").asText());
-            String valueA = objective.get("calculate").get("a").get("value").asText();
+            fileClass = fileClass.replace("$objective.calculate.type", objective.getCalculate().getType());
+            String valueA = objective.getCalculate().getA().getValue();
             if (!Objects.equals(valueA, "sum")) {
                 valueA = "instance.getSumOf" + valueA + "()";
             }
             fileClass = fileClass.replace("$objective.calculate.a", valueA);
 
-            String valueB = objective.get("calculate").get("b").get("value").asText();
+            String valueB = objective.getCalculate().getB().getValue();
             if (!Objects.equals(valueB, "sum")) {
-                 valueB = "instance.getSumOf" + valueB + "()";
+                valueB = "instance.getSumOf" + valueB + "()";
             }
             fileClass = fileClass.replace("$objective.calculate.b", valueB);
             writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/objective/" + className + ".java", fileClass);
+        }
+    }
+
+    private static boolean isNumber(String incrementWith) {
+        try {
+            return Double.parseDouble(incrementWith) > 0;
+        } catch (RuntimeException ex) {
+            return false;
         }
     }
 

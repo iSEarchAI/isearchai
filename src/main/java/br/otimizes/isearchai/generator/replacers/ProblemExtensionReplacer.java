@@ -1,34 +1,37 @@
-package br.otimizes.isearchai.generator;
+package br.otimizes.isearchai.generator.replacers;
 
+import br.otimizes.isearchai.generator.model.Generate;
+import br.otimizes.isearchai.generator.model.Objective;
+import br.otimizes.isearchai.util.ObjMapUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class ProblemExtensionReplacer {
     public static void main(String[] args) throws JsonProcessingException {
-        generate("nrp-generate.json");
+        generateForFile("nrp-generate.json");
     }
 
-    public static void generate(String file) throws JsonProcessingException {
+    public static void generateForFile(String file) throws JsonProcessingException {
         String jsonFile = readFileFromResources(file);
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode json = objectMapper.readTree(jsonFile);
+        generate(ObjMapUtils.mapper().readValue(jsonFile, Generate.class));
+
+    }
+
+    public static void generate(Generate json) throws JsonProcessingException {
         String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/extension/problem/ProblemExtension.java");
 
         String methods = "";
         String imports = "";
-        for (JsonNode jsonNode : json.get("objectives")) {
-            methods += "objectives.add(new " + jsonNode.get("name").asText() + "());\n\t\t";
-            imports += "import org.nautilus.plugin.nrp.encoding.objective." + jsonNode.get("name").asText() + ";\n";
+        for (Objective jsonNode : json.getObjectives()) {
+            methods += "objectives.add(new " + jsonNode.getName() + "());\n\t\t";
+            imports += "import org.nautilus.plugin.nrp.encoding.objective." + jsonNode.getName() + ";\n";
         }
         fileClass = fileClass.replace("$methods", methods);
         fileClass = fileClass.replace("$imports", imports);
         System.out.println(fileClass);
         writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/extension/problem/ProblemExtension.java", fileClass);
-
     }
 
     public static void writeFile(String filePath, String content) {

@@ -1,4 +1,4 @@
-package org.nautilus.plugin.nrp.encoding.SearchProblem;
+package org.nautilus.plugin.nrp.encoding.problem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,36 +13,37 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 public class SearchProblem extends NBinaryProblem {
 
-	private static final long serialVersionUID = 1233594822179588853L;
+    private static final long serialVersionUID = 1233594822179588853L;
 
-	public SearchProblem(Instance instance, List<AbstractObjective> objectives) {
-		super(instance, objectives);
+    public SearchProblem(Instance instance, List<AbstractObjective> objectives) {
+        super(instance, objectives);
 
-		setNumberOfVariables(1);
+        setNumberOfVariables(1);
 
-		List<Integer> bitsPerVariable = new ArrayList<>(getNumberOfVariables());
+        List<Integer> bitsPerVariable = new ArrayList<>(getNumberOfVariables());
 
-		for (int i = 0; i < getNumberOfVariables(); i++) {
-			bitsPerVariable.add(((TXTInstance) getInstance()).getSumOfSolution());
-		}
+        for (int i = 0; i < getNumberOfVariables(); i++) {
+            bitsPerVariable.add(((TXTInstance) getInstance()).getSumOfSolution());
+        }
 
-		setBitsPerVariable(bitsPerVariable);
-	}
+        setBitsPerVariable(bitsPerVariable);
+    }
 
-	@Override
-	public void evaluate(BinarySolution solution) {
+    @Override
+    public void evaluate(BinarySolution solution) {
 
-		// Change if it is invalid
+        // Change if it is invalid
 
-		BinarySet binarySet = (BinarySet) solution.getVariableValue(0);
+        BinarySet binarySet = (BinarySet) solution.getVariableValue(0);
 
-		if (binarySet.isEmpty()) {
+        if (binarySet.isEmpty()) {
 
-			int pos = JMetalRandom.getInstance().nextInt(0, binarySet.getBinarySetLength() - 1);
+            int pos = JMetalRandom.getInstance().nextInt(0, binarySet.getBinarySetLength() - 1);
 
-			binarySet.set(pos, true);
-		}
+            binarySet.set(pos, true);
+        }
 
-		super.evaluate(solution);
-	}
+        super.evaluate(solution);
+    }
 }
+

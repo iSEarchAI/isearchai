@@ -1,23 +1,26 @@
-package br.otimizes.isearchai.generator;
+package br.otimizes.isearchai.generator.replacers;
 
+import br.otimizes.isearchai.generator.model.Generate;
+import br.otimizes.isearchai.util.ObjMapUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class SolutionReplacer {
     public static void main(String[] args) throws JsonProcessingException {
-        generate("nrp-generate.json");
+        generateForFile("nrp-generate.json");
     }
 
-    public static void generate(String file) throws JsonProcessingException {
+    public static void generateForFile(String file) throws JsonProcessingException {
         String jsonFile = readFileFromResources(file);
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode json = objectMapper.readTree(jsonFile);
-        String solutionName = json.get("solution").get("name").asText();
-        String itemName = json.get("item").get("name").asText();
+        generate(ObjMapUtils.mapper().readValue(jsonFile, Generate.class));
+
+    }
+
+    public static void generate(Generate json) throws JsonProcessingException {
+        String solutionName = json.getSolution().getName();
+        String itemName = json.getItem().getName();
         String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/Solution.java");
         fileClass = fileClass.replaceAll("\\$solution\\.name", solutionName);
         fileClass = fileClass.replaceAll("\\$item\\.name", itemName);
@@ -36,15 +39,14 @@ public class SolutionReplacer {
 
         String methods = "";
 
-        for (JsonNode jsonNode : json.get("item").get("objectives")) {
+        for (String jsonNode : json.getItem().getObjectives()) {
             methods += methodTemplate.replace("$item.name", itemName)
-                .replace("$objective", jsonNode.asText())
-                .replace("$attr", jsonNode.asText().toLowerCase()) + "\n\n\t";
+                .replace("$objective", jsonNode)
+                .replace("$attr", jsonNode.toLowerCase()) + "\n\n\t";
         }
         fileClass = fileClass.replace("$methods", methods);
         System.out.println(fileClass);
         writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/" + solutionName + ".java", fileClass);
-
     }
 
     public static void writeFile(String filePath, String content) {
