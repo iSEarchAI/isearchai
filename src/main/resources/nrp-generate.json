@@ -17,10 +17,10 @@
             }
         },
         {
-            "name": "Importante",
+            "name": "Importance",
             "type": "double",
             "process": {
-                "incrementWith": "Importante"
+                "incrementWith": "Importance"
             },
             "calculate": {
                 "type": "/",
@@ -64,7 +64,7 @@
                     "value": "sum"
                 },
                 "b": {
-                    "value": "Requeriments"
+                    "value": "Solution"
                 }
             }
         }

@@ -5,13 +5,13 @@ import org.nautilus.core.objective.AbstractObjective;
 import org.nautilus.plugin.nrp.encoding.instance.TXTInstance;
 import org.uma.jmetal.solution.Solution;
 
-public class Importante extends AbstractObjective {
+public class Importance extends AbstractObjective {
 
 	protected double sum;
 
 	@Override
 	public void beforeProcess(Instance instanceData, Solution<?> sol) {
-		this.sum = 0.0;
+		this.sum = 0;
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public class Importante extends AbstractObjective {
 
 		TXTInstance instance = (TXTInstance) instanceData;
 
-		sum += instance.getSumOfImportante();
+		sum += instance.getSumOfImportance();
 	}
 
 	@Override

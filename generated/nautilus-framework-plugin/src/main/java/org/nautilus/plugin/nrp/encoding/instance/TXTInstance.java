@@ -14,9 +14,9 @@ import java.util.List;
 
 public class TXTInstance extends Instance {
 
-    protected int numberOfSolutions;
+    protected int sumOfSolution;
 
-    protected double sumOfItems;
+    protected double sumOfItem;
 
     protected List<Integer> numberOfItems;
 
@@ -40,12 +40,12 @@ public class TXTInstance extends Instance {
         InstanceReader reader = new InstanceReader(path, " ");
 
         reader.ignoreLine();
-        this.numberOfSolutions = reader.readIntegerValue();
+        this.sumOfSolution = reader.readIntegerValue();
 
         reader.ignoreLine();
         this.numberOfItems = reader.readIntegerValues();
 
-        for (int i = 0; i < numberOfSolutions; i++) {
+        for (int i = 0; i < sumOfSolution; i++) {
 
             reader.ignoreLine();
 
@@ -66,27 +66,30 @@ public class TXTInstance extends Instance {
         }
 
         for (Requirement solution : solutions) {
-            this.solutioncost.add(solution.getcost());,this.solutionprofit.add(solution.getprofit());,this.solutionimportance.add(solution.getimportance());
+            this.solutioncost.add(solution.getCost());
+			this.solutionprofit.add(solution.getProfit());
+			this.solutionimportance.add(solution.getImportance());
+			
         }
 
         this.sumOfcost = this.solutioncost.stream().mapToDouble(e -> e).sum();
 	this.sumOfprofit = this.solutionprofit.stream().mapToDouble(e -> e).sum();
 	this.sumOfimportance = this.solutionimportance.stream().mapToDouble(e -> e).sum();
-        this.sumOfItems = this.numberOfItems.stream().mapToDouble(e -> e).sum();
+        this.sumOfItem = this.numberOfItems.stream().mapToDouble(e -> e).sum();
     }
 
-    public int getNumberOfSolutions() {
-        return numberOfSolutions;
+    public int getSumOfSolution() {
+        return sumOfSolution;
     }
 
-    public double getSumOfcost() {return this.sumOfcost;}
+    public double getSumOfCost() {return this.sumOfcost;}
 
-	public double getSumOfprofit() {return this.sumOfprofit;}
+	public double getSumOfProfit() {return this.sumOfprofit;}
 
-	public double getSumOfimportance() {return this.sumOfimportance;}
+	public double getSumOfImportance() {return this.sumOfimportance;}
 
-    public double getSumOfItems() {
-        return this.sumOfItems;
+    public double getSumOfItem() {
+        return this.sumOfItem;
     }
 
     public double getcost(int solutionId) {return this.solutioncost.get(solutionId);}
@@ -99,7 +102,7 @@ public class TXTInstance extends Instance {
         return this.solutions.get(solutionId).items;
     }
 
-    public Requirement getRequirement(int index) {
+    public Requirement getSolution(int index) {
         return this.solutions.get(index);
     }
 
@@ -119,7 +122,7 @@ public class TXTInstance extends Instance {
 
         TableTabContent table = new TableTabContent(Arrays.asList("cost","profit","importance"));
 
-        for (int i = 0; i < data.getNumberOfSolutions(); i++) {
+        for (int i = 0; i < data.getSumOfSolution(); i++) {
             table.getRows().add(Arrays.asList(
                 "" + data.getcost(i),"" + data.getprofit(i),"" + data.getimportance(i)
             ));

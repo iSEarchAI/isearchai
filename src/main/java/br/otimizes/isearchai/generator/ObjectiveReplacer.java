@@ -10,10 +10,10 @@ import java.util.Objects;
 
 public class ObjectiveReplacer {
     public static void main(String[] args) throws JsonProcessingException {
-        generateObjectives("nrp-generate.json");
+        generate("nrp-generate.json");
     }
 
-    private static void generateObjectives(String file) throws JsonProcessingException {
+    public static void generate(String file) throws JsonProcessingException {
         String jsonFile = readFileFromResources(file);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode json = objectMapper.readTree(jsonFile);

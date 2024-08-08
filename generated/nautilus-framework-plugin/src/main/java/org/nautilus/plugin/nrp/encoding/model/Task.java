@@ -7,12 +7,14 @@ public class Task {
 
 	protected static JMetalRandom random = JMetalRandom.getInstance();
 
-	public doublecost;
-	public doubleprofit;
-	public doubleimportante
+	public double cost;
+	public double profit;
+	public double importance;
 
-	public Task(doublecost,doubleprofit,doubleimportante) {
-        this.cost = cost,this.profit = profit,this.importante = importante
+	public Task(double cost,double profit,double importance) {
+        this.cost = cost;
+		this.profit = profit;
+		this.importance = importance;
 	}
 
 	public static Task getRandom() {

@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 
 public class TXTInstanceReplacer {
     public static void main(String[] args) throws JsonProcessingException {
-        generateObjectives("nrp-generate.json");
+        generate("nrp-generate.json");
     }
 
-    private static void generateObjectives(String file) throws JsonProcessingException {
+    public static void generate(String file) throws JsonProcessingException {
         String jsonFile = readFileFromResources(file);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode json = objectMapper.readTree(jsonFile);
@@ -34,9 +34,9 @@ public class TXTInstanceReplacer {
         String objectivesParams = objectives.stream().map(str -> "double" + str).collect(Collectors.joining(","));
         String objectivesConstructor = objectives.stream().map(str -> "this.solution" + str + " = new ArrayList<>()").collect(Collectors.joining(";\n\t")) + ";";
         String valuesGet = objectives.stream().map(str -> "values.get(0)").collect(Collectors.joining(",")); // TODO
-        String solutionFor = objectives.stream().map(str -> "this.solution" + str + ".add(solution.get" + str + "());").collect(Collectors.joining(","));
+        String solutionFor = objectives.stream().map(str -> "this.solution" + str + ".add(solution.get" + capitalizeFirstLetter(str) + "());\n\t\t\t").collect(Collectors.joining(""));
         String solutionStream = objectives.stream().map(str -> "this.sumOf" + str + " = this.solution" + str + ".stream().mapToDouble(e -> e).sum()").collect(Collectors.joining(";\n\t")) + ";";
-        String getters = objectives.stream().map(str -> "public double getSumOf" + str + "() {return this.sumOf" + str + ";}").collect(Collectors.joining("\n\n\t"));
+        String getters = objectives.stream().map(str -> "public double getSumOf" + capitalizeFirstLetter(str) + "() {return this.sumOf" + str + ";}").collect(Collectors.joining("\n\n\t"));
         String geti = objectives.stream().map(str -> "public double get" + str + "(int solutionId) {return this.solution" + str + ".get(solutionId);}").collect(Collectors.joining("\n\n\t"));
         String dataGet = objectives.stream().map(str -> "\"\" + data.get" + str  +"(i)").collect(Collectors.joining(","));
 
@@ -56,6 +56,10 @@ public class TXTInstanceReplacer {
 
         writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/instance/TXTInstance.java", fileClass);
 
+    }
+
+    public static String capitalizeFirstLetter(String str) {
+        return str.substring(0,1).toUpperCase() + str.substring(1);
     }
 
     public static void writeFile(String filePath, String content) {

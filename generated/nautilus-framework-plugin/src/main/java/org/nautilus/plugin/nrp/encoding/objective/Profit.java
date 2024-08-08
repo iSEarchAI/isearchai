@@ -11,7 +11,7 @@ public class Profit extends AbstractObjective {
 
 	@Override
 	public void beforeProcess(Instance instanceData, Solution<?> sol) {
-		this.sum = 0.0;
+		this.sum = 0;
 	}
 
 	@Override

@@ -7,9 +7,9 @@ import org.nautilus.plugin.nrp.encoding.model.Requirement;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 public class GenerateRandomInstance {
-	
+
 	protected static JMetalRandom random = JMetalRandom.getInstance();
-	
+
 	public static String generate(int numberOfRequirements) {
 
 		StringBuilder builder = new StringBuilder();
@@ -26,8 +26,8 @@ public class GenerateRandomInstance {
 		builder.append("# number of tasks").append("\n");
 
 		for (int i = 0; i < requirements.size(); i++) {
-			
-			builder.append(requirements.get(i).tasks.size());
+
+			builder.append(requirements.get(i).items.size());
 
 			if (i + 1 != requirements.size()) {
 				builder.append(" ");
@@ -35,24 +35,24 @@ public class GenerateRandomInstance {
 		}
 
 		builder.append("\n");
-		
+
 		for (int i = 0; i < requirements.size(); i++) {
 
 			builder.append("# requirement " + i).append("\n");
 
 			Requirement requirement = requirements.get(i);
-			
-			for (int j = 0; j < requirement.tasks.size(); j++) {
-				
-				builder.append(requirement.tasks.get(j).cost)
+
+			for (int j = 0; j < requirement.items.size(); j++) {
+
+				builder.append(requirement.items.get(j).cost)
 						.append(" ")
-						.append(requirement.tasks.get(j).profit)
+						.append(requirement.items.get(j).profit)
 						.append(" ")
-						.append(requirement.tasks.get(j).importance)
-						.append("\n");		
+						.append(requirement.items.get(j).importance)
+						.append("\n");
 			}
 		}
-		
+
 		return builder.toString();
 	}
 

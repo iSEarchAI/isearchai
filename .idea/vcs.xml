@@ -4,6 +4,7 @@
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/generated/jvalidation" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/generated/nautilus-framework" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/generated/nautilus-framework-plugin-nrp-interactive" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/main/resources/nautilus-framework-plugin" vcs="Git" />
   </component>
 </project>

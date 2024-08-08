@@ -10,14 +10,19 @@ public class Generator {
     public static void main(String[] args) {
 
         try {
-            installDependencies();
-            extractZipFileFromResources("nautilus-framework-plugin.zip", "generated");
+//            extractAndinstallDependencies();
+//            extractZipFileFromResources("nautilus-framework-plugin.zip", "generated");
+            ObjectiveReplacer.generate("nrp-generate.json");
+            ItemReplacer.generate("nrp-generate.json");
+            SolutionReplacer.generate("nrp-generate.json");
+            TXTInstanceReplacer.generate("nrp-generate.json");
+            ProblemExtensionReplacer.generate("nrp-generate.json");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void installDependencies() throws IOException {
+    private static void extractAndinstallDependencies() throws IOException {
         extractZipFileFromResources("jvalidation.zip", "generated");
         mvnCleanInstall("generated/jvalidation");
         extractZipFileFromResources("nautilus-framework.zip", "generated");

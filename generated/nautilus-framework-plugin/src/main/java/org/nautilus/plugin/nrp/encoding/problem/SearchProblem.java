@@ -1,4 +1,4 @@
-package org.nautilus.plugin.nrp.encoding.problem;
+package org.nautilus.plugin.nrp.encoding.SearchProblem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +11,11 @@ import org.uma.jmetal.solution.BinarySolution;
 import org.uma.jmetal.util.binarySet.BinarySet;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
-public class NRPProblem extends NBinaryProblem {
+public class SearchProblem extends NBinaryProblem {
 
 	private static final long serialVersionUID = 1233594822179588853L;
 
-	public NRPProblem(Instance instance, List<AbstractObjective> objectives) {
+	public SearchProblem(Instance instance, List<AbstractObjective> objectives) {
 		super(instance, objectives);
 
 		setNumberOfVariables(1);
@@ -23,7 +23,7 @@ public class NRPProblem extends NBinaryProblem {
 		List<Integer> bitsPerVariable = new ArrayList<>(getNumberOfVariables());
 
 		for (int i = 0; i < getNumberOfVariables(); i++) {
-			bitsPerVariable.add(((TXTInstance) getInstance()).getNumberOfSolutions());
+			bitsPerVariable.add(((TXTInstance) getInstance()).getSumOfSolution());
 		}
 
 		setBitsPerVariable(bitsPerVariable);

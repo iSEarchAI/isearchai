@@ -2,8 +2,8 @@ package org.nautilus.plugin.nrp.encoding.runner;
 
 import org.nautilus.core.model.Instance;
 import org.nautilus.core.objective.AbstractObjective;
-import org.nautilus.plugin.nrp.encoding.problem.NRPProblem;
-import org.nautilus.plugin.nrp.extension.problem.NRPProblemExtension;
+import org.nautilus.plugin.nrp.encoding.SearchProblem.SearchProblem;
+import org.nautilus.plugin.nrp.extension.problem.ProblemExtension;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.operator.CrossoverOperator;
@@ -30,10 +30,10 @@ public class NSGAIIRunner {
 
         System.out.println("Loading...");
 
-        List<AbstractObjective> objectives = new NRPProblemExtension().getObjectives();
-        Instance instance = new NRPProblemExtension().getInstance(path);
+        List<AbstractObjective> objectives = new ProblemExtension().getObjectives();
+        Instance instance = new ProblemExtension().getInstance(path);
 
-        Problem<BinarySolution> problem = new NRPProblem(instance, objectives);
+        Problem<BinarySolution> problem = new SearchProblem(instance, objectives);
 
         CrossoverOperator<BinarySolution> crossover = new SinglePointCrossover(0.9);
         MutationOperator<BinarySolution> mutation = new BitFlipMutation(0.005);

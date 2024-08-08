@@ -8,15 +8,14 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class itemReplacer {
+public class ItemReplacer {
     public static void main(String[] args) throws JsonProcessingException {
-        generateObjectives("nrp-generate.json");
+        generate("nrp-generate.json");
     }
 
-    private static void generateObjectives(String file) throws JsonProcessingException {
+    public static void generate(String file) throws JsonProcessingException {
         String jsonFile = readFileFromResources(file);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode json = objectMapper.readTree(jsonFile);
@@ -29,9 +28,9 @@ public class itemReplacer {
         for (JsonNode jsonNode : item.get("objectives")) {
             objectives.add(jsonNode.asText().toLowerCase());
         }
-        String objectivesAttributes = objectives.stream().map(str -> "public double" + str).collect(Collectors.joining(";\n\t"));
-        String objectivesParams = objectives.stream().map(str -> "double" + str).collect(Collectors.joining(","));
-        String objectivesConstructor = objectives.stream().map(str -> "this." + str + " = " + str).collect(Collectors.joining(","));
+        String objectivesAttributes = objectives.stream().map(str -> "public double " + str + ";").collect(Collectors.joining("\n\t"));
+        String objectivesParams = objectives.stream().map(str -> "double " + str).collect(Collectors.joining(","));
+        String objectivesConstructor = objectives.stream().map(str -> "this." + str + " = " + str + ";").collect(Collectors.joining("\n\t\t"));
         String objectivesRandomParams = objectives.stream().map(str -> "Converter.round(random.nextDouble(1, 10), 1)").collect(Collectors.joining(","));
 
         fileClass = fileClass.replace("$item.objectivesAttributes", objectivesAttributes);
@@ -56,7 +55,7 @@ public class itemReplacer {
 
     public static String readFileFromResources(String fileName) {
         // Get the input stream of the file from resources
-        try (InputStream inputStream = itemReplacer.class.getClassLoader().getResourceAsStream(fileName);
+        try (InputStream inputStream = ItemReplacer.class.getClassLoader().getResourceAsStream(fileName);
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
             if (inputStream == null) {

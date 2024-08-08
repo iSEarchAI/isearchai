@@ -11,7 +11,7 @@ public class Size extends AbstractObjective {
 
 	@Override
 	public void beforeProcess(Instance instanceData, Solution<?> sol) {
-		this.sum = 0.0;
+		this.sum = 0;
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class Size extends AbstractObjective {
 
 		TXTInstance instance = (TXTInstance) instanceData;
 
-		return (double) sum / (double) instance.getSumOfRequeriments();
+		return (double) sum / (double) instance.getSumOfSolution();
 	}
 
 	public boolean isMaximize() {
