@@ -1,0 +1,72 @@
+{
+    "objectives": [
+        {
+            "name": "Cost",
+            "type": "double",
+            "process": {
+                "incrementWith": "Cost"
+            },
+            "calculate": {
+                "type": "/",
+                "a": {
+                    "value": "sum"
+                },
+                "b": {
+                    "value": "Cost"
+                }
+            }
+        },
+        {
+            "name": "Importante",
+            "type": "double",
+            "process": {
+                "incrementWith": "Importante"
+            },
+            "calculate": {
+                "type": "/",
+                "invert": "true",
+                "a": {
+                    "value": "sum"
+                },
+                "b": {
+                    "value": "Importance"
+                }
+            }
+        },
+        {
+            "name": "Profit",
+            "type": "double",
+            "process": {
+                "incrementWith": "Profit"
+            },
+            "calculate": {
+                "type": "/",
+                "invert": "true",
+                "a": {
+                    "value": "sum"
+                },
+                "b": {
+                    "value": "Profit"
+                }
+            }
+        },
+
+        {
+            "name": "Size",
+            "type": "int",
+            "process": {
+                "incrementWith": 1
+            },
+            "calculate": {
+                "type": "/",
+                "invert": "true",
+                "a": {
+                    "value": "sum"
+                },
+                "b": {
+                    "value": "Requeriments"
+                }
+            }
+        }
+    ]
+}
