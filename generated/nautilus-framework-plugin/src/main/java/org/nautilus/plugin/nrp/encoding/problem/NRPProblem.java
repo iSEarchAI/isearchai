@@ -17,21 +17,21 @@ public class NRPProblem extends NBinaryProblem {
 
 	public NRPProblem(Instance instance, List<AbstractObjective> objectives) {
 		super(instance, objectives);
-		
+
 		setNumberOfVariables(1);
-		
+
 		List<Integer> bitsPerVariable = new ArrayList<>(getNumberOfVariables());
 
 		for (int i = 0; i < getNumberOfVariables(); i++) {
-			bitsPerVariable.add(((TXTInstance) getInstance()).getNumberOfRequirements());
+			bitsPerVariable.add(((TXTInstance) getInstance()).getNumberOfSolutions());
 		}
-		
+
 		setBitsPerVariable(bitsPerVariable);
 	}
-	
+
 	@Override
 	public void evaluate(BinarySolution solution) {
-		
+
 		// Change if it is invalid
 
 		BinarySet binarySet = (BinarySet) solution.getVariableValue(0);

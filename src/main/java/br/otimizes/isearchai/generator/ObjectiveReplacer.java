@@ -10,7 +10,11 @@ import java.util.Objects;
 
 public class ObjectiveReplacer {
     public static void main(String[] args) throws JsonProcessingException {
-        String jsonFile = readFileFromResources("nrp-generate.json");
+        generateObjectives("nrp-generate.json");
+    }
+
+    private static void generateObjectives(String file) throws JsonProcessingException {
+        String jsonFile = readFileFromResources(file);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode json = objectMapper.readTree(jsonFile);
         JsonNode objectives = json.get("objectives");
@@ -35,7 +39,7 @@ public class ObjectiveReplacer {
 
             String valueB = objective.get("calculate").get("b").get("value").asText();
             if (!Objects.equals(valueB, "sum")) {
-                valueB = "instance.getSumOf" + valueB + "()";
+                 valueB = "instance.getSumOf" + valueB + "()";
             }
             fileClass = fileClass.replace("$objective.calculate.b", valueB);
             writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/objective/" + className + ".java", fileClass);

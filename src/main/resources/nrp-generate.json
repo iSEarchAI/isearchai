@@ -68,5 +68,12 @@
                 }
             }
         }
-    ]
+    ],
+    "item": {
+        "name": "Task",
+        "objectives": ["Cost", "Profit", "Importance"]
+    },
+    "solution": {
+        "name": "Requirement"
+    }
 }

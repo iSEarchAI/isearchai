@@ -1,10 +1,5 @@
 package org.nautilus.plugin.nrp.encoding.instance;
 
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.nautilus.core.gui.Tab;
 import org.nautilus.core.gui.TableTabContent;
 import org.nautilus.core.model.Instance;
@@ -12,141 +7,124 @@ import org.nautilus.core.util.InstanceReader;
 import org.nautilus.plugin.nrp.encoding.model.Requirement;
 import org.nautilus.plugin.nrp.encoding.model.Task;
 
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class TXTInstance extends Instance {
-	
-	protected int numberOfRequirements;
-	
-	protected double sumOfCosts;
-	
-	protected double sumOfProfits;
-	
-	protected double sumOfImportances;
-	
-	protected double sumOfTasks;
-	
-	protected List<Double> requirementsCosts;
-	
-	protected List<Double> requirementsProfits;
-	
-	protected List<Double> requirementsImportances;
-	
-	protected List<Integer> numberOfTasks;
-	
-	protected List<Requirement> requirements;
-	
-	public TXTInstance(Path path) {
-		
-		this.requirements = new ArrayList<>();
-		this.requirementsCosts = new ArrayList<>();
-		this.requirementsProfits = new ArrayList<>();
-		this.requirementsImportances = new ArrayList<>();
-		
-		InstanceReader reader = new InstanceReader(path, " ");
-		
-		reader.ignoreLine();
-		this.numberOfRequirements = reader.readIntegerValue();
-		
-		reader.ignoreLine();
-		this.numberOfTasks = reader.readIntegerValues();
-		
-		for (int i = 0; i < numberOfRequirements; i++) {
-		
-			reader.ignoreLine();
-			
-			List<Task> tasks = new ArrayList<>();
 
-			for (int j = 0; j < numberOfTasks.get(i); j++) {
-				
-				List<Double> values = reader.readDoubleValues();
-				
-				Task task = new Task(
-					values.get(0),
-					values.get(1),
-					values.get(2)
-				);
-				
-				tasks.add(task);
-			}
-			
-			this.requirements.add(new Requirement(tasks));		
-		}
-		
-		for (Requirement requirement : requirements) {
-			this.requirementsCosts.add(requirement.getCost());
-			this.requirementsProfits.add(requirement.getProfit());
-			this.requirementsImportances.add(requirement.getImportance());
-		}
+    protected int numberOfSolutions;
 
-		this.sumOfCosts = this.requirementsCosts.stream().mapToDouble(e -> e).sum();
-		this.sumOfProfits = this.requirementsProfits.stream().mapToDouble(e -> e).sum();
-		this.sumOfImportances = this.requirementsImportances.stream().mapToDouble(e -> e).sum();
-		this.sumOfTasks = this.numberOfTasks.stream().mapToDouble(e -> e).sum();
-	}
-	
-	public int getNumberOfRequirements() {
-		return numberOfRequirements;
-	}
+    protected double sumOfItems;
 
-	public double getSumOfCosts() {
-		return this.sumOfCosts;
-	}
-	
-	public double getSumOfProfits() {
-		return this.sumOfProfits;
-	}
-	
-	public double getSumOfImportances() {
-		return this.sumOfImportances;
-	}
-	
-	public double getSumOfTasks() {
-		return this.sumOfTasks;
-	}
+    protected List<Integer> numberOfItems;
 
-	public double getCost(int requirementId) {
-		return this.requirementsCosts.get(requirementId);
-	}
-	
-	public double getProfit(int requirementId) {
-		return this.requirementsProfits.get(requirementId);
-	}
+    protected List<Requirement> solutions;
 
-	public double getImportance(int requirementId) {
-		return this.requirementsImportances.get(requirementId);
-	}
+    public double sumOfcost;
+	public double sumOfprofit;
+	public double sumOfimportance;
 
-	public List<Task> getTasks(int requirementId) {
-		return this.requirements.get(requirementId).tasks;
-	}
-	
-	public Requirement getRequirement(int index) {
-	    return this.requirements.get(index);
-	}
-	
-	@Override
+    public List<Double> solutioncost;
+	public List<Double> solutionprofit;
+	public List<Double> solutionimportance;
+
+    public TXTInstance(Path path) {
+
+        this.solutions = new ArrayList<>();
+        this.solutioncost = new ArrayList<>();
+	this.solutionprofit = new ArrayList<>();
+	this.solutionimportance = new ArrayList<>();
+
+        InstanceReader reader = new InstanceReader(path, " ");
+
+        reader.ignoreLine();
+        this.numberOfSolutions = reader.readIntegerValue();
+
+        reader.ignoreLine();
+        this.numberOfItems = reader.readIntegerValues();
+
+        for (int i = 0; i < numberOfSolutions; i++) {
+
+            reader.ignoreLine();
+
+            List<Task> items = new ArrayList<>();
+
+            for (int j = 0; j < numberOfItems.get(i); j++) {
+
+                List<Double> values = reader.readDoubleValues();
+
+                Task item = new Task(
+                    values.get(0),values.get(0),values.get(0)
+                );
+
+                items.add(item);
+            }
+
+            this.solutions.add(new Requirement(items));
+        }
+
+        for (Requirement solution : solutions) {
+            this.solutioncost.add(solution.getcost());,this.solutionprofit.add(solution.getprofit());,this.solutionimportance.add(solution.getimportance());
+        }
+
+        this.sumOfcost = this.solutioncost.stream().mapToDouble(e -> e).sum();
+	this.sumOfprofit = this.solutionprofit.stream().mapToDouble(e -> e).sum();
+	this.sumOfimportance = this.solutionimportance.stream().mapToDouble(e -> e).sum();
+        this.sumOfItems = this.numberOfItems.stream().mapToDouble(e -> e).sum();
+    }
+
+    public int getNumberOfSolutions() {
+        return numberOfSolutions;
+    }
+
+    public double getSumOfcost() {return this.sumOfcost;}
+
+	public double getSumOfprofit() {return this.sumOfprofit;}
+
+	public double getSumOfimportance() {return this.sumOfimportance;}
+
+    public double getSumOfItems() {
+        return this.sumOfItems;
+    }
+
+    public double getcost(int solutionId) {return this.solutioncost.get(solutionId);}
+
+	public double getprofit(int solutionId) {return this.solutionprofit.get(solutionId);}
+
+	public double getimportance(int solutionId) {return this.solutionimportance.get(solutionId);}
+
+    public List<Task> getTasks(int solutionId) {
+        return this.solutions.get(solutionId).items;
+    }
+
+    public Requirement getRequirement(int index) {
+        return this.solutions.get(index);
+    }
+
+    @Override
     public List<Tab> getTabs(Instance data) {
 
         TXTInstance c = (TXTInstance) data;
 
         List<Tab> tabs = new ArrayList<>();
 
-        tabs.add(getRequirementsTab(c));
-        
+        tabs.add(getSolutionsTab(c));
+
         return tabs;
     }
 
-    protected Tab getRequirementsTab(TXTInstance data) {
+    protected Tab getSolutionsTab(TXTInstance data) {
 
-        TableTabContent table = new TableTabContent(Arrays.asList("Cost", "Profit", "Importance"));
+        TableTabContent table = new TableTabContent(Arrays.asList("cost","profit","importance"));
 
-        for (int i = 0; i < data.getNumberOfRequirements(); i++) {
+        for (int i = 0; i < data.getNumberOfSolutions(); i++) {
             table.getRows().add(Arrays.asList(
-                    "" + data.getCost(i),
-                    "" + data.getProfit(i),
-                    "" + data.getImportance(i)
+                "" + data.getcost(i),"" + data.getprofit(i),"" + data.getimportance(i)
             ));
         }
 
-        return new Tab("Requirements", table);
+        return new Tab("Solutions", table);
     }
 }
