@@ -25,9 +25,8 @@ public class Application {
             res.header("Content-Disposition", "attachment; filename=\"nautilus-framework-plugin.zip\"");
             res.type("application/zip");
 
-            String f = req.body();
-//            Generate generate = ObjMapUtils.mapper().readValue(body, Generate.class);
-//            Generator.generate(generate);
+            Generate generate = ObjMapUtils.mapper().readValue(req.body(), Generate.class);
+            Generator.generate(generate);
             ByteArrayOutputStream byteArrayOutputStream = createByteArrayOutputStreamFromFile("generated/nautilus-framework-plugin.zip");
             // Set response headers
 

@@ -3,7 +3,7 @@ import styles from './Generator.module.css';
 import {
     Autocomplete,
     Box,
-    Button,
+    Button, CircularProgress,
     FormControl,
     Grid,
     InputAdornment,
@@ -27,7 +27,7 @@ import InfoIcon from '@mui/icons-material/Info';
 const steps = [
     {
         label: 'Instructions',
-        description: `Firsly, read the instructions provided below`,
+        description: <b>Welcome to the ISEarchAI Generator. Firsly, read the instructions provided below.</b>,
         jsx: (ctx) => (
             <div>
                 <ul>
@@ -245,6 +245,7 @@ class Generator extends Component {
 
     state = {
         activeStep: 0,
+        loading: false,
         generate: {
             "objectives": [
                 {
@@ -329,6 +330,10 @@ class Generator extends Component {
     updateState = (event) => {
         let path = event.target.name;
         let value = event.target.value;
+        this.updateStateAt(path, value);
+    }
+
+    updateStateAt = (path, value) => {
         this.setState((prevState) => {
             const newState = {...prevState};
             const keys = path.split('.');
@@ -378,6 +383,8 @@ class Generator extends Component {
     }
 
     finish = async () => {
+        this.setState({activeStep: this.state.activeStep + 1})
+        this.updateStateAt('loading', true)
         await fetch('http://localhost:8080/generate', {
             method: 'POST',
             headers: {
@@ -388,6 +395,7 @@ class Generator extends Component {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
+            this.updateStateAt('loading', false)
             return response.blob(); // Convert the response to a blob
         })
             .then(blob => {
@@ -405,8 +413,10 @@ class Generator extends Component {
                 // Clean up and remove the link
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
+                this.updateStateAt('loading', false)
             })
             .catch(error => {
+                this.updateStateAt('loading', false)
                 console.error('There was an error with the fetch operation:', error);
             });
     }
@@ -427,7 +437,7 @@ class Generator extends Component {
         let {activeStep} = this.state;
         return (
             <div className={styles.Generator} data-testid="Generator">
-                <Box sx={{maxWidth: 2048}}>
+                <Box sx={{maxWidth: 1024}}>
                     <Stepper nonLinear activeStep={activeStep} orientation="vertical">
                         {steps.map((step, index) => (
                             <Step key={step.label}>
@@ -446,15 +456,17 @@ class Generator extends Component {
                                 <StepContent>
                                     <Typography><i>{step.description}</i></Typography>
                                     <Box sx={{mb: 2}} className={styles.StepContent}>
-                                        <div>{step.jsx(this)}</div>
+                                        <div className={styles.jsx}>{step.jsx(this)}</div>
                                         <div>
                                             <Button
                                                 variant="contained"
+                                                disabled={this.state.loading}
                                                 onClick={() => index === steps.length - 1 ? this.finish() : this.handleNext(step.onContinue)}
-                                                endIcon={<NavigateNextIcon/>}
+                                                endIcon={!this.state.loading ? <NavigateNextIcon/> : null}
                                                 sx={{mt: 1, mr: 1}}
                                             >
                                                 {index === steps.length - 1 ? 'Finish' : 'Continue'}
+                                                {this.state.loading ? <CircularProgress className={styles.CircularProgress}  color="warning" /> : null}
                                             </Button>
                                             <Button
                                                 disabled={index === 0}
@@ -473,8 +485,9 @@ class Generator extends Component {
                         <Paper square elevation={0} sx={{p: 3}}>
                             <Typography>All steps completed - you&apos;re finished. Wait the generation of the
                                 project.</Typography>
-                            <Button onClick={this.handleReset} sx={{mt: 1, mr: 1}}>
+                            <Button onClick={this.handleReset} sx={{mt: 1, mr: 1}} disabled={this.state.loading}>
                                 Reset
+                                {this.state.loading ? <CircularProgress className={styles.CircularProgress}  color="warning" /> : null}
                             </Button>
                         </Paper>
                     )}

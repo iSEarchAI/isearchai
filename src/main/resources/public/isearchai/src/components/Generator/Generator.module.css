@@ -53,3 +53,13 @@
     display: flex;
     justify-content: end;
 }
+
+.jsx {
+    margin: 20px 5px;
+}
+
+.CircularProgress {
+    width: 30px !important;
+    height: 30px !important;
+    margin: 0 10px;
+}
