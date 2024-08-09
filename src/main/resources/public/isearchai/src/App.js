@@ -16,7 +16,7 @@ class App extends Component {
         return (
             <div className={App}>
                 <Card className='CardGenerate Header' style={{'padding':'20px'}}>
-                    <img src="logo.png" alt="" height='48'/>
+                    <img src="https://isearchai.github.io/logo/logo.png" alt="" height='48'/>
                     <div>
                         <Button variant="outlined" startIcon={<GitHubIcon/>}>Repository</Button>
                         <Button variant="outlined" startIcon={<DescriptionIcon/>}>Thesis</Button>

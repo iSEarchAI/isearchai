@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.rest;
+package br.otimizes.isearchai.generator.rest;
 
 import br.otimizes.isearchai.generator.model.Generate;
 import br.otimizes.isearchai.generator.replacers.Generator;
@@ -16,7 +16,7 @@ import static spark.Spark.*;
 public class Application {
     public static void main(String[] args) {
         port(8080);
-        staticFileLocation("/public");
+        staticFileLocation("/public/isearchai/build");
         get("/hello", (req, res) -> "Hello, World!");
         post("/generate", (req, res) -> {
             res.header("Access-Control-Allow-Origin", "*");

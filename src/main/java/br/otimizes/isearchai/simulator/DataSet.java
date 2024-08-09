@@ -16,11 +16,7 @@ public class DataSet {
 	public Instances dataSet;
 	FastVector featureVector;
 	int numberOfAttributes;
-	/**
-	 *
-	 * @param maxOfEvaluations
-	 * @param numberOfAttributes
-	 */
+
 	public DataSet(int maxOfEvaluations, int numberOfAttributes) {
 
 		this.numberOfAttributes = numberOfAttributes;
@@ -44,8 +40,6 @@ public class DataSet {
 	}
 	/**
 	 * Method used to store a solution with its respective subjective evaluation
-	 * @param individual
-	 * @param she
 	 */
 	public void insert(int[] individual, int she) {
 		Instance aux = new DenseInstance(numberOfAttributes +1);
@@ -64,7 +58,6 @@ public class DataSet {
 	}
 	/**
 	 *
-	 * @param individual
 	 * @return Convert a given solution in instance
 	 */
 	public Instance getInstance(int [] individual) {

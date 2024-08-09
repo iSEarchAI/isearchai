@@ -91,6 +91,11 @@
                     <exclude>**/*.png</exclude>
                     <exclude>**/*.svg</exclude>
                     <exclude>**/*.bib</exclude>
+                    <exclude>**/*.zip</exclude>
+                    <exclude>public/isearchai/.idea/**</exclude>
+                    <exclude>public/isearchai/node_modules/**</exclude>
+                    <exclude>public/isearchai/public/**</exclude>
+                    <exclude>public/isearchai/src/**</exclude>
                 </excludes>
             </resource>
         </resources>
@@ -175,7 +180,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Generate a jar file with javadocs code
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -183,6 +187,8 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                    <failOnError>false</failOnError>
                 </configuration>
                 <executions>
                     <execution>
@@ -192,7 +198,24 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
+<!--                <plugin>-->
+<!--                    <groupId>org.apache.maven.plugins</groupId>-->
+<!--                    <artifactId>maven-javadoc-plugin</artifactId>-->
+<!--                    <version>3.2.0</version>-->
+<!--                    <configuration>-->
+<!--                        <doclet>info.leadinglight.umljavadoclet.UmlJavaDoclet</doclet>-->
+<!--                        <docletArtifact>-->
+<!--                            <groupId>com.github.gboersma</groupId>-->
+<!--                            <artifactId>uml-java-doclet</artifactId>-->
+<!--                            <version>1.1</version>-->
+<!--                        </docletArtifact>-->
+<!--                        <useStandardDocletOptions>true</useStandardDocletOptions>-->
+<!--                        <additionalOptions>-->
+<!--                            &lt;!&ndash; Specify each diagram option here as an additionOption tag. &ndash;&gt;-->
+<!--                        </additionalOptions>-->
+<!--                    </configuration>-->
+<!--                </plugin>-->
         </plugins>
     </build>
 <!--    <distributionManagement>-->
@@ -201,5 +224,10 @@
 <!--            <url>file://${project.build.directory}/mvn-repo</url>-->
 <!--        </repository>-->
 <!--    </distributionManagement>-->
-
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 </project>

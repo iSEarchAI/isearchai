@@ -9,7 +9,6 @@ public class InstanceReader {
 	private BufferedReader reader;
 	/**
 	 * Constructor
-	 * @param instance
 	 */
 	public InstanceReader(File instance){
 		try{
@@ -23,7 +22,6 @@ public class InstanceReader {
 	}
 	/**
 	 * Get Number Of Clients
-	 * @return
 	 */
 	private int getNumberOfCustomers(){
 		String[] values = null;
@@ -42,7 +40,6 @@ public class InstanceReader {
 	}
 	/**
 	 * Get number of attributes from the specified instance
-	 * @return
 	 */
 	private int getNumberOfAttributes(){
 		String[] values = null;
@@ -61,7 +58,6 @@ public class InstanceReader {
 	}
 	/**
 	 * Get importance of the clients from the instance
-	 * @return
 	 */
 	public double[] getCustomersImportance(){
 		double[] customersImportance = new double[getNumberOfCustomers()];
@@ -85,7 +81,6 @@ public class InstanceReader {
 	}
 	/**
 	 * Get Importances of the attributes
-	 * @return
 	 */
 	public double[][] getAttributesImportances(){
 		double[][] attributesImportances = new double[getNumberOfCustomers()][getNumberOfAttributes()];
@@ -115,7 +110,6 @@ public class InstanceReader {
 	}
 	/**
 	 * Get attribute Cost from the instance
-	 * @return
 	 */
 	public double[] getAttributesCosts(){
 		double[] attributesCosts = new double[getNumberOfAttributes()];

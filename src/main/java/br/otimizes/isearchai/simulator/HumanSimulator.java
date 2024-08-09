@@ -49,7 +49,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param attributesScore
 	 */
 	public void setScoreValues (double[] attributesScore) {
 		this.attributesScore = attributesScore;
@@ -57,7 +56,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param attributesCost
 	 */
 	public void setCostValues (double[] attributesCost) {
 		this.attributesCost = attributesCost;
@@ -123,7 +121,6 @@ public class HumanSimulator {
 	}
 	/**
 	 * Evaluate a given individual according to the target solution
-	 * @param individual
 	 * @return "subjective" evaluation
 	 */
 	public int getHumanEvaluation(int[] individual){
@@ -143,7 +140,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @return
 	 */
 	private int[] getManuallyTargetSolution(){
 		int[] targetSolution = null;
@@ -172,16 +168,12 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param attributesPercentage
-	 * @return
 	 */
 	private int getNumberOfAttributesInIndividual(int attributesPercentage){
 		return (int) Math.round((attributesPercentage / 100.0) * numberOfAttributes);
 	}
 	/**
 	 *
-	 * @param numberOfAttributesInSolution
-	 * @return
 	 */
 	private int[] getRandomlyTargetSolution(int numberOfAttributesInSolution){
 		int[] targetSolution = new int[numberOfAttributes];
@@ -210,9 +202,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param attribute
-	 * @param targetSolution
-	 * @return
 	 */
 	private boolean isAttributeInTargetSolution(int attribute, int[] targetSolution){
 		boolean result = false;
@@ -228,8 +217,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param numberOfAttributesInSolution
-	 * @return
 	 */
 	private int[] getHigherScoreTargetSolution(int numberOfAttributesInSolution){
 		int[] targetSolution = new int[numberOfAttributes];
@@ -246,8 +233,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param attributesSelectedFlags
-	 * @return
 	 */
 	private int selectHigherScoreAttribute(int[] attributesSelectedFlags){
 		int higherScoreAttribute = getFirstAttributeNotSelected(attributesSelectedFlags);
@@ -262,8 +247,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param attributesSelectedFlags
-	 * @return
 	 */
 	private int getFirstAttributeNotSelected(int[] attributesSelectedFlags){
 		int firstAttributeNotSelected = 0;
@@ -279,8 +262,6 @@ public class HumanSimulator {
 	}
 /**
  *
- * @param numberOfAttributesInSolution
- * @return
  */
 	private int[] getLowerScoreTargetSolution(int numberOfAttributesInSolution){
 		int[] targetSolution = new int[numberOfAttributes];
@@ -297,8 +278,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param attributesSelectedFlags
-	 * @return
 	 */
 	private int selectLowerScoreAttribute(int[] attributesSelectedFlags){
 		int lowerScoreAttribute = getFirstAttributeNotSelected(attributesSelectedFlags);
@@ -313,8 +292,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param numberOfAttributesInSolution
-	 * @return
 	 */
 	private int[] getHigherCostTargetSolution(int numberOfAttributesInSolution){
 		int[] targetSolution = new int[numberOfAttributes];
@@ -332,8 +309,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param attributesSelectedFlags
-	 * @return
 	 */
 	private int selectHigherCostAttribute(int[] attributesSelectedFlags){
 		int higherCostAttribute = getFirstAttributeNotSelected(attributesSelectedFlags);
@@ -348,8 +323,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param numberOfAttributesInSolution
-	 * @return
 	 */
 	private int[] getLowerCostTargetSolution(int numberOfAttributesInSolution){
 		int[] targetSolution = new int[numberOfAttributes];
@@ -367,8 +340,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param attributesSelectedFlags
-	 * @return
 	 */
 	private int selectLowerCostAttribute(int[] attributesSelectedFlags){
 		int lowerCostAttribute = getFirstAttributeNotSelected(attributesSelectedFlags);
@@ -384,8 +355,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @param individual
-	 * @return
 	 */
 	public int getNumberOfSimilaritiesInIndividual(int[] individual){
 		int numberOfSimilaritiesInIndividual = 0;
@@ -400,7 +369,6 @@ public class HumanSimulator {
 	}
 	/**
 	 *
-	 * @return
 	 */
 	public int getNumberOfAttributes(){
 		return numberOfAttributes;
