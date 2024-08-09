@@ -187,3 +187,6 @@ jMetal.log
 
 
 # End of https://www.gitignore.io/api/java,maven,macos,linux,eclipse,windows,netbeans
+
+node_modules
+src/main/resources/public/isearchai/node_modules

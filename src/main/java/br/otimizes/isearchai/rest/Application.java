@@ -3,16 +3,12 @@ package br.otimizes.isearchai.rest;
 import br.otimizes.isearchai.generator.model.Generate;
 import br.otimizes.isearchai.generator.replacers.Generator;
 import br.otimizes.isearchai.util.ObjMapUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import spark.Spark;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import static spark.Spark.*;
 
@@ -23,13 +19,17 @@ public class Application {
         staticFileLocation("/public");
         get("/hello", (req, res) -> "Hello, World!");
         post("/generate", (req, res) -> {
-            String body = req.body();
-            Generate generate = ObjMapUtils.mapper().readValue(body, Generate.class);
-            Generator.generate(generate);
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Methods", "POST");
+            res.header("Access-Control-Allow-Headers", "Content-Type");
+            res.header("Content-Disposition", "attachment; filename=\"nautilus-framework-plugin.zip\"");
+            res.type("application/zip");
+
+            String f = req.body();
+//            Generate generate = ObjMapUtils.mapper().readValue(body, Generate.class);
+//            Generator.generate(generate);
             ByteArrayOutputStream byteArrayOutputStream = createByteArrayOutputStreamFromFile("generated/nautilus-framework-plugin.zip");
             // Set response headers
-            res.type("application/zip");
-            res.header("Content-Disposition", "attachment; filename=\"nautilus-framework-plugin.zip\"");
 
             // Write the zip content to the response
             res.raw().getOutputStream().write(byteArrayOutputStream.toByteArray());
@@ -37,6 +37,29 @@ public class Application {
             res.raw().getOutputStream().close();
 
             return res.raw();
+        });
+        options("/*",
+            (request, response) -> {
+
+                String accessControlRequestHeaders = request
+                    .headers("Access-Control-Request-Headers");
+                if (accessControlRequestHeaders != null) {
+                    response.header("Access-Control-Allow-Headers",
+                        accessControlRequestHeaders);
+                }
+
+                String accessControlRequestMethod = request
+                    .headers("Access-Control-Request-Method");
+                if (accessControlRequestMethod != null) {
+                    response.header("Access-Control-Allow-Methods",
+                        accessControlRequestMethod);
+                }
+
+                return "OK";
+            });
+        after((request, response) -> {
+            response.header("Access-Control-Allow-Origin", "*");
+            response.header("Access-Control-Allow-Methods", "*");
         });
 //        init();
     }
