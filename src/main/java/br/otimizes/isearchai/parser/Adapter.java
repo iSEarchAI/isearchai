@@ -12,6 +12,7 @@ public class Adapter {
 //            writer.close();
         MLElementParser mlElementParser = getMlElementParser();
         MLSolutionParser mlSolutionParser = getMlSolutionParser(mlElementParser);
+        MLSolutionSetParser mlSolutionSetParser = getMlSolutionSetParser(mlElementParser, mlSolutionParser);
         System.out.println();
     }
 
@@ -29,6 +30,15 @@ public class Adapter {
         String clazz = "src/main/java/br/otimizes/oplatool/core/jmetal4/core/Solution.java";
         MLSolutionParser ps = new MLSolutionParser().projectClazz(project, clazz)
             .implement(mlElementParser)
+            .writeFile();
+        return ps;
+    }
+
+    private static MLSolutionSetParser getMlSolutionSetParser(MLElementParser mlElementParser, MLSolutionParser mlSolutionParser) {
+        String project = "/home/wmfsystem/Documents/Doutorado/0_framework/code/OPLA-Tool/modules/opla-core";
+        String clazz = "src/main/java/br/otimizes/oplatool/core/jmetal4/core/SolutionSet.java";
+        MLSolutionSetParser ps = new MLSolutionSetParser().projectClazz(project, clazz)
+            .extend(mlElementParser, mlSolutionParser)
             .writeFile();
         return ps;
     }

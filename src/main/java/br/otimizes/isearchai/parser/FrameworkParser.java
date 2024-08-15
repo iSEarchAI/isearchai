@@ -4,6 +4,7 @@ import com.github.javaparser.ParseResult;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -11,12 +12,14 @@ import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.expr.Name;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.type.TypeParameter;
 import com.github.javaparser.utils.CodeGenerationUtils;
 import com.github.javaparser.utils.SourceRoot;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,13 +97,10 @@ public class FrameworkParser<E extends FrameworkParser> {
         return this.implement(null);
     }
 
-    public E implement(FrameworkParser qualified) {
+    public E implement(FrameworkParser... qualifieds) {
         if (!hasImplementationClazz()) {
             ClassOrInterfaceType implementation = new ClassOrInterfaceType(null, implementationClazz);
-            if (qualified != null) {
-                projectUnit.addImport(qualified.getFullyQualifiedName());
-                implementation.setTypeArguments(new NodeList<>(new TypeParameter(qualified.getSimpleQualifiedName())));
-            }
+            setTypesOnImplementation(qualifieds, implementation);
             projectClass.addImplementedType(implementation);
         }
 
@@ -111,7 +111,7 @@ public class FrameworkParser<E extends FrameworkParser> {
         }
 
         for (MethodDeclaration method : getFrameworkMethods()) {
-            MethodDeclaration methodStub = getClonedMethod(method);
+            MethodDeclaration methodStub = getClonedMethod(method, qualifieds);
             boolean hasMethod = hasImplementationMethod(methodStub);
             if (!hasMethod) {
                 methodStub.setBody(StaticJavaParser.parseBlock("{ throw new UnsupportedOperationException(\"Not implemented yet.\"); }"));
@@ -121,32 +121,105 @@ public class FrameworkParser<E extends FrameworkParser> {
         return (E) this;
     }
 
-    private List<MethodDeclaration> getFrameworkMethods() {
-        return frameworkUnit.getTypes().stream().findFirst().get().getMethods();
+    private void setTypesOnImplementation(FrameworkParser[] qualifieds, ClassOrInterfaceType implementation) {
+        if (qualifieds != null) {
+            NodeList<Type> nodes = new NodeList<>();
+            for (TypeParameter typeParameter : getFrameworkClazz().getTypeParameters()) {
+                String nameAsString = typeParameter.getTypeBound().get(0).getNameAsString();
+                FrameworkParser found = Arrays.stream(qualifieds).filter(nn -> nn.getImplementationClazz().equals(nameAsString)).findFirst().orElse(null);
+                if (found != null) {
+                    projectUnit.addImport(found.getFullyQualifiedName());
+                    nodes.add(new TypeParameter(found.getSimpleQualifiedName()));
+                }
+            }
+            implementation.setTypeArguments(nodes);
+        }
     }
 
-    MethodDeclaration getClonedMethod(MethodDeclaration method) {
+    public E extend(FrameworkParser... qualifieds) {
+        if (!hasExtensionClazz()) {
+            ClassOrInterfaceType implementation = new ClassOrInterfaceType(null, implementationClazz);
+            setTypesOnImplementation(qualifieds, implementation);
+            projectClass.addExtendedType(implementation);
+        }
+
+        if (!hasImport()) {
+            NodeList<ImportDeclaration> imports = projectUnit.getImports();
+            imports.add(new ImportDeclaration(new Name(getIdentifier()), false, false));
+            projectUnit.setImports(imports);
+        }
+
+        for (MethodDeclaration method : getFrameworkMethods()) {
+            if (!method.getBody().isPresent()) {
+                MethodDeclaration methodStub = getClonedMethod(method, qualifieds);
+                boolean hasMethod = hasImplementationMethod(methodStub);
+                if (!hasMethod) {
+                    methodStub.setBody(StaticJavaParser.parseBlock("{ throw new UnsupportedOperationException(\"Not implemented yet.\"); }"));
+                    projectClass.addMember(methodStub);
+                }
+            }
+        }
+        return (E) this;
+    }
+
+    private List<MethodDeclaration> getFrameworkMethods() {
+        return getFrameworkClazz().getMethods();
+    }
+
+    MethodDeclaration getClonedMethod(MethodDeclaration method, FrameworkParser... qualifieds) {
         MethodDeclaration methodStub = method.clone();
+        methodStub.setAbstract(false);
 
         NodeList<TypeParameter> typeParameters = methodStub.getTypeParameters();
-        if (!typeParameters.isEmpty()) {
-            TypeParameter typeParameter = typeParameters.get(0);
-            ClassOrInterfaceType classOrInterfaceType = typeParameter.getTypeBound().get(0);
-            methodStub.setTypeParameters(new NodeList<>());
 
-            List<Parameter> parameters = methodStub.getParameters().stream().filter(parameter -> parameter.getType().toString().equals(typeParameter.getNameAsString())).collect(Collectors.toList());
-            for (Parameter parameter : parameters) {
-                parameter.setType(classOrInterfaceType);
+        typeParameters.addAll(getFrameworkClazz().getTypeParameters());
+        if (!typeParameters.isEmpty()) {
+            for (TypeParameter typeParameter : typeParameters) {
+                ClassOrInterfaceType classOrInterfaceType = typeParameter.getTypeBound().get(0);
+                methodStub.setTypeParameters(new NodeList<>());
+
+                List<Parameter> parameters = methodStub.getParameters().stream().filter(parameter -> parameter.getType().toString().equals(typeParameter.getNameAsString())).collect(Collectors.toList());
+                for (Parameter parameter : parameters) {
+                    parameter.setType(classOrInterfaceType);
+                }
+
+                if (methodStub.getType().toString().equals(typeParameter.getNameAsString())) {
+                    methodStub.setType(classOrInterfaceType);
+                }
+
+                List<Node> childNodes = methodStub.getType().getElementType().getChildNodes();
+                for (Node childNode : childNodes) {
+                    if (childNode.toString().equals(typeParameter.getNameAsString())) {
+                        FrameworkParser foundParser = Arrays.stream(qualifieds).filter(ff -> typeParameter.getTypeBound().get(0).getName().getId().equals(ff.getImplementationClazz())).findFirst().get();
+                        ((ClassOrInterfaceType) childNode).setName(foundParser.getFullyQualifiedName());
+                    }
+                }
+
             }
-            if (methodStub.getType().toString().equals(typeParameter.getNameAsString())) {
-                methodStub.setType(classOrInterfaceType);
+
+            if (qualifieds != null) {
+                for (Parameter parameter : methodStub.getParameters()) {
+                    FrameworkParser frameworkParser = Arrays.stream(qualifieds).filter(p -> parameter.getType().toString().contains(p.getImplementationClazz())).findFirst().orElse(null);
+                    if (frameworkParser != null) {
+                        parameter.setType(new TypeParameter(frameworkParser.getSimpleQualifiedName()));
+                    }
+                }
             }
+
         }
         return methodStub;
     }
 
+    private ClassOrInterfaceDeclaration getFrameworkClazz() {
+        return (ClassOrInterfaceDeclaration) frameworkUnit.getTypes().stream().findFirst().get();
+    }
+
     public boolean hasImplementationClazz() {
         return projectClass.getImplementedTypes().stream().anyMatch(type -> type.getName().getId().equals(implementationClazz));
+    }
+
+    public boolean hasExtensionClazz() {
+        return projectClass.getExtendedTypes().stream().anyMatch(type -> type.getName().getId().equals(implementationClazz));
     }
 
     public boolean hasImplementationMethod(MethodDeclaration method) {
