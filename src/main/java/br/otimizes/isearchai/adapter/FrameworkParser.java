@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.parser;
+package br.otimizes.isearchai.adapter;
 
 import com.github.javaparser.ParseResult;
 import com.github.javaparser.StaticJavaParser;

@@ -14,6 +14,14 @@ import java.util.stream.Collectors;
 public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLSolution<MLElement>> {
     private SubjectiveAnalyzeAlgorithm subjectiveAnalyzeAlgorithm = null;
 
+    Boolean interactive = true;
+    int currentInteraction;
+    int generation;
+    int maxInteractions;
+    int firstInteraction;
+    int intervalInteraction;
+    InteractiveFunction<T> interactiveFunction;
+
     public InteractWithDM() {
     }
 
@@ -27,6 +35,35 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
                                            int firstInteraction,
                                            int intervalInteraction, InteractiveFunction<T> interactiveFunction,
                                            int currentInteraction, HashSet<E> bestOfUserEvaluation) throws Exception {
+        this.setGeneration(generation);
+        this.setMaxInteractions(maxInteractions);
+        this.setFirstInteraction(firstInteraction);
+        this.setIntervalInteraction(intervalInteraction);
+        this.setCurrentInteraction(currentInteraction);
+        this.setInteractiveFunction(interactiveFunction);
+        return this.interactWithDM(generation, solutionSet, maxInteractions, firstInteraction, intervalInteraction,
+            interactiveFunction, currentInteraction, bestOfUserEvaluation);
+    }
+
+    public void subjectiveAnalyzeAlgorithmEvaluate(T solutionSet) {
+        SubjectiveAnalyzeAlgorithm subjectiveAnalyzeAlgorithm = getSubjectiveAnalyzeAlgorithm();
+        if (getInteractive() && subjectiveAnalyzeAlgorithm != null && subjectiveAnalyzeAlgorithm.isTrained()) {
+            try {
+                subjectiveAnalyzeAlgorithm.evaluateSolutionSetScoreAndArchitecturalAlgorithm(solutionSet, false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public synchronized int interactWithDMUpdatingInteraction(T solutionSet, HashSet<E> bestOfUserEvaluation, int generation) throws Exception {
+        setCurrentInteraction(interactWithDM(solutionSet, bestOfUserEvaluation, generation));
+        return getCurrentInteraction();
+    }
+    public synchronized int interactWithDM(T solutionSet, HashSet<E> bestOfUserEvaluation, int generation) throws Exception {
+        setGeneration(generation);
+        if (!getInteractive())
+            return getCurrentInteraction();
         for (E solution : solutionSet) {
             solution.setEvaluation(0);
         }
@@ -88,5 +125,62 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
 
     public void setSubjectiveAnalyzeAlgorithm(SubjectiveAnalyzeAlgorithm subjectiveAnalyzeAlgorithm) {
         this.subjectiveAnalyzeAlgorithm = subjectiveAnalyzeAlgorithm;
+    }
+
+
+    public Boolean getInteractive() {
+        return interactive != null && interactive;
+    }
+
+    public void setInteractive(Boolean interactive) {
+        this.interactive = interactive;
+    }
+
+    public int getCurrentInteraction() {
+        return currentInteraction;
+    }
+
+    public void setCurrentInteraction(int currentInteraction) {
+        this.currentInteraction = currentInteraction;
+    }
+
+    public int getGeneration() {
+        return generation;
+    }
+
+    public void setGeneration(int generation) {
+        this.generation = generation;
+    }
+
+    public int getMaxInteractions() {
+        return maxInteractions;
+    }
+
+    public void setMaxInteractions(int maxInteractions) {
+        this.maxInteractions = maxInteractions;
+    }
+
+    public int getFirstInteraction() {
+        return firstInteraction;
+    }
+
+    public void setFirstInteraction(int firstInteraction) {
+        this.firstInteraction = firstInteraction;
+    }
+
+    public int getIntervalInteraction() {
+        return intervalInteraction;
+    }
+
+    public void setIntervalInteraction(int intervalInteraction) {
+        this.intervalInteraction = intervalInteraction;
+    }
+
+    public InteractiveFunction<T> getInteractiveFunction() {
+        return interactiveFunction;
+    }
+
+    public void setInteractiveFunction(InteractiveFunction<T> interactiveFunction) {
+        this.interactiveFunction = interactiveFunction;
     }
 }

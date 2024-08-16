@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.parser;
+package br.otimizes.isearchai.adapter;
 
 import br.otimizes.isearchai.learning.MLSolutionSet;
 
