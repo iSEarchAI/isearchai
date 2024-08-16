@@ -1,7 +1,7 @@
-package br.otimizes.isearchai.generator.rest;
+package br.otimizes.isearchai.rest;
 
 import br.otimizes.isearchai.generator.model.Generate;
-import br.otimizes.isearchai.generator.replacers.Generator;
+import br.otimizes.isearchai.generator.starter.Starter;
 import br.otimizes.isearchai.util.ObjMapUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -26,7 +26,7 @@ public class Application {
             res.type("application/zip");
 
             Generate generate = ObjMapUtils.mapper().readValue(req.body(), Generate.class);
-            Generator.generate(generate);
+            Starter.generate(generate);
             ByteArrayOutputStream byteArrayOutputStream = createByteArrayOutputStreamFromFile("generated/nautilus-framework-plugin.zip");
             // Set response headers
 

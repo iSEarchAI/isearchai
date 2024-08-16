@@ -26,36 +26,32 @@ public class Adapter {
     }
 
     public MLElementAdapter implementMLElement() {
-        MLElementAdapter ps = new MLElementAdapter().setSourceClazz(project, clazz)
+        return new MLElementAdapter().setSourceClazz(project, clazz)
             .withTypeParameter("E")
             .implement()
             .writeFile();
-        return ps;
     }
 
     public MLSolutionAdapter implementMlSolution(MLElementAdapter mlElementParser) {
-        MLSolutionAdapter ps = new MLSolutionAdapter().setSourceClazz(project, clazz)
+        return new MLSolutionAdapter().setSourceClazz(project, clazz)
             .withTypeParameter("S")
             .implement(mlElementParser)
             .writeFile();
-        return ps;
     }
 
     public MLSolutionSetAdapter implementMlSolutionSet(MLElementAdapter mlElementParser, MLSolutionAdapter mlSolutionParser) {
-        MLSolutionSetAdapter ps = new MLSolutionSetAdapter().setSourceClazz(project, clazz)
+        return new MLSolutionSetAdapter().setSourceClazz(project, clazz)
             .withTypeParameter("T")
             .extend(mlElementParser, mlSolutionParser)
             .writeFile();
-        return ps;
     }
 
     public MLSearchAlgorithmAdapter implementMlSearchAlgorithm(MLElementAdapter mlElementParser, MLSolutionAdapter mlSolutionParser,
                                                                MLSolutionSetAdapter mlSolutionSetParser) {
-        MLSearchAlgorithmAdapter ps = new MLSearchAlgorithmAdapter().setSourceClazz(project, clazz)
+        return new MLSearchAlgorithmAdapter().setSourceClazz(project, clazz)
             .implement(mlElementParser, mlSolutionParser, mlSolutionSetParser)
             .replaceComments()
             .addAttributes()
             .writeFile();
-        return ps;
     }
 }

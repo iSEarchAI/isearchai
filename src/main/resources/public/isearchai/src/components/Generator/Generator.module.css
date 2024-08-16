@@ -6,9 +6,6 @@
     margin-top: 20px;
 }
 
-.ObjectiveFunctionContent div {
-    margin: 5px;
-}
 .ObjectiveFunctionContent > div {
     margin: 5px;
 }
@@ -62,4 +59,9 @@
     width: 30px !important;
     height: 30px !important;
     margin: 0 10px;
+}
+
+
+.Select {
+    margin-left: 10px;
 }

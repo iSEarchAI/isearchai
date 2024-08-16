@@ -1,6 +1,6 @@
 package br.otimizes.isearchai.util;
 
-import br.otimizes.isearchai.generator.replacers.Generator;
+import br.otimizes.isearchai.generator.starter.Starter;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,7 +28,7 @@ public class ZipUtils {
 
     public static void extractZipFileFromResources(String zipFileName, String outputDir) throws IOException {
         // Get the input stream of the zip file from resources
-        try (InputStream inputStream = Generator.class.getClassLoader().getResourceAsStream(zipFileName);
+        try (InputStream inputStream = Starter.class.getClassLoader().getResourceAsStream(zipFileName);
              ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
 
             if (inputStream == null) {
@@ -59,6 +59,8 @@ public class ZipUtils {
                 }
                 zipInputStream.closeEntry();
             }
+        } catch (RuntimeException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -81,6 +83,8 @@ public class ZipUtils {
                     return FileVisitResult.CONTINUE;
                 }
             });
+        } catch (RuntimeException ex) {
+            ex.printStackTrace();
         }
     }
 }

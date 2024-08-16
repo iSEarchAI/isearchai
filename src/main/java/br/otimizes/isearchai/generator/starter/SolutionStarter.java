@@ -1,17 +1,13 @@
-package br.otimizes.isearchai.generator.replacers;
+package br.otimizes.isearchai.generator.starter;
 
 import br.otimizes.isearchai.generator.model.Generate;
-import br.otimizes.isearchai.generator.model.Item;
 import br.otimizes.isearchai.util.ObjMapUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
-public class ItemReplacer {
+public class SolutionStarter {
     public static void main(String[] args) throws JsonProcessingException {
         generateForFile("nrp-generate.json");
     }
@@ -23,26 +19,34 @@ public class ItemReplacer {
     }
 
     public static void generate(Generate json) throws JsonProcessingException {
-        Item item = json.getItem();
-        String name = item.getName();
-        String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/Item.java");
-        fileClass = fileClass.replaceAll("\\$item\\.name", name);
+        String solutionName = json.getSolution().getName();
+        String itemName = json.getItem().getName();
+        String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/Solution.java");
+        fileClass = fileClass.replaceAll("\\$solution\\.name", solutionName);
+        fileClass = fileClass.replaceAll("\\$item\\.name", itemName);
 
-        List<String> objectives = new ArrayList<>();
-        for (String jsonNode : item.getObjectives()) {
-            objectives.add(jsonNode.toLowerCase());
+
+        String methodTemplate = " public double get$objective() {\n" +
+            "\n" +
+            "        double sum = 0.0;\n" +
+            "\n" +
+            "        for ($item.name item : items) {\n" +
+            "            sum += item.$attr;\n" +
+            "        }\n" +
+            "\n" +
+            "        return sum;\n" +
+            "    }";
+
+        String methods = "";
+
+        for (String jsonNode : json.getItem().getObjectives()) {
+            methods += methodTemplate.replace("$item.name", itemName)
+                .replace("$objective", jsonNode)
+                .replace("$attr", jsonNode.toLowerCase()) + "\n\n\t";
         }
-        String objectivesAttributes = objectives.stream().map(str -> "public double " + str + ";").collect(Collectors.joining("\n\t"));
-        String objectivesParams = objectives.stream().map(str -> "double " + str).collect(Collectors.joining(","));
-        String objectivesConstructor = objectives.stream().map(str -> "this." + str + " = " + str + ";").collect(Collectors.joining("\n\t\t"));
-        String objectivesRandomParams = objectives.stream().map(str -> "Converter.round(random.nextDouble(1, 10), 1)").collect(Collectors.joining(","));
-
-        fileClass = fileClass.replace("$item.objectivesAttributes", objectivesAttributes);
-        fileClass = fileClass.replace("$item.objectivesParams", objectivesParams);
-        fileClass = fileClass.replace("$item.objectivesConstructor", objectivesConstructor);
-        fileClass = fileClass.replace("$item.objectivesRandomParams", objectivesRandomParams);
+        fileClass = fileClass.replace("$methods", methods);
         System.out.println(fileClass);
-        writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/" + name + ".java", fileClass);
+        writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/" + solutionName + ".java", fileClass);
     }
 
     public static void writeFile(String filePath, String content) {
@@ -58,7 +62,7 @@ public class ItemReplacer {
 
     public static String readFileFromResources(String fileName) {
         // Get the input stream of the file from resources
-        try (InputStream inputStream = ItemReplacer.class.getClassLoader().getResourceAsStream(fileName);
+        try (InputStream inputStream = SolutionStarter.class.getClassLoader().getResourceAsStream(fileName);
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
             if (inputStream == null) {

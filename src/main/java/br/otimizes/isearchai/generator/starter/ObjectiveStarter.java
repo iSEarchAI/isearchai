@@ -1,16 +1,19 @@
-package br.otimizes.isearchai.generator.replacers;
+package br.otimizes.isearchai.generator.starter;
 
 import br.otimizes.isearchai.generator.model.Generate;
 import br.otimizes.isearchai.generator.model.Objective;
 import br.otimizes.isearchai.util.ObjMapUtils;
+import br.otimizes.isearchai.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-public class ObjectiveReplacer {
+public class ObjectiveStarter {
     public static void main(String[] args) throws JsonProcessingException {
         generateForFile("nrp-generate.json");
     }
@@ -33,19 +36,18 @@ public class ObjectiveReplacer {
                 incrementWith = "instance.getSumOf" + incrementWith + "()";
             }
             fileClass = fileClass.replace("$objective.process.incrementWith", incrementWith);
+            fileClass = fileClass.replace("$objective.maximize", objective.getMaximize() ? "true": "false");
 
-            fileClass = fileClass.replace("$objective.calculate.type", objective.getCalculate().getType());
-            String valueA = objective.getCalculate().getA().getValue();
-            if (!Objects.equals(valueA, "sum")) {
-                valueA = "instance.getSumOf" + valueA + "()";
-            }
-            fileClass = fileClass.replace("$objective.calculate.a", valueA);
+            List<String> expression = objective.getCalculate().getExpression();
 
-            String valueB = objective.getCalculate().getB().getValue();
-            if (!Objects.equals(valueB, "sum")) {
-                valueB = "instance.getSumOf" + valueB + "()";
-            }
-            fileClass = fileClass.replace("$objective.calculate.b", valueB);
+            fileClass = fileClass.replace("$objective.calculate.expression", expression.stream().map(v -> {
+                if (Objects.equals(v, "sum"))
+                    return "(double) " + v;
+                if (StringUtils.isMathOperator(v))
+                    return v;
+                return "(double) instance.getSumOf" + StringUtils.camelcase(v) + "()";
+            }).collect(Collectors.joining(" ")));
+
             writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/objective/" + className + ".java", fileClass);
         }
     }
@@ -71,7 +73,7 @@ public class ObjectiveReplacer {
 
     public static String readFileFromResources(String fileName) {
         // Get the input stream of the file from resources
-        try (InputStream inputStream = ObjectiveReplacer.class.getClassLoader().getResourceAsStream(fileName);
+        try (InputStream inputStream = ObjectiveStarter.class.getClassLoader().getResourceAsStream(fileName);
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
             if (inputStream == null) {

@@ -5,6 +5,7 @@ public class Objective {
     private String type;
     private Process process;
     private Calculate calculate;
+    private Boolean maximize;
 
     public Objective() {
     }
@@ -39,5 +40,13 @@ public class Objective {
 
     public void setCalculate(Calculate calculate) {
         this.calculate = calculate;
+    }
+
+    public Boolean getMaximize() {
+        return maximize != null && maximize;
+    }
+
+    public void setMaximize(Boolean maximize) {
+        this.maximize = maximize;
     }
 }

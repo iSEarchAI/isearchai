@@ -3,12 +3,14 @@ import styles from './Generator.module.css';
 import {
     Autocomplete,
     Box,
-    Button, CircularProgress,
+    Button,
+    CircularProgress,
     FormControl,
     Grid,
     InputAdornment,
     InputLabel,
     MenuItem,
+    OutlinedInput,
     Paper,
     Select,
     Step,
@@ -23,6 +25,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoIcon from '@mui/icons-material/Info';
+import Chip from '@mui/material/Chip';
 
 const steps = [
     {
@@ -83,11 +86,12 @@ const steps = [
             <>
                 {/*{ctx.state.generate.solution.name}*/}
                 <TextField id="outlined-basic" label="Item Name" variant="outlined"
+                           name='generate.item.name'
                            InputProps={{
                                endAdornment: (<InputAdornment position={"end"}><Tooltip
                                    title="Put a name without spaces and uppercase at beginning"><InfoIcon/></Tooltip></InputAdornment>)
                            }}
-                           value={ctx.state.generate.item.name}/>
+                           value={ctx.state.generate.item.name} onChange={ctx.updateState}/>
             </>
         ),
         onContinue: (ctx) => {
@@ -103,21 +107,23 @@ const steps = [
                                                                         className={styles.ObjectiveFunctionItem}>
                     <Paper elevation={1} className={styles.Paper}>
                         <div className={styles.Label}>{obj.name}</div>
-                        <Grid container spacing={0} columns={16}>
+                        <Grid container spacing={1} columns={16}>
                             <Grid xs={4}>
                                 <TextField id="outlined-basic" label="Name"
+                                           style={{'marginLeft':'15px'}}
                                            InputProps={{
                                                endAdornment: (<InputAdornment position={"end"}><Tooltip
                                                    title="Put a name without spaces and uppercase at beginning"><InfoIcon/></Tooltip></InputAdornment>)
                                            }}
                                            variant="outlined" value={obj.name}/>
                             </Grid>
-                            <Grid xs={2}>
-                                <Tooltip title="Use Double for no integer objective functions">
+                            <Grid xs={2} spacing={1}>
+                                <Tooltip title="Use Double for no integer objective functions" placement={'top'}>
                                     <FormControl size="small">
                                         <InputLabel id="obj-type-label">Type</InputLabel>
                                         <Select
                                             labelId="obj-type-label"
+                                            className={styles.Select}
                                             value={obj.type}
                                             label="Type"
                                             variant="outlined"
@@ -146,11 +152,32 @@ const steps = [
                                 <Grid xs={2}>
                                     {/*<TextField id="outlined-basic" label="Invert" variant="outlined"*/}
                                     {/*           value={obj.calculate.invert || 'false'}/>*/}
+                                    <Tooltip
+                                        title="'True' sets the objective function to maximization and 'False' sets minimization">
+                                        <FormControl fullWidth size="small">
+                                            <InputLabel id="obj-type-label">Maximize</InputLabel>
+                                            <Select
+                                                labelId="obj-type-label"
+                                                className={styles.Select}
+                                                value={obj.maximize || 'true'}
+                                                label="Maximize"
+                                                variant="outlined"
+                                            >
+                                                <MenuItem value="true">True</MenuItem>
+                                                <MenuItem value="false">False</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </Tooltip>
+                                </Grid>
+                                <Grid xs={2}>
+                                    {/*<TextField id="outlined-basic" label="Invert" variant="outlined"*/}
+                                    {/*           value={obj.calculate.invert || 'false'}/>*/}
                                     <Tooltip title="'True' adds an inversion in the formula (-1 in the beginning)">
                                         <FormControl fullWidth size="small">
                                             <InputLabel id="obj-type-label">Invert formula</InputLabel>
                                             <Select
                                                 labelId="obj-type-label"
+                                                className={styles.Select}
                                                 value={obj.calculate.invert || 'false'}
                                                 label="Invert formula"
                                                 variant="outlined"
@@ -161,51 +188,100 @@ const steps = [
                                         </FormControl>
                                     </Tooltip>
                                 </Grid>
-                                <Grid xs={4}>
+                                <Grid xs={10}>
                                     <Tooltip
-                                        title="The first part of the formula. Remember that 'sum' represents the objective function itself.">
-                                        <Autocomplete
-                                            id="free-solo-demo"
-                                            freeSolo
-                                            value={obj.calculate.a.value}
-                                            options={ctx.state.generate.objectives.map((option) => option.name + "").concat([ctx.state.generate.item.name, ctx.state.generate.solution.name, 'sum'])}
-                                            renderInput={(params) => <TextField {...params}
-                                                                                label="First part of formula"/>}
-                                        />
-                                    </Tooltip>
-                                </Grid>
-                                <Grid xs={2}>
-                                    <Tooltip
-                                        title="The operator used in the middle of the formula (A [operator] B).">
-                                        <FormControl size="small">
-                                            <InputLabel id="obj-type-label">Type</InputLabel>
+                                        placement={"top"}
+                                        title="This is the formula of the objective function. For example, Cost / Importance">
+                                        <FormControl sx={{m: 1, minWidth: 400}}>
+                                            <InputLabel id="demo-multiple-chip-label">Expression</InputLabel>
                                             <Select
-                                                labelId="obj-type-label"
-                                                value={obj.calculate.type}
-                                                label="Type"
-                                                variant="outlined"
+                                                labelId="demo-multiple-chip-label"
+                                                className={styles.Select}
+                                                id="demo-multiple-chip"
+                                                multiple
+
+                                                value={obj.calculate.expression}
+                                                onChange={event => ctx.changeExpression(index, event.target.value, ctx.state)}
+                                                input={<OutlinedInput id="select-multiple-chip" label="Chip"/>}
+                                                renderValue={(selected) => (
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        flexWrap: 'wrap',
+                                                        gap: 0,
+                                                        height: '10px'
+                                                    }}>
+                                                        {selected.map((value) => (
+                                                            <Chip key={value} label={value}/>
+                                                        ))}
+                                                    </Box>
+                                                )}
+                                                MenuProps={{
+                                                    PaperProps: {
+                                                        style: {
+                                                            maxHeight: 225,
+                                                            width: 250,
+                                                        },
+                                                    },
+                                                }}
                                             >
-                                                <MenuItem value="/">Divide (/)</MenuItem>
-                                                <MenuItem value="*">Multiple (*)</MenuItem>
-                                                <MenuItem value="*">Sum (+)</MenuItem>
-                                                <MenuItem value="*">Reduce (-)</MenuItem>
+                                                {ctx.expressionItems(obj.calculate.expression)
+                                                    .map((name) => (
+                                                        <MenuItem
+                                                            key={name}
+                                                            value={name}
+                                                        >
+                                                            {name}
+                                                        </MenuItem>
+                                                    ))}
                                             </Select>
                                         </FormControl>
                                     </Tooltip>
                                 </Grid>
-                                <Grid xs={4}>
-                                    <Tooltip
-                                        title="The second part of the formula. Remember that 'sum' represents the objective function itself.">
-                                        <Autocomplete
-                                            id="free-solo-demo"
-                                            freeSolo
-                                            value={obj.calculate.b.value}
-                                            options={ctx.state.generate.objectives.map((option) => option.name + "").concat([ctx.state.generate.item.name, ctx.state.generate.solution.name])}
-                                            renderInput={(params) => <TextField {...params}
-                                                                                label="Second part of formula"/>}
-                                        />
-                                    </Tooltip>
-                                </Grid>
+                                {/*<Grid xs={4}>*/}
+                                {/*    <Tooltip*/}
+                                {/*        title="The first part of the formula. Remember that 'sum' represents the objective function itself.">*/}
+                                {/*        <Autocomplete*/}
+                                {/*            id="free-solo-demo"*/}
+                                {/*            freeSolo*/}
+                                {/*            value={obj.calculate.a.value}*/}
+                                {/*            options={ctx.state.generate.objectives.map((option) => option.name + "").concat([ctx.state.generate.item.name, ctx.state.generate.solution.name, 'sum'])}*/}
+                                {/*            renderInput={(params) => <TextField {...params}*/}
+                                {/*                                                label="First part of formula"/>}*/}
+                                {/*        />*/}
+                                {/*    </Tooltip>*/}
+                                {/*</Grid>*/}
+                                {/*<Grid xs={2}>*/}
+                                {/*    <Tooltip*/}
+                                {/*        title="The operator used in the middle of the formula (A [operator] B).">*/}
+                                {/*        <FormControl size="small">*/}
+                                {/*            <InputLabel id="obj-type-label">Type</InputLabel>*/}
+                                {/*            <Select*/}
+                                {/*                labelId="obj-type-label"*/}
+                                {/*                value={obj.calculate.type}*/}
+                                {/*                label="Type"*/}
+                                {/*                variant="outlined"*/}
+                                {/*            >*/}
+                                {/*                <MenuItem value="/">Divide (/)</MenuItem>*/}
+                                {/*                <MenuItem value="*">Multiple (*)</MenuItem>*/}
+                                {/*                <MenuItem value="*">Sum (+)</MenuItem>*/}
+                                {/*                <MenuItem value="*">Reduce (-)</MenuItem>*/}
+                                {/*            </Select>*/}
+                                {/*        </FormControl>*/}
+                                {/*    </Tooltip>*/}
+                                {/*</Grid>*/}
+                                {/*<Grid xs={4}>*/}
+                                {/*    <Tooltip*/}
+                                {/*        title="The second part of the formula. Remember that 'sum' represents the objective function itself.">*/}
+                                {/*        <Autocomplete*/}
+                                {/*            id="free-solo-demo"*/}
+                                {/*            freeSolo*/}
+                                {/*            value={obj.calculate.b.value}*/}
+                                {/*            options={ctx.state.generate.objectives.map((option) => option.name + "").concat([ctx.state.generate.item.name, ctx.state.generate.solution.name])}*/}
+                                {/*            renderInput={(params) => <TextField {...params}*/}
+                                {/*                                                label="Second part of formula"/>}*/}
+                                {/*        />*/}
+                                {/*    </Tooltip>*/}
+                                {/*</Grid>*/}
 
                             </Grid>
                         </div>
@@ -256,12 +332,7 @@ class Generator extends Component {
                     },
                     "calculate": {
                         "type": "/",
-                        "a": {
-                            "value": "sum"
-                        },
-                        "b": {
-                            "value": "Cost"
-                        }
+                        "expression": ['sum', '/', 'Cost']
                     }
                 },
                 {
@@ -271,14 +342,9 @@ class Generator extends Component {
                         "incrementWith": "Importance"
                     },
                     "calculate": {
+                        "expression": ['sum', '/', 'Importance'],
                         "type": "/",
-                        "invert": "true",
-                        "a": {
-                            "value": "sum"
-                        },
-                        "b": {
-                            "value": "Importance"
-                        }
+                        "invert": "true"
                     }
                 },
                 {
@@ -288,14 +354,9 @@ class Generator extends Component {
                         "incrementWith": "Profit"
                     },
                     "calculate": {
+                        "expression": ['sum', '/', 'Profit'],
                         "type": "/",
                         "invert": "true",
-                        "a": {
-                            "value": "sum"
-                        },
-                        "b": {
-                            "value": "Profit"
-                        }
                     }
                 },
 
@@ -306,14 +367,9 @@ class Generator extends Component {
                         "incrementWith": '1'
                     },
                     "calculate": {
+                        "expression": ['sum', '/', 'Requirement'],
                         "type": "/",
-                        "invert": "true",
-                        "a": {
-                            "value": "sum"
-                        },
-                        "b": {
-                            "value": "Solution"
-                        }
+                        "invert": "true"
                     }
                 }
             ],
@@ -325,6 +381,25 @@ class Generator extends Component {
                 "name": "Requirement"
             }
         }
+    }
+
+    expressionItems = (currentExpression) => {
+        let vars = this.state.generate.objectives.map((option) => option.name + "")
+            .concat([this.state.generate.item.name, this.state.generate.solution.name, 'sum']);
+        let operators = ['+', '-', '*', '/'];
+        if (currentExpression.length === 0 || this.isMathOperator(currentExpression[currentExpression.length - 1]))
+            return vars;
+        else return operators;
+    }
+
+    isMathOperator(str) {
+        return ['+', '-', '*', '/'].includes(str);
+    }
+
+    changeExpression = (index, value, state) => {
+        state.generate.objectives[index].calculate.expression = value instanceof String ? value.split(',') : value
+        this.setState(state)
+        console.log("---------------------", this.state, value)
     }
 
     updateState = (event) => {
@@ -466,7 +541,9 @@ class Generator extends Component {
                                                 sx={{mt: 1, mr: 1}}
                                             >
                                                 {index === steps.length - 1 ? 'Finish' : 'Continue'}
-                                                {this.state.loading ? <CircularProgress className={styles.CircularProgress}  color="warning" /> : null}
+                                                {this.state.loading ?
+                                                    <CircularProgress className={styles.CircularProgress}
+                                                                      color="warning"/> : null}
                                             </Button>
                                             <Button
                                                 disabled={index === 0}
@@ -487,7 +564,8 @@ class Generator extends Component {
                                 project.</Typography>
                             <Button onClick={this.handleReset} sx={{mt: 1, mr: 1}} disabled={this.state.loading}>
                                 Reset
-                                {this.state.loading ? <CircularProgress className={styles.CircularProgress}  color="warning" /> : null}
+                                {this.state.loading ?
+                                    <CircularProgress className={styles.CircularProgress} color="warning"/> : null}
                             </Button>
                         </Paper>
                     )}

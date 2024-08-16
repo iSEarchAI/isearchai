@@ -110,7 +110,7 @@
                     <exclude>**/*.png</exclude>
                     <exclude>**/*.svg</exclude>
                     <exclude>**/*.bib</exclude>
-                    <exclude>**/*.zip</exclude>
+<!--                    <exclude>**/*.zip</exclude>-->
                     <exclude>public/isearchai/.idea/**</exclude>
                     <exclude>public/isearchai/node_modules/**</exclude>
                     <exclude>public/isearchai/public/**</exclude>

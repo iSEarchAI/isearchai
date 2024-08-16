@@ -3,7 +3,7 @@ package org.nautilus.plugin.nrp.encoding.model;
 import org.nautilus.core.util.Converter;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
-public class Task {
+public class Taska {
 
 	protected static JMetalRandom random = JMetalRandom.getInstance();
 
@@ -11,15 +11,15 @@ public class Task {
 	public double profit;
 	public double importance;
 
-	public Task(double cost,double profit,double importance) {
+	public Taska(double cost,double profit,double importance) {
         this.cost = cost;
 		this.profit = profit;
 		this.importance = importance;
 	}
 
-	public static Task getRandom() {
+	public static Taska getRandom() {
 
-		return new Task(
+		return new Taska(
 			Converter.round(random.nextDouble(1, 10), 1),Converter.round(random.nextDouble(1, 10), 1),Converter.round(random.nextDouble(1, 10), 1)
 		);
 	}

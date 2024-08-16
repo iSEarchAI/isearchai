@@ -27,7 +27,7 @@ public class Size extends AbstractObjective {
 
 		TXTInstance instance = (TXTInstance) instanceData;
 
-		return (double) sum / (double) instance.getSumOfSolution();
+		return (double) instance.getSumOfProfit() - (double) instance.getSumOfTaska();
 	}
 
 	public boolean isMaximize() {
@@ -36,7 +36,7 @@ public class Size extends AbstractObjective {
 
 	@Override
 	public String getName() {
-		return "Cost";
+		return "Size";
 	}
 
 	@Override

@@ -1,13 +1,14 @@
-package br.otimizes.isearchai.generator.replacers;
+package br.otimizes.isearchai.generator.starter;
 
 import br.otimizes.isearchai.generator.model.Generate;
+import br.otimizes.isearchai.generator.model.Objective;
 import br.otimizes.isearchai.util.ObjMapUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-public class SolutionReplacer {
+public class ProblemExtensionStarter {
     public static void main(String[] args) throws JsonProcessingException {
         generateForFile("nrp-generate.json");
     }
@@ -19,34 +20,18 @@ public class SolutionReplacer {
     }
 
     public static void generate(Generate json) throws JsonProcessingException {
-        String solutionName = json.getSolution().getName();
-        String itemName = json.getItem().getName();
-        String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/Solution.java");
-        fileClass = fileClass.replaceAll("\\$solution\\.name", solutionName);
-        fileClass = fileClass.replaceAll("\\$item\\.name", itemName);
-
-
-        String methodTemplate = " public double get$objective() {\n" +
-            "\n" +
-            "        double sum = 0.0;\n" +
-            "\n" +
-            "        for ($item.name item : items) {\n" +
-            "            sum += item.$attr;\n" +
-            "        }\n" +
-            "\n" +
-            "        return sum;\n" +
-            "    }";
+        String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/extension/problem/ProblemExtension.java");
 
         String methods = "";
-
-        for (String jsonNode : json.getItem().getObjectives()) {
-            methods += methodTemplate.replace("$item.name", itemName)
-                .replace("$objective", jsonNode)
-                .replace("$attr", jsonNode.toLowerCase()) + "\n\n\t";
+        String imports = "";
+        for (Objective jsonNode : json.getObjectives()) {
+            methods += "objectives.add(new " + jsonNode.getName() + "());\n\t\t";
+            imports += "import org.nautilus.plugin.nrp.encoding.objective." + jsonNode.getName() + ";\n";
         }
         fileClass = fileClass.replace("$methods", methods);
+        fileClass = fileClass.replace("$imports", imports);
         System.out.println(fileClass);
-        writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/" + solutionName + ".java", fileClass);
+        writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/extension/problem/ProblemExtension.java", fileClass);
     }
 
     public static void writeFile(String filePath, String content) {
@@ -62,7 +47,7 @@ public class SolutionReplacer {
 
     public static String readFileFromResources(String fileName) {
         // Get the input stream of the file from resources
-        try (InputStream inputStream = SolutionReplacer.class.getClassLoader().getResourceAsStream(fileName);
+        try (InputStream inputStream = ProblemExtensionStarter.class.getClassLoader().getResourceAsStream(fileName);
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
             if (inputStream == null) {

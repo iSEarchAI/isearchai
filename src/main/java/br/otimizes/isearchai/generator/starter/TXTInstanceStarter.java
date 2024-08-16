@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.generator.replacers;
+package br.otimizes.isearchai.generator.starter;
 
 import br.otimizes.isearchai.generator.model.Generate;
 import br.otimizes.isearchai.util.ObjMapUtils;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TXTInstanceReplacer {
+public class TXTInstanceStarter {
     public static void main(String[] args) throws JsonProcessingException {
         generateForFile("nrp-generate.json");
     }
@@ -77,7 +77,7 @@ public class TXTInstanceReplacer {
 
     public static String readFileFromResources(String fileName) {
         // Get the input stream of the file from resources
-        try (InputStream inputStream = TXTInstanceReplacer.class.getClassLoader().getResourceAsStream(fileName);
+        try (InputStream inputStream = TXTInstanceStarter.class.getClassLoader().getResourceAsStream(fileName);
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
             if (inputStream == null) {

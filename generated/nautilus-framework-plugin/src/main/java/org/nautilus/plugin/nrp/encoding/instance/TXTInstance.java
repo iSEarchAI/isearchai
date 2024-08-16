@@ -4,8 +4,8 @@ import org.nautilus.core.gui.Tab;
 import org.nautilus.core.gui.TableTabContent;
 import org.nautilus.core.model.Instance;
 import org.nautilus.core.util.InstanceReader;
-import org.nautilus.plugin.nrp.encoding.model.Requirement;
-import org.nautilus.plugin.nrp.encoding.model.Task;
+import org.nautilus.plugin.nrp.encoding.model.Requirementb;
+import org.nautilus.plugin.nrp.encoding.model.Taska;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class TXTInstance extends Instance {
 
     protected List<Integer> numberOfItems;
 
-    protected List<Requirement> solutions;
+    protected List<Requirementb> solutions;
 
     public double sumOfcost;
 	public double sumOfprofit;
@@ -49,23 +49,23 @@ public class TXTInstance extends Instance {
 
             reader.ignoreLine();
 
-            List<Task> items = new ArrayList<>();
+            List<Taska> items = new ArrayList<>();
 
             for (int j = 0; j < numberOfItems.get(i); j++) {
 
                 List<Double> values = reader.readDoubleValues();
 
-                Task item = new Task(
+                Taska item = new Taska(
                     values.get(0),values.get(0),values.get(0)
                 );
 
                 items.add(item);
             }
 
-            this.solutions.add(new Requirement(items));
+            this.solutions.add(new Requirementb(items));
         }
 
-        for (Requirement solution : solutions) {
+        for (Requirementb solution : solutions) {
             this.solutioncost.add(solution.getCost());
 			this.solutionprofit.add(solution.getProfit());
 			this.solutionimportance.add(solution.getImportance());
@@ -98,11 +98,11 @@ public class TXTInstance extends Instance {
 
 	public double getimportance(int solutionId) {return this.solutionimportance.get(solutionId);}
 
-    public List<Task> getTasks(int solutionId) {
+    public List<Taska> getTaskas(int solutionId) {
         return this.solutions.get(solutionId).items;
     }
 
-    public Requirement getSolution(int index) {
+    public Requirementb getSolution(int index) {
         return this.solutions.get(index);
     }
 

@@ -27,7 +27,7 @@ public class Cost extends AbstractObjective {
 
 		TXTInstance instance = (TXTInstance) instanceData;
 
-		return (double) sum / (double) instance.getSumOfCost();
+		return (double) instance.getSumOfCost() + (double) instance.getSumOfImportance();
 	}
 
 	public boolean isMaximize() {
