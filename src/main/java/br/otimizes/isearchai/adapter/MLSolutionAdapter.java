@@ -2,9 +2,9 @@ package br.otimizes.isearchai.adapter;
 
 import br.otimizes.isearchai.learning.MLSolution;
 
-public class MLSolutionParser extends FrameworkParser<MLSolutionParser> {
+public class MLSolutionAdapter extends FrameworkAdapter<MLSolutionAdapter> {
 
-    public MLSolutionParser() {
+    public MLSolutionAdapter() {
         super(MLSolution.class);
     }
 }

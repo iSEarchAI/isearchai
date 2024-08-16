@@ -56,11 +56,12 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
         }
     }
 
-    public synchronized int interactWithDMUpdatingInteraction(T solutionSet, HashSet<E> bestOfUserEvaluation, int generation) throws Exception {
+    public synchronized int interactWithDMUpdatingInteraction(T solutionSet, HashSet<E> bestOfUserEvaluation, int generation) {
         setCurrentInteraction(interactWithDM(solutionSet, bestOfUserEvaluation, generation));
         return getCurrentInteraction();
     }
-    public synchronized int interactWithDM(T solutionSet, HashSet<E> bestOfUserEvaluation, int generation) throws Exception {
+
+    public synchronized int interactWithDM(T solutionSet, HashSet<E> bestOfUserEvaluation, int generation) {
         setGeneration(generation);
         if (!getInteractive())
             return getCurrentInteraction();
@@ -100,23 +101,30 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
             boolean isTrainFinished = subjectiveAnalyzeAlgorithm.isTrained() &&
                 currentInteraction >= maxInteractions && isOnInteraction;
             if (isTrainFinished) {
-                subjectiveAnalyzeAlgorithm
-                    .evaluateSolutionSetScoreAndArchitecturalAlgorithm(getMlSolutionSet(solutionSet, solutionSet.getSolutions()), true);
+                subjectiveAnalyzeAlgorithm.evaluateSolutionSetScoreAndArchitecturalAlgorithm(getMlSolutionSet(solutionSet, solutionSet.getSolutions()), true);
             }
         }
         return currentInteraction;
     }
 
-    private T getMlSolutionSet(T solutionSet, List<E> solutions) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+    private T getMlSolutionSet(T solutionSet, List<E> solutions) {
         try {
-            T newS = (T) clazz(solutionSet).getConstructors()[0].newInstance(solutions.size());
-            newS.setSolutions(solutions);
-            return newS;
+            return getMlSolutionSetIn(solutionSet, 0, solutions);
         } catch (RuntimeException ex) {
-            T newS = (T) clazz(solutionSet).getConstructors()[1].newInstance(solutions.size());
-            newS.setSolutions(solutions);
-            return newS;
+            try {
+                return getMlSolutionSetIn(solutionSet, 1, solutions);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    private T getMlSolutionSetIn(T solutionSet, int x, List<E> solutions) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+        T newS = (T) clazz(solutionSet).getConstructors()[x].newInstance(solutions.size());
+        newS.setSolutions(solutions);
+        return newS;
     }
 
     public SubjectiveAnalyzeAlgorithm getSubjectiveAnalyzeAlgorithm() {

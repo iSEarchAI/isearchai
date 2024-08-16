@@ -2,9 +2,9 @@ package br.otimizes.isearchai.adapter;
 
 import br.otimizes.isearchai.learning.MLElement;
 
-public class MLElementParser extends FrameworkParser<MLElementParser> {
+public class MLElementAdapter extends FrameworkAdapter<MLElementAdapter> {
 
-    public MLElementParser() {
+    public MLElementAdapter() {
         super(MLElement.class);
     }
 }

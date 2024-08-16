@@ -199,15 +199,19 @@ public class SubjectiveAnalyzeAlgorithm {
      * Evaluate subjectively using Likert score and architectural elements evaluation
      *
      * @param MLSolutionSet solution set
-     * @param subjective  assign or not the Likert score
+     * @param subjective    assign or not the Likert score
      * @throws Exception default exception
      */
-    public void evaluateSolutionSetScoreAndArchitecturalAlgorithm(MLSolutionSet MLSolutionSet, boolean subjective) throws Exception {
+    public void evaluateSolutionSetScoreAndArchitecturalAlgorithm(MLSolutionSet MLSolutionSet, boolean subjective) {
         for (int i = 0; i < MLSolutionSet.size(); i++) {
             MLSolution MLSolution = MLSolutionSet.get(i);
             double[] solutionMatrix = MLSolutionSet.writeObjectivesAndElementsNumberEvaluationToMatrix()[i];
             if (subjective) {
-                MLSolution.setEvaluation((int) scoreAlgorithm.classifyInstance(new DenseInstance(1.0, solutionMatrix)));
+                try {
+                    MLSolution.setEvaluation((int) scoreAlgorithm.classifyInstance(new DenseInstance(1.0, solutionMatrix)));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
             List<MLElement> elementsWithPackages = MLSolution.getElements();
             elementsWithPackages.parallelStream().forEach(element -> {

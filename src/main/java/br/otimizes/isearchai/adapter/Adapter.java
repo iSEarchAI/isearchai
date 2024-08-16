@@ -10,35 +10,50 @@ public class Adapter {
 //            FileWriter writer = new FileWriter("path/to/your/Element.java");
 //            writer.write(cu.toString());
 //            writer.close();
-        MLElementParser mlElementParser = getMlElementParser();
-        MLSolutionParser mlSolutionParser = getMlSolutionParser(mlElementParser);
-        MLSolutionSetParser mlSolutionSetParser = getMlSolutionSetParser(mlElementParser, mlSolutionParser);
+        MLElementAdapter mlElementParser = getMlElementParser();
+        MLSolutionAdapter mlSolutionParser = getMlSolutionParser(mlElementParser);
+        MLSolutionSetAdapter mlSolutionSetParser = getMlSolutionSetParser(mlElementParser, mlSolutionParser);
+        getMlSearchAlgorithmParser(mlElementParser, mlSolutionParser, mlSolutionSetParser);
         System.out.println();
     }
 
-    private static MLElementParser getMlElementParser() {
+    private static MLElementAdapter getMlElementParser() {
         String project = "/home/wmfsystem/Documents/Doutorado/0_framework/code/OPLA-Tool/modules/architecture-representation";
         String clazz = "src/main/java/br/otimizes/oplatool/architecture/representation/Element.java";
-        MLElementParser ps = new MLElementParser().projectClazz(project, clazz)
+        MLElementAdapter ps = new MLElementAdapter().projectClazz(project, clazz)
+            .withTypeParameter("E")
             .implement()
             .writeFile();
         return ps;
     }
 
-    private static MLSolutionParser getMlSolutionParser(MLElementParser mlElementParser) {
+    private static MLSolutionAdapter getMlSolutionParser(MLElementAdapter mlElementParser) {
         String project = "/home/wmfsystem/Documents/Doutorado/0_framework/code/OPLA-Tool/modules/opla-core";
         String clazz = "src/main/java/br/otimizes/oplatool/core/jmetal4/core/Solution.java";
-        MLSolutionParser ps = new MLSolutionParser().projectClazz(project, clazz)
+        MLSolutionAdapter ps = new MLSolutionAdapter().projectClazz(project, clazz)
+            .withTypeParameter("S")
             .implement(mlElementParser)
             .writeFile();
         return ps;
     }
 
-    private static MLSolutionSetParser getMlSolutionSetParser(MLElementParser mlElementParser, MLSolutionParser mlSolutionParser) {
+    private static MLSolutionSetAdapter getMlSolutionSetParser(MLElementAdapter mlElementParser, MLSolutionAdapter mlSolutionParser) {
         String project = "/home/wmfsystem/Documents/Doutorado/0_framework/code/OPLA-Tool/modules/opla-core";
         String clazz = "src/main/java/br/otimizes/oplatool/core/jmetal4/core/SolutionSet.java";
-        MLSolutionSetParser ps = new MLSolutionSetParser().projectClazz(project, clazz)
+        MLSolutionSetAdapter ps = new MLSolutionSetAdapter().projectClazz(project, clazz)
+            .withTypeParameter("T")
             .extend(mlElementParser, mlSolutionParser)
+            .writeFile();
+        return ps;
+    }
+    private static MLSearchAlgorithmAdapter getMlSearchAlgorithmParser(MLElementAdapter mlElementParser, MLSolutionAdapter mlSolutionParser,
+                                                                       MLSolutionSetAdapter mlSolutionSetParser) {
+        String project = "/home/wmfsystem/Documents/Doutorado/0_framework/code/OPLA-Tool/modules/opla-core";
+        String clazz = "src/main/java/br/otimizes/oplatool/core/jmetal4/metaheuristics/nsgaII/NSGAII.java";
+        MLSearchAlgorithmAdapter ps = new MLSearchAlgorithmAdapter().projectClazz(project, clazz)
+            .implement(mlElementParser, mlSolutionParser, mlSolutionSetParser)
+            .replaceComments()
+            .addAttributes()
             .writeFile();
         return ps;
     }

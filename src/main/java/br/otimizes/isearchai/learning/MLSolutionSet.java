@@ -6,9 +6,9 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement> implements Serializable, Iterable<T> {
+public abstract class MLSolutionSet<S extends MLSolution<E>, E extends MLElement> implements Serializable, Iterable<S> {
 
-    protected List<T> solutions = new ArrayList<>();
+    protected List<S> solutions = new ArrayList<>();
 
     /**
      * Copies the objectives and Elements Number of the solution set to a matrix
@@ -39,7 +39,7 @@ public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement
      * @param solution specific solution
      * @return Matrix with values
      */
-    private double[][] writeObjectiveWithAllElementsFromSolution(T solution) {
+    private double[][] writeObjectiveWithAllElementsFromSolution(S solution) {
         double[] objectives = solution.getObjectives();
         double[][] values = writeAllElementsFromSolution(solution);
         double[][] newValues = new double[values.length][];
@@ -113,7 +113,7 @@ public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement
      * @param solution specific solution
      * @return array of elements
      */
-    public double[][] writeAllElementsFromSolution(T solution) {
+    public double[][] writeAllElementsFromSolution(S solution) {
         List<E> allElementsFromSolution = getAllElementsFromSolution(solution);
         return allElementsFromSolution.stream().map(s -> this.writeCharacteristicsFromElement(s, solution)).toArray(double[][]::new);
     }
@@ -207,7 +207,7 @@ public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement
      */
     public Map<Double, Set<Integer>> getClusterIds() {
         Map<Double, Set<Integer>> clusters = new HashMap<>();
-        for (T solution : solutions) {
+        for (S solution : solutions) {
             if (solution.getClusterId() != null) {
                 Set<Integer> clusterId = clusters.getOrDefault(solution.getClusterId(), new HashSet<>());
                 clusterId.add(solution.getEvaluation());
@@ -240,7 +240,7 @@ public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement
      *
      * @return solutions with architectural evaluations
      */
-    public List<T> getSolutionsWithArchitecturalEvaluations() {
+    public List<S> getSolutionsWithArchitecturalEvaluations() {
         return solutions.stream().filter(MLSolution::containsArchitecturalEvaluation).collect(Collectors.toList());
     }
 
@@ -257,7 +257,7 @@ public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement
      * @param clusterId cluster id
      * @return list of solutions with architectural elements
      */
-    public List<T> getSolutionWithArchitecturalElementsEvaluatedByClusterId(Double clusterId) {
+    public List<S> getSolutionWithArchitecturalElementsEvaluatedByClusterId(Double clusterId) {
         return getSolutionsWithArchitecturalEvaluations().stream()
             .filter(solution -> clusterId.equals(solution.getClusterId())).collect(Collectors.toList());
     }
@@ -271,10 +271,10 @@ public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement
         if (DistributeUserEvaluation.NONE.equals(distributeUserEvaluation)) return;
         Map<Double, Set<Integer>> clusterIds = getClusterIds();
         if (hasUserEvaluation() && clusterIds.size() > 0) {
-            List<T> solutionsList_ = solutions;
+            List<S> solutionsList_ = solutions;
             if (DistributeUserEvaluation.MIDDLE.equals(distributeUserEvaluation))
                 solutionsList_ = solutionsList_.subList(0, Math.abs(solutionsList_.size() / 2));
-            for (T solution : solutionsList_) {
+            for (S solution : solutionsList_) {
                 if (solution.getEvaluation() == 0) {
                     int media = Math.abs(getMedia(clusterIds.get(solution.getClusterId())));
                     solution.setEvaluation(media);
@@ -289,9 +289,9 @@ public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement
      * @param solution specific solution
      * @return solution with elements
      */
-    private T freezeArchitecturalElementsAccordingCluster(T solution) {
+    private S freezeArchitecturalElementsAccordingCluster(S solution) {
         if (!solution.containsArchitecturalEvaluation()) {
-            List<T> solutions
+            List<S> solutions
                 = getSolutionWithArchitecturalElementsEvaluatedByClusterId(solution.getClusterId());
             if (solutions.size() > 0) {
                 solution = solutions.get(0);
@@ -305,7 +305,7 @@ public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement
      *
      * @param solution solution with elements
      */
-    public abstract void freezeArchitecturalElementsAccordingSolution(T solution);
+    public abstract void freezeArchitecturalElementsAccordingSolution(S solution);
 
     /**
      * Find elements with a id
@@ -316,9 +316,9 @@ public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement
     public abstract List<E> findElementWithNumberId(Double id);
 
     public double[] getNormalizedSolution(int i) {
-        T solution = solutions.get(i);
-        T max = getMax();
-        T min = getMin();
+        S solution = solutions.get(i);
+        S max = getMax();
+        S min = getMin();
         double[] doubles = new double[solution.getObjectives().length];
         if (solutions.size() == 1) return doubles;
         for (int j = 0; j < solution.getObjectives().length; j++) {
@@ -329,10 +329,10 @@ public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement
         return doubles;
     }
 
-    public T getMin() {
-        T solution = solutions.get(0);
+    public S getMin() {
+        S solution = solutions.get(0);
         for (int i = 0; i < solution.getObjectives().length; i++) {
-            for (T otherMLSolution : solutions) {
+            for (S otherMLSolution : solutions) {
                 if (otherMLSolution.getObjective(i) <= solution.getObjective(i)) {
                     solution = otherMLSolution;
                 }
@@ -341,10 +341,10 @@ public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement
         return solution;
     }
 
-    public T getMax() {
-        T solution = solutions.get(0);
+    public S getMax() {
+        S solution = solutions.get(0);
         for (int i = 0; i < solution.getObjectives().length; i++) {
-            for (T otherMLSolution : solutions) {
+            for (S otherMLSolution : solutions) {
                 if (otherMLSolution.getObjective(i) >= solution.getObjective(i)) {
                     solution = otherMLSolution;
                 }
@@ -353,15 +353,15 @@ public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement
         return solution;
     }
 
-    public T get(int i) {
+    public S get(int i) {
         return this.solutions.get(i);
     }
 
-    public List<T> getSolutions() {
+    public List<S> getSolutions() {
         return solutions;
     }
 
-    public void setSolutions(List<T> MLSolutions) {
+    public void setSolutions(List<S> MLSolutions) {
         this.solutions = MLSolutions;
     }
 
@@ -373,22 +373,22 @@ public abstract class MLSolutionSet<T extends MLSolution<E>, E extends MLElement
         this.solutions.remove(integer);
     }
 
-    public void addAll(MLSolutionSet<T, E> MLSolutionSet) {
+    public void addAll(MLSolutionSet<S, E> MLSolutionSet) {
         this.solutions.addAll(MLSolutionSet.getSolutions());
     }
 
 
-    public abstract double[] writeObjectiveFromElementsAndObjectives(E MLElement, T MLSolution);
+    public abstract double[] writeObjectiveFromElementsAndObjectives(E MLElement, S MLSolution);
 
-    public abstract double[] writeCharacteristicsFromElement(E MLElement, T MLSolution);
+    public abstract double[] writeCharacteristicsFromElement(E MLElement, S MLSolution);
 
-    public abstract List<E> getAllElementsFromSolution(T MLSolution);
+    public abstract List<E> getAllElementsFromSolution(S MLSolution);
 
     public abstract double[][] writeObjectivesToMatrix();
 
     public abstract List<E> getArchitecturalElementsEvaluatedByClusterId(Double clusterId);
 
-    public boolean add(T solution) {
+    public boolean add(S solution) {
         return this.solutions.add(solution);
     }
 }

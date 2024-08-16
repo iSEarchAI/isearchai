@@ -9,5 +9,5 @@ import br.otimizes.isearchai.learning.MLSolutionSet;
  */
 public interface InteractiveFunction<T extends MLSolutionSet> {
 
-    T run(T solutionSet) throws Exception;
+    T run(T solutionSet);
 }
