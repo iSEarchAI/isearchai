@@ -1,6 +1,6 @@
 // import React, { lazy, Suspense } from 'react';
 //
-// const LazyGenerator = lazy(() => import('./Generator'));
+// const LazyGenerator = lazy(() => import('./Adapter'));
 //
 // const Adapter = props => (
 //   <Suspense fallback={null}>

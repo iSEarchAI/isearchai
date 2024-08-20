@@ -28,11 +28,22 @@ public class ZipUtils {
 
     public static void extractZipFileFromResources(String zipFileName, String outputDir) throws IOException {
         // Get the input stream of the zip file from resources
-        try (InputStream inputStream = Starter.class.getClassLoader().getResourceAsStream(zipFileName);
+        InputStream resourceAsStream = Starter.class.getClassLoader().getResourceAsStream(zipFileName);
+        unzip(outputDir, resourceAsStream);
+    }
+
+    public static void unzip(String outputDir, InputStream resourceAsStream) {
+        // Create the directory if it doesn't exist
+        File dir = new File(outputDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        try (InputStream inputStream = resourceAsStream;
              ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
 
             if (inputStream == null) {
-                throw new IOException("File not found: " + zipFileName);
+                throw new IOException("File not found");
             }
 
             // Create the output directory if it doesn't exist
@@ -61,6 +72,8 @@ public class ZipUtils {
             }
         } catch (RuntimeException ex) {
             ex.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

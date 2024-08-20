@@ -7,6 +7,10 @@
     margin: 20px;
 }
 
+.Option {
+    margin: 20px;
+}
+
 .Header {
     display: flex;
     justify-content: space-between;
