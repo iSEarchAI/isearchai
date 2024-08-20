@@ -62,6 +62,7 @@ const steps = [
                 <Button
                     component="label"
                     role={undefined}
+                    disabled={ctx.state.uploaded}
                     variant="contained"
                     tabIndex={-1}
                     startIcon={<CloudUploadIcon/>}
@@ -133,7 +134,8 @@ class Adapter extends Component {
             solutionClazz: 'generated/adapt/OPLA-Tool/modules/opla-core/src/main/java/br/otimizes/oplatool/core/jmetal4/core/Solution.java',
             solutionSetClazz: 'generated/adapt/OPLA-Tool/modules/opla-core/src/main/java/br/otimizes/oplatool/core/jmetal4/core/SolutionSet.java',
             searchAlgorithmClazz: 'generated/adapt/OPLA-Tool/modules/opla-core/src/main/java/br/otimizes/oplatool/core/jmetal4/metaheuristics/nsgaII/NSGAII.java'
-        }
+        },
+        uploaded: false
     }
 
     files = []
@@ -158,6 +160,7 @@ class Adapter extends Component {
                 const response = await fetch('http://localhost:8080/upload/zip/adapt', {
                     method: 'POST', body: formData
                 })
+                this.updateStateAt('uploaded', true)
                 console.log('File uploaded successfully:', response.data);
             } catch (error) {
                 console.error('Error uploading file:', error);
