@@ -58,14 +58,14 @@ public class Adapter {
     }
 
     public MLSolutionAdapter implementMlSolution(MLElementAdapter mlElementParser) {
-        return new MLSolutionAdapter().setSourceClazz(elementProject, solutionClazz)
+        return new MLSolutionAdapter().setSourceClazz(solutionProject, solutionClazz)
             .withTypeParameter("S")
             .implement(mlElementParser)
             .writeFile();
     }
 
     public MLSolutionSetAdapter implementMlSolutionSet(MLElementAdapter mlElementParser, MLSolutionAdapter mlSolutionParser) {
-        return new MLSolutionSetAdapter().setSourceClazz(elementProject, solutionSetClazz)
+        return new MLSolutionSetAdapter().setSourceClazz(solutionSetProject, solutionSetClazz)
             .withTypeParameter("T")
             .extend(mlElementParser, mlSolutionParser)
             .writeFile();
@@ -73,10 +73,13 @@ public class Adapter {
 
     public MLSearchAlgorithmAdapter implementMlSearchAlgorithm(MLElementAdapter mlElementParser, MLSolutionAdapter mlSolutionParser,
                                                                MLSolutionSetAdapter mlSolutionSetParser) {
-        return new MLSearchAlgorithmAdapter().setSourceClazz(elementProject, searchAlgorithmClazz)
+        return new MLSearchAlgorithmAdapter().setSourceClazz(searchAlgorithmProject, searchAlgorithmClazz)
             .implement(mlElementParser, mlSolutionParser, mlSolutionSetParser)
             .replaceComments()
             .addAttributes()
             .writeFile();
     }
+
+
+
 }

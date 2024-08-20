@@ -83,11 +83,18 @@ public class Application {
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Methods", "POST");
             res.header("Access-Control-Allow-Headers", "Content-Type");
-            res.header("Content-Disposition", "attachment; filename=\"nautilus-framework-plugin.zip\"");
+            res.header("Content-Disposition", "attachment; filename=\"adaptation.zip\"");
             res.type("application/zip");
 
             Adapter adapter = ObjMapUtils.mapper().readValue(req.body(), Adapter.class);
             adapter.implement();
+
+            ZipUtils.zipFolder("generated/adapt", "generated/adapt.zip");
+
+            ByteArrayOutputStream byteArrayOutputStream = createByteArrayOutputStreamFromFile("generated/adapt.zip");
+            res.raw().getOutputStream().write(byteArrayOutputStream.toByteArray());
+            res.raw().getOutputStream().flush();
+            res.raw().getOutputStream().close();
 
             return res.raw();
         });
@@ -101,9 +108,6 @@ public class Application {
             Generate generate = ObjMapUtils.mapper().readValue(req.body(), Generate.class);
             Starter.generate(generate);
             ByteArrayOutputStream byteArrayOutputStream = createByteArrayOutputStreamFromFile("generated/nautilus-framework-plugin.zip");
-            // Set response headers
-
-            // Write the zip content to the response
             res.raw().getOutputStream().write(byteArrayOutputStream.toByteArray());
             res.raw().getOutputStream().flush();
             res.raw().getOutputStream().close();

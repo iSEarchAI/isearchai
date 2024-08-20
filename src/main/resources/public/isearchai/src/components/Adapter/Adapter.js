@@ -5,27 +5,16 @@ import {
     Box,
     Button,
     CircularProgress,
-    FormControl,
-    Grid,
-    InputAdornment,
-    InputLabel,
-    MenuItem,
-    OutlinedInput,
     Paper,
-    Select,
     Step,
     StepButton,
     StepContent,
-    Stepper, styled,
+    Stepper,
+    styled,
     TextField,
-    Tooltip,
     Typography
 } from "@mui/material";
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import InfoIcon from '@mui/icons-material/Info';
-import Chip from '@mui/material/Chip';
 
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 
@@ -75,10 +64,10 @@ const steps = [
                     role={undefined}
                     variant="contained"
                     tabIndex={-1}
-                    startIcon={<CloudUploadIcon />}
+                    startIcon={<CloudUploadIcon/>}
                 >
                     Upload file
-                    <VisuallyHiddenInput type="file" onChange={ctx.handleFileUpload} />
+                    <VisuallyHiddenInput type="file" onChange={ctx.handleFileUpload}/>
                 </Button>
             </div>
         ),
@@ -87,7 +76,7 @@ const steps = [
         }
     },
     {
-        label: 'Composition of your solution',
+        label: 'Classes to adapt',
         description:
             'Select the classes of your project to adapter. They are: an Element representation, a Search Solution, the Solution Set and finally the Search Algorithm.',
         jsx: (ctx) => (
@@ -96,9 +85,37 @@ const steps = [
                 <Autocomplete
                     disablePortal
                     options={ctx.files}
-                    sx={{ width: '100%' }}
+                    value={ctx.state.adapter.elementClazz}
+                    sx={{width: '100%'}}
                     onChange={(event, value) => ctx.updateStateAt('adapter.elementClazz', value)}
-                    renderInput={(params) => <TextField {...params} label="Element" />}
+                    renderInput={(params) => <TextField {...params} label="Element Class"/>}
+                />
+                <br/>
+                <Autocomplete
+                    disablePortal
+                    options={ctx.files}
+                    value={ctx.state.adapter.solutionClazz}
+                    sx={{width: '100%'}}
+                    onChange={(event, value) => ctx.updateStateAt('adapter.solutionClazz', value)}
+                    renderInput={(params) => <TextField {...params} label="Solution Class"/>}
+                />
+                <br/>
+                <Autocomplete
+                    disablePortal
+                    options={ctx.files}
+                    value={ctx.state.adapter.solutionSetClazz}
+                    sx={{width: '100%'}}
+                    onChange={(event, value) => ctx.updateStateAt('adapter.solutionSetClazz', value)}
+                    renderInput={(params) => <TextField {...params} label="Solution Set Class"/>}
+                />
+                <br/>
+                <Autocomplete
+                    disablePortal
+                    options={ctx.files}
+                    value={ctx.state.adapter.searchAlgorithmClazz}
+                    sx={{width: '100%'}}
+                    onChange={(event, value) => ctx.updateStateAt('adapter.searchAlgorithmClazz', value)}
+                    renderInput={(params) => <TextField {...params} label="Search Algorithm Class"/>}
                 />
             </>
         ),
@@ -112,10 +129,10 @@ class Adapter extends Component {
 
     state = {
         adapter: {
-            elementClazz: '',
-            solutionClazz: '',
-            solutionSetClazz: '',
-            searchAlgorithmClazz: ''
+            elementClazz: 'generated/adapt/OPLA-Tool/modules/architecture-representation/src/main/java/br/otimizes/oplatool/architecture/representation/Element.java',
+            solutionClazz: 'generated/adapt/OPLA-Tool/modules/opla-core/src/main/java/br/otimizes/oplatool/core/jmetal4/core/Solution.java',
+            solutionSetClazz: 'generated/adapt/OPLA-Tool/modules/opla-core/src/main/java/br/otimizes/oplatool/core/jmetal4/core/SolutionSet.java',
+            searchAlgorithmClazz: 'generated/adapt/OPLA-Tool/modules/opla-core/src/main/java/br/otimizes/oplatool/core/jmetal4/metaheuristics/nsgaII/NSGAII.java'
         }
     }
 
@@ -177,12 +194,26 @@ class Adapter extends Component {
     finish = async () => {
         this.setState({activeStep: this.state.activeStep + 1})
         this.updateStateAt('loading', true)
-        await fetch('http://localhost:8080/generate', {
+        let adapter = Object.assign({}, this.state.adapter);
+        let solutionSetClazz = adapter.solutionSetClazz.split("src");
+        adapter.solutionSetClazz = "src" + solutionSetClazz[1];
+        adapter.solutionSetProject = solutionSetClazz[0];
+        let solutionClazz = adapter.solutionClazz.split("src");
+        adapter.solutionClazz = "src" + solutionClazz[1];
+        adapter.solutionProject = solutionClazz[0];
+        let elementClazz = adapter.elementClazz.split("src");
+        adapter.elementClazz = "src" + elementClazz[1];
+        adapter.elementProject = elementClazz[0];
+        let sc = adapter.searchAlgorithmClazz.split("src");
+        adapter.searchAlgorithmClazz = "src" + sc[1];
+        adapter.searchAlgorithmProject = sc[0];
+
+        await fetch('http://localhost:8080/adapt', {
             method: 'POST',
             headers: {
                 'Accept': 'application/zip',
                 'Content-Type': 'application/json',
-            }, body: JSON.stringify(this.state.generate)
+            }, body: JSON.stringify(adapter)
         }).then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
