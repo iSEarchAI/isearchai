@@ -27,7 +27,7 @@ public class Profit extends AbstractObjective {
 
 		TXTInstance instance = (TXTInstance) instanceData;
 
-		return (double) instance.getSumOfCost() - (double) instance.getSumOfProfit();
+		return (double) sum / (double) instance.getSumOfProfit();
 	}
 
 	public boolean isMaximize() {

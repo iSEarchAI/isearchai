@@ -3,7 +3,9 @@ package br.otimizes.isearchai.interactive;
 import br.otimizes.isearchai.learning.*;
 import com.rits.cloning.Cloner;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -84,7 +86,7 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
                 subjectiveAnalyzeAlgorithm.run(getMlSolutionSet(solutionSet, solutionSet.getSolutions()), false);
             }
             bestOfUserEvaluation.addAll(solutionSet.getSolutions().stream().filter(p -> (p.getEvaluation() >= 5
-                    && p.getEvaluatedByUser()) || (p.containsArchitecturalEvaluation() && p.getEvaluatedByUser()))
+                    && p.getEvaluatedByUser()) || (p.containsElementsEvaluation() && p.getEvaluatedByUser()))
                 .collect(Collectors.toList()));
             currentInteraction++;
         }
@@ -108,23 +110,15 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
     }
 
     private T getMlSolutionSet(T solutionSet, List<E> solutions) {
+        Constructor<?> founded = Arrays.stream(clazz(solutionSet)
+            .getConstructors()).filter(constructor -> constructor.getParameters().length == 0).findFirst().orElse(null);
         try {
-            return getMlSolutionSetIn(solutionSet, 0, solutions);
-        } catch (RuntimeException ex) {
-            try {
-                return getMlSolutionSetIn(solutionSet, 1, solutions);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
-            }
-        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            T newS = (T) founded.newInstance();
+            newS.setSolutions(solutions);
+            return newS;
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private T getMlSolutionSetIn(T solutionSet, int x, List<E> solutions) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-        T newS = (T) clazz(solutionSet).getConstructors()[x].newInstance(solutions.size());
-        newS.setSolutions(solutions);
-        return newS;
     }
 
     public SubjectiveAnalyzeAlgorithm getSubjectiveAnalyzeAlgorithm() {

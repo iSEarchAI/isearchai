@@ -13,7 +13,7 @@ import Adapter from "./components/Adapter/Adapter";
 
 class App extends Component {
 
-    state = {option: 'adapter'}
+    state = {option: 'generator'}
 
     render() {
         return (

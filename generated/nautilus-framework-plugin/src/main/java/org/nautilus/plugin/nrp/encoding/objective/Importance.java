@@ -27,7 +27,7 @@ public class Importance extends AbstractObjective {
 
 		TXTInstance instance = (TXTInstance) instanceData;
 
-		return (double) sum - (double) instance.getSumOfRequirementa();
+		return (double) sum / (double) instance.getSumOfImportance() + (double) instance.getSumOfProfit();
 	}
 
 	public boolean isMaximize() {

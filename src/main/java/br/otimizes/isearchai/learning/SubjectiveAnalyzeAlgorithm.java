@@ -51,8 +51,8 @@ public class SubjectiveAnalyzeAlgorithm {
         distributeUserEvaluations(resultFront);
         this.scoreArffExecution = new ArffExecution(resultFront.writeObjectivesAndElementsNumberToMatrix(),
             resultFront.writeUserEvaluationsToMatrix(), null);
-        this.architecturalArffExecution = new ArffExecution(resultFront.writeObjectivesAndArchitecturalElementsNumberToMatrix(),
-            resultFront.writeArchitecturalEvaluationsToMatrix(), null, true);
+        this.architecturalArffExecution = new ArffExecution(resultFront.writeObjectivesAndAllElementsNumberToMatrix(),
+            resultFront.writeElementsEvaluationsToMatrix(), null, true);
         this.numObjectives = this.resultFront.get(0).numberOfObjectives();
     }
 
@@ -62,8 +62,8 @@ public class SubjectiveAnalyzeAlgorithm {
         distributeUserEvaluations(resultFront);
         this.scoreArffExecution = new ArffExecution(resultFront.writeObjectivesAndElementsNumberToMatrix(),
             resultFront.writeUserEvaluationsToMatrix(), null);
-        this.architecturalArffExecution = new ArffExecution(resultFront.writeObjectivesAndArchitecturalElementsNumberToMatrix(),
-            resultFront.writeArchitecturalEvaluationsToMatrix(), null, true);
+        this.architecturalArffExecution = new ArffExecution(resultFront.writeObjectivesAndAllElementsNumberToMatrix(),
+            resultFront.writeElementsEvaluationsToMatrix(), null, true);
         this.numObjectives = this.resultFront.get(0).numberOfObjectives();
     }
 
@@ -143,8 +143,8 @@ public class SubjectiveAnalyzeAlgorithm {
             distributeUserEvaluations(MLSolutionSet);
         }
         if (!inOnMiddle) {
-            ArffExecution newArffArchitectureAlgorithm = new ArffExecution(resultFront.writeObjectivesAndArchitecturalElementsNumberToMatrix(),
-                resultFront.writeArchitecturalEvaluationsToMatrix(), null, true);
+            ArffExecution newArffArchitectureAlgorithm = new ArffExecution(resultFront.writeObjectivesAndAllElementsNumberToMatrix(),
+                resultFront.writeElementsEvaluationsToMatrix(), null, true);
             if (newArffArchitectureAlgorithm.getData() != null) {
                 newArffArchitectureAlgorithm.getData().setClassIndex(newArffArchitectureAlgorithm.getAttrIndices());
                 if (architecturalArffExecution.getData() == null)
@@ -220,7 +220,7 @@ public class SubjectiveAnalyzeAlgorithm {
                     DenseInstance denseInstance = new DenseInstance(1.0, data);
                     denseInstance.setDataset(architecturalArffExecution.getData());
                     try {
-                        element.setFreezeFromDM(architecturalAlgorithm.classifyInstance(denseInstance));
+                        element.setFreezeFromDM(architecturalAlgorithm.classifyInstance(denseInstance) > 0);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -236,13 +236,13 @@ public class SubjectiveAnalyzeAlgorithm {
 
     private double[] getDataSet(MLSolutionSet MLSolutionSet, MLSolution MLSolution, MLElement MLElement) {
         double[] data = MLSolution.getObjectives();
-        double[] objectives = MLSolutionSet.writeObjectiveFromElementsAndObjectives(MLElement, MLSolution);
+        double[] objectives = MLSolutionSet.writeObjectivesFromElements(MLElement, MLSolution);
         double[] characteristics = MLSolutionSet.writeCharacteristicsFromElement(MLElement, MLSolution);
 
         data = ArrayUtils.addAll(data, characteristics);
         data = ArrayUtils.addAll(data, objectives);
         data = ArrayUtils.addAll(data, new double[]{
-            MLSolution.containsArchitecturalEvaluation() ? 1 : 0,
+            MLSolution.containsElementsEvaluation() ? 1 : 0,
             MLElement.isFreezeByDM() ? 1 : 0
         });
         return data;

@@ -4,34 +4,25 @@ import java.io.Serializable;
 import java.util.List;
 
 public interface MLSolution<T extends MLElement> {
-    public double[] getObjectives();
+    double[] getObjectives();
 
-    public int numberOfObjectives();
+    int numberOfObjectives();
 
-    public double getObjective(int i);
+    double getObjective(int i);
 
-    public void setClusterId(Double assignment);
+    void setClusterId(Double assignment);
 
-    public String getSolutionName();
+    void setClusterNoise(Boolean b);
 
-    public void setClusterNoise(Boolean b);
+    Double getClusterId();
 
-    public Double getClusterId();
+    void setEvaluation(int i);
 
-    public void setEvaluation(int i);
+    List<T> getElements();
 
-    public List<T> getElements();
+    boolean containsElementsEvaluation();
 
-    public boolean containsArchitecturalEvaluation();
-
-    public int getEvaluation();
-
-    public List<T> getFreezedElements();
-
-    public List<T> getAllElements();
-
-    public List<T> findElementByNumberId(Double id);
-    public <E extends Serializable> E getProblem();
+    int getEvaluation();
 
     boolean getEvaluatedByUser();
 }

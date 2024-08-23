@@ -6,17 +6,17 @@ import java.util.List;
 import org.nautilus.core.util.Converter;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
-public class Requirementb {
+public class Requirement {
 
     protected static JMetalRandom random = JMetalRandom.getInstance();
 
-    public List<Taska> items;
+    public List<Task> items;
 
-    public Requirementb(List<Taska> items) {
+    public Requirement(List<Task> items) {
         this.items = items;
     }
 
-    public static Requirementb getRandom() {
+    public static Requirement getRandom() {
 
         int numberOfTasks = JMetalRandom.getInstance().nextInt(1, 5);
 
@@ -26,14 +26,14 @@ public class Requirementb {
             items.add(Task.getRandom());
         }
 
-        return new Requirementb(items);
+        return new Requirement(items);
     }
 
      public double getCost() {
 
         double sum = 0.0;
 
-        for (Taska item : items) {
+        for (Task item : items) {
             sum += item.cost;
         }
 
@@ -44,7 +44,7 @@ public class Requirementb {
 
         double sum = 0.0;
 
-        for (Taska item : items) {
+        for (Task item : items) {
             sum += item.profit;
         }
 
@@ -55,7 +55,7 @@ public class Requirementb {
 
         double sum = 0.0;
 
-        for (Taska item : items) {
+        for (Task item : items) {
             sum += item.importance;
         }
 

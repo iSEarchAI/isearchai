@@ -17,9 +17,7 @@ public abstract class MLSolutionSet<S extends MLSolution<E>, E extends MLElement
      *
      * @return matrix containing the objectives
      */
-    public double[][] writeObjectivesAndElementsNumberToMatrix() {
-        return null;
-    }
+    public abstract double[][] writeObjectivesAndElementsNumberToMatrix();
 
     /**
      * Copies the objectives and Elements Number of the solution set to a matrix
@@ -28,8 +26,8 @@ public abstract class MLSolutionSet<S extends MLSolution<E>, E extends MLElement
      *
      * @return matrix containing the objectives
      */
-    public double[][] writeObjectivesAndArchitecturalElementsNumberToMatrix() {
-        return reduceThreeDimensionalArray(getSolutionsWithArchitecturalEvaluations().stream()
+    public double[][] writeObjectivesAndAllElementsNumberToMatrix() {
+        return reduceThreeDimensionalArray(getSolutionsWithElementsEvaluations().stream()
             .map(this::writeObjectiveWithAllElementsFromSolution).toArray(double[][][]::new));
     }
 
@@ -69,8 +67,8 @@ public abstract class MLSolutionSet<S extends MLSolution<E>, E extends MLElement
      *
      * @return A matrix containing the objectives
      */
-    public double[] writeArchitecturalEvaluationsToMatrix() {
-        double[][] doubles = getSolutionsWithArchitecturalEvaluations().stream().map(solution -> {
+    public double[] writeElementsEvaluationsToMatrix() {
+        double[][] doubles = getSolutionsWithElementsEvaluations().stream().map(solution -> {
             List<E> allElementsFromSolution = getAllElementsFromSolution(solution);
             return allElementsFromSolution.stream().mapToDouble(MLElement -> MLElement.isFreezeByDM() ? 1.0 : 0.0).toArray();
         }).toArray(double[][]::new);
@@ -116,6 +114,17 @@ public abstract class MLSolutionSet<S extends MLSolution<E>, E extends MLElement
     public double[][] writeAllElementsFromSolution(S solution) {
         List<E> allElementsFromSolution = getAllElementsFromSolution(solution);
         return allElementsFromSolution.stream().map(s -> this.writeCharacteristicsFromElement(s, solution)).toArray(double[][]::new);
+    }
+
+
+    public MLSolutionSet newInstance(List solutions) {
+        try {
+            MLSolutionSet clone = this.getClass().newInstance();
+            clone.setSolutions(solutions);
+            return clone;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -240,26 +249,8 @@ public abstract class MLSolutionSet<S extends MLSolution<E>, E extends MLElement
      *
      * @return solutions with architectural evaluations
      */
-    public List<S> getSolutionsWithArchitecturalEvaluations() {
-        return solutions.stream().filter(MLSolution::containsArchitecturalEvaluation).collect(Collectors.toList());
-    }
-
-    /**
-     * Get architectural elements evaluated in a cluster
-     *
-     * @param clusterId cluster id
-     * @return list of elements
-     */
-
-    /**
-     * Get solutions with architectural elements evaluated in a cluster
-     *
-     * @param clusterId cluster id
-     * @return list of solutions with architectural elements
-     */
-    public List<S> getSolutionWithArchitecturalElementsEvaluatedByClusterId(Double clusterId) {
-        return getSolutionsWithArchitecturalEvaluations().stream()
-            .filter(solution -> clusterId.equals(solution.getClusterId())).collect(Collectors.toList());
+    public List<S> getSolutionsWithElementsEvaluations() {
+        return solutions.stream().filter(MLSolution::containsElementsEvaluation).collect(Collectors.toList());
     }
 
     /**
@@ -281,52 +272,6 @@ public abstract class MLSolutionSet<S extends MLSolution<E>, E extends MLElement
                 }
             }
         }
-    }
-
-    /**
-     * freeze solutions according the clusters in a solution
-     *
-     * @param solution specific solution
-     * @return solution with elements
-     */
-    private S freezeArchitecturalElementsAccordingCluster(S solution) {
-        if (!solution.containsArchitecturalEvaluation()) {
-            List<S> solutions
-                = getSolutionWithArchitecturalElementsEvaluatedByClusterId(solution.getClusterId());
-            if (solutions.size() > 0) {
-                solution = solutions.get(0);
-            }
-        }
-        return solution;
-    }
-
-    /**
-     * Freeze the architectural elements according the solution
-     *
-     * @param solution solution with elements
-     */
-    public abstract void freezeArchitecturalElementsAccordingSolution(S solution);
-
-    /**
-     * Find elements with a id
-     *
-     * @param id hash id
-     * @return filtered elements
-     */
-    public abstract List<E> findElementWithNumberId(Double id);
-
-    public double[] getNormalizedSolution(int i) {
-        S solution = solutions.get(i);
-        S max = getMax();
-        S min = getMin();
-        double[] doubles = new double[solution.getObjectives().length];
-        if (solutions.size() == 1) return doubles;
-        for (int j = 0; j < solution.getObjectives().length; j++) {
-            doubles[j] = (max.getObjective(j) - min.getObjective(j)) == 0 ? 0 :
-                (solution.getObjective(j) - min.getObjective(j)) / (max.getObjective(j) - min.getObjective(j));
-            if (doubles[j] == -0.0) doubles[j] = 0.0;
-        }
-        return doubles;
     }
 
     public S getMin() {
@@ -377,18 +322,38 @@ public abstract class MLSolutionSet<S extends MLSolution<E>, E extends MLElement
         this.solutions.addAll(MLSolutionSet.getSolutions());
     }
 
+    /**
+     * Copies the objectives of the solution set to a matrix
+     *
+     * @return A matrix containing the objectives
+     */
+    public double[][] writeObjectivesToMatrix() {
+        if (this.size() == 0) {
+            return null;
+        }
+        double[][] objectives;
+        objectives = new double[size()][get(0).numberOfObjectives()];
+        for (int i = 0; i < size(); i++) {
+            for (int j = 0; j < get(0).numberOfObjectives(); j++) {
+                objectives[i][j] = get(i).getObjective(j);
+            }
+        }
+        return objectives;
+    }
 
-    public abstract double[] writeObjectiveFromElementsAndObjectives(E MLElement, S MLSolution);
+    public boolean add(S solution) {
+        return this.solutions.add(solution);
+    }
+
+    public abstract double[] writeObjectivesFromElements(E MLElement, S MLSolution);
 
     public abstract double[] writeCharacteristicsFromElement(E MLElement, S MLSolution);
 
     public abstract List<E> getAllElementsFromSolution(S MLSolution);
 
-    public abstract double[][] writeObjectivesToMatrix();
 
-    public abstract List<E> getArchitecturalElementsEvaluatedByClusterId(Double clusterId);
-
-    public boolean add(S solution) {
-        return this.solutions.add(solution);
+    @Override
+    public Iterator<S> iterator() {
+        return solutions.iterator();
     }
 }
