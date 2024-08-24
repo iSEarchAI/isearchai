@@ -40,3 +40,7 @@ Since Nautilus already presented a comparison with other framework, below we pre
 
 ![Nautilus comparison with other frameworks](docs/img/nautilus-comparison-others.png)
 
+## ISearchAI Modules
+
+![ISearchAI modules](docs/modules.drawio)
+
