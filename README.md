@@ -42,5 +42,5 @@ Since Nautilus already presented a comparison with other framework, below we pre
 
 ## ISearchAI Modules
 
-![ISearchAI modules](docs/modules.drawio)
+![ISearchAI modules](docs/modules.drawio.png)
 
