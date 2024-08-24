@@ -1,6 +1,6 @@
 package br.otimizes.isearchai.interactive;
 
-import br.otimizes.isearchai.learning.ml.MLSolutionSet;
+import br.otimizes.isearchai.learning.ml.interfaces.MLSolutionSet;
 
 /**
  * Interface that allows to adapt the method of interaction with the user

@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning.ml;
+package br.otimizes.isearchai.learning.ml.subjective;
 
 /**
  * OPLA machine learning algorithms adaptations

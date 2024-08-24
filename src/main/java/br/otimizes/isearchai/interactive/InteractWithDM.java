@@ -1,6 +1,10 @@
 package br.otimizes.isearchai.interactive;
 
-import br.otimizes.isearchai.learning.ml.*;
+import br.otimizes.isearchai.learning.ml.interfaces.MLElement;
+import br.otimizes.isearchai.learning.ml.interfaces.MLSolution;
+import br.otimizes.isearchai.learning.ml.interfaces.MLSolutionSet;
+import br.otimizes.isearchai.learning.ml.subjective.ClassifierAlgorithm;
+import br.otimizes.isearchai.learning.ml.subjective.SubjectiveAnalyzeAlgorithm;
 import com.rits.cloning.Cloner;
 
 import java.lang.reflect.Constructor;

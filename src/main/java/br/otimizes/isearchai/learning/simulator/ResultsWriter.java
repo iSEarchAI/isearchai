@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.simulator;
+package br.otimizes.isearchai.learning.simulator;
 import java.util.ArrayList;
 import java.util.HashMap;
 

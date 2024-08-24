@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.simulator;
+package br.otimizes.isearchai.learning.simulator;
 import java.util.Random;
 /**
  * This Class is used as a simulator of different types of profile for evaluating solutions.

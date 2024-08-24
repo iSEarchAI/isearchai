@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.simulator;
+package br.otimizes.isearchai.learning.simulator;
 
 import weka.core.*;
 

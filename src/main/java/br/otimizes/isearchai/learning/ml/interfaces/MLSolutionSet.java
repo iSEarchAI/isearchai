@@ -1,5 +1,6 @@
-package br.otimizes.isearchai.learning.ml;
+package br.otimizes.isearchai.learning.ml.interfaces;
 
+import br.otimizes.isearchai.learning.ml.clustering.DistributeUserEvaluation;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.Serializable;

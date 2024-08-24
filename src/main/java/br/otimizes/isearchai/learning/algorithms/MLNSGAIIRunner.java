@@ -1,7 +1,7 @@
 package br.otimizes.isearchai.learning.algorithms;
 
 import br.otimizes.isearchai.interactive.InteractiveConfig;
-import br.otimizes.isearchai.learning.ml.MLSolutionSet;
+import br.otimizes.isearchai.learning.ml.interfaces.MLSolutionSet;
 import br.otimizes.isearchai.learning.encoding.binary.*;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.operator.CrossoverOperator;

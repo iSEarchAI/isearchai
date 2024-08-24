@@ -26,9 +26,9 @@ br/otimizes/isearchai/simulator/ResultsWriter.java
 
 package br.otimizes.isearchai.interactive;
 
-import br.otimizes.isearchai.learning.ml.MLElement;
-import br.otimizes.isearchai.learning.ml.MLSolution;
-import br.otimizes.isearchai.learning.ml.MLSolutionSet;
+import br.otimizes.isearchai.learning.ml.interfaces.MLElement;
+import br.otimizes.isearchai.learning.ml.interfaces.MLSolution;
+import br.otimizes.isearchai.learning.ml.interfaces.MLSolutionSet;
 
 /**
  * Interface that allows to adapt the method of interaction with the user
@@ -40,10 +40,10 @@ public interface InteractiveFunction<T extends MLSolutionSet<S, MLElement>, S ex
 
 package br.otimizes.isearchai.interactive;
 
-import br.otimizes.isearchai.learning.ml.MLElement;
-import br.otimizes.isearchai.learning.ml.MLSolution;
-import br.otimizes.isearchai.learning.ml.MLSolutionSet;
-import br.otimizes.isearchai.learning.ml.SubjectiveAnalyzeAlgorithm;
+import br.otimizes.isearchai.learning.ml.interfaces.MLElement;
+import br.otimizes.isearchai.learning.ml.interfaces.MLSolution;
+import br.otimizes.isearchai.learning.ml.interfaces.MLSolutionSet;
+import br.otimizes.isearchai.learning.ml.subjective.SubjectiveAnalyzeAlgorithm;
 
 import java.util.HashSet;
 
@@ -2280,7 +2280,7 @@ public class Utils {
     }
 }
 
-package br.otimizes.isearchai.simulator;
+package br.otimizes.isearchai.learning.simulator;
 
 import weka.core.*;
 
@@ -2358,7 +2358,7 @@ public class DataSet {
 	}
 }
 
-package br.otimizes.isearchai.simulator;
+package br.otimizes.isearchai.learning.simulator;
 import java.util.Random;
 /**
  * This Class is used as a simulator of different types of profile for evaluating solutions.
@@ -2767,7 +2767,7 @@ public class HumanSimulator {
 	}
 }
 
-package br.otimizes.isearchai.simulator;
+package br.otimizes.isearchai.learning.simulator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -2911,7 +2911,7 @@ public class InstanceReader {
 	}
 }
 
-package br.otimizes.isearchai.simulator;
+package br.otimizes.isearchai.learning.simulator;
 import java.util.ArrayList;
 import java.util.HashMap;
 

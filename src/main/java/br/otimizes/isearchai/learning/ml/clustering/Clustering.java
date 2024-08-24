@@ -1,5 +1,9 @@
-package br.otimizes.isearchai.learning.ml;
+package br.otimizes.isearchai.learning.ml.clustering;
 
+import br.otimizes.isearchai.learning.ml.basis.ArffExecution;
+import br.otimizes.isearchai.learning.ml.interfaces.MLElement;
+import br.otimizes.isearchai.learning.ml.interfaces.MLSolution;
+import br.otimizes.isearchai.learning.ml.interfaces.MLSolutionSet;
 import weka.clusterers.*;
 import weka.core.DistanceFunction;
 import weka.core.Instance;
