@@ -36,4 +36,7 @@
 | Generation of interactive approach code           | v         | -        |
 | Adaptation of existent interactive approach code           | v         | -        |
 
+Since Nautilus already presented a comparison with other framework, below we present the comparsion.
+
+![Nautilus comparison with other frameworks](docs/img/nautilus-comparison-others.png)
 
