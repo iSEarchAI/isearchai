@@ -10,7 +10,7 @@ public class Calculate {
     }
 
     public Boolean getInvert() {
-        return invert;
+        return invert != null && invert;
     }
 
     public void setInvert(Boolean invert) {

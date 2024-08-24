@@ -16,7 +16,7 @@ import java.util.List;
 
 public abstract class MLNSGAIIRunner {
 
-    private List<MLBinarySolution> population;
+    public List<MLBinarySolution> population;
 
     public MLNSGAIIRunner() {
     }
@@ -32,7 +32,7 @@ public abstract class MLNSGAIIRunner {
         return this;
     }
 
-    private static void postGetResult(List<MLBinarySolution> population) {
+    public static void postGetResult(List<MLBinarySolution> population) {
         for (MLBinarySolution solution : population) {
             System.out.println(Arrays.toString(solution.getObjectives()) + " - Evaluation: " + solution.getEvaluation());
         }
@@ -47,11 +47,11 @@ public abstract class MLNSGAIIRunner {
         new AlgorithmRunner.Executor(algorithm).execute();
     }
 
-    private Algorithm<List<MLBinarySolution>> build() {
+    public Algorithm<List<MLBinarySolution>> build() {
         Algorithm<List<MLBinarySolution>> algorithm = new MLNSGAIIBuilder<MLBinarySolution>()
             .setProblem(getProblem())
             .setInteractiveConfig(getInteractiveConfig())
-            .setSolutionSet(new MLBinarySolutionSet())
+            .setSolutionSet(getSolutionSet())
             .setCrossoverOperator(getCrossover())
             .setMutationOperator(getMutation())
             .setPopulationSize(getPopulationSize())
@@ -61,7 +61,11 @@ public abstract class MLNSGAIIRunner {
         return algorithm;
     }
 
-    private InteractiveConfig getInteractiveConfig() {
+    public MLBinarySolutionSet getSolutionSet() {
+        return new MLBinarySolutionSet();
+    }
+
+    public InteractiveConfig getInteractiveConfig() {
         return getInteractiveFunction()
             .setFirstInteraction(getFirstInteraction())
             .setIntervalInteraction(getIntervalInteraction()).setMaxInteractions(getMaxInteractions());
@@ -69,11 +73,11 @@ public abstract class MLNSGAIIRunner {
 
     public abstract Problem<MLBinarySolution> getProblem();
 
-    private void postBuild(Algorithm<List<MLBinarySolution>> algorithm) {
+    public void postBuild(Algorithm<List<MLBinarySolution>> algorithm) {
         System.out.println("Optimizing...");
     }
 
-    private void preBuild() {
+    public void preBuild() {
 
     }
 

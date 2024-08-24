@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class TXTInstanceStarter {
     public static void main(String[] args) throws JsonProcessingException {
@@ -36,7 +37,10 @@ public class TXTInstanceStarter {
         String listAttributes = objectives.stream().map(str -> "public List<Double> solution" + str).collect(Collectors.joining(";\n\t")) + ";";
         String objectivesParams = objectives.stream().map(str -> "double" + str).collect(Collectors.joining(","));
         String objectivesConstructor = objectives.stream().map(str -> "this.solution" + str + " = new ArrayList<>()").collect(Collectors.joining(";\n\t")) + ";";
-        String valuesGet = objectives.stream().map(str -> "values.get(0)").collect(Collectors.joining(",")); // TODO
+        String valuesGet = IntStream.range(0, objectives.size())
+            .mapToObj(i -> "values.get(" + i + ")")
+            .collect(Collectors.joining(", "));
+//        String valuesGet = objectives.stream().map(str -> "values.get(0)").collect(Collectors.joining(",")); // TODO
         String solutionFor = objectives.stream().map(str -> "this.solution" + str + ".add(solution.get" + capitalizeFirstLetter(str) + "());\n\t\t\t").collect(Collectors.joining(""));
         String solutionStream = objectives.stream().map(str -> "this.sumOf" + str + " = this.solution" + str + ".stream().mapToDouble(e -> e).sum()").collect(Collectors.joining(";\n\t")) + ";";
         String getters = objectives.stream().map(str -> "public double getSumOf" + capitalizeFirstLetter(str) + "() {return this.sumOf" + str + ";}").collect(Collectors.joining("\n\n\t"));

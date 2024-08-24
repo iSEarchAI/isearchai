@@ -33,20 +33,22 @@ public class ObjectiveStarter {
             String incrementWith = objective.getProcess().getIncrementWith();
 
             if (!isNumber(incrementWith)) {
-                incrementWith = "instance.getSumOf" + incrementWith + "()";
+                incrementWith = "instance.get" + incrementWith.toLowerCase() + "(i)";
             }
             fileClass = fileClass.replace("$objective.process.incrementWith", incrementWith);
             fileClass = fileClass.replace("$objective.maximize", objective.getMaximize() ? "true": "false");
 
-            List<String> expression = objective.getCalculate().getExpression();
+            List<String> expressionList = objective.getCalculate().getExpression();
 
-            fileClass = fileClass.replace("$objective.calculate.expression", expression.stream().map(v -> {
+            String expression = (objective.getCalculate().getInvert() ? "1.0 - " : "") + expressionList.stream().map(v -> {
                 if (Objects.equals(v, "sum"))
                     return "(double) " + v;
                 if (StringUtils.isMathOperator(v))
                     return v;
                 return "(double) instance.getSumOf" + StringUtils.camelcase(v) + "()";
-            }).collect(Collectors.joining(" ")));
+            }).collect(Collectors.joining(" "));
+
+            fileClass = fileClass.replace("$objective.calculate.expression", expression);
 
             writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/objective/" + className + ".java", fileClass);
         }

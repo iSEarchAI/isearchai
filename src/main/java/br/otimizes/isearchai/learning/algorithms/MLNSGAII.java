@@ -16,8 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class MLNSGAII<S extends Solution<?>> extends NSGAII<S> {
-    private InteractWithDM interaction = new InteractWithDM();
-    private InteractiveConfig interactiveConfig;
+    private InteractWithDM interaction;
     private MLSolutionSet solutionSet;
 
     HashSet<Solution> bestOfUserEvaluation = new HashSet<>();
@@ -32,15 +31,8 @@ public class MLNSGAII<S extends Solution<?>> extends NSGAII<S> {
     }
 
     private void setInteractiveConfig(InteractiveConfig interactiveConfig) {
-        if (interactiveConfig == null)
-            return;
-        this.interactiveConfig = interactiveConfig;
-        this.interaction.setMaxInteractions(interactiveConfig.getMaxInteractions());
-        this.interaction.setFirstInteraction(interactiveConfig.getFirstInteraction());
-        this.interaction.setIntervalInteraction(interactiveConfig.getIntervalInteraction());
-        this.interaction.setInteractive(true);
-        this.interaction.setCurrentInteraction(0);
-        this.interaction.setInteractiveFunction(interactiveConfig.getInteractiveFunction());
+        if (interactiveConfig != null)
+            this.interaction = new InteractWithDM(interactiveConfig);
     }
 
     public MLNSGAII(Problem<S> problem, int maxEvaluations, int populationSize, int matingPoolSize, int offspringPopulationSize,

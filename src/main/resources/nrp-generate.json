@@ -6,72 +6,55 @@
             "process": {
                 "incrementWith": "Cost"
             },
+            "maximize": false,
             "calculate": {
-                "type": "/",
-                "a": {
-                    "value": "sum"
-                },
-                "b": {
-                    "value": "Cost"
-                }
+                "expression": ["sum","/","Cost"]
             }
         },
         {
             "name": "Importance",
             "type": "double",
+            "maximize": false,
             "process": {
                 "incrementWith": "Importance"
             },
             "calculate": {
-                "type": "/",
                 "invert": "true",
-                "a": {
-                    "value": "sum"
-                },
-                "b": {
-                    "value": "Importance"
-                }
+                "expression": ["sum", "/", "Importance"]
             }
         },
         {
             "name": "Profit",
             "type": "double",
+            "maximize": false,
             "process": {
                 "incrementWith": "Profit"
             },
             "calculate": {
-                "type": "/",
                 "invert": "true",
-                "a": {
-                    "value": "sum"
-                },
-                "b": {
-                    "value": "Profit"
-                }
+                "expression": ["sum","/","Profit"]
             }
         },
-
         {
             "name": "Size",
             "type": "int",
+            "maximize": false,
             "process": {
                 "incrementWith": 1
             },
             "calculate": {
-                "type": "/",
-                "invert": "true",
-                "a": {
-                    "value": "sum"
-                },
-                "b": {
-                    "value": "Solution"
-                }
+                "expression": ["sum","/","Solution"],
+                "invert": "true"
             }
         }
     ],
     "item": {
         "name": "Task",
-        "objectives": ["Cost", "Profit", "Importance"]
+        "objectives": [
+            "Cost",
+            "Profit",
+            "Importance"
+        ]
     },
     "solution": {
         "name": "Requirement"

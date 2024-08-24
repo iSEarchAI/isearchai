@@ -27,6 +27,15 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
     public InteractWithDM() {
     }
 
+    public InteractWithDM(InteractiveConfig interactiveConfig) {
+        this.setMaxInteractions(interactiveConfig.getMaxInteractions());
+        this.setFirstInteraction(interactiveConfig.getFirstInteraction());
+        this.setIntervalInteraction(interactiveConfig.getIntervalInteraction());
+        this.setInteractive(true);
+        this.setCurrentInteraction(interactiveConfig.getCurrentInteraction());
+        this.setInteractiveFunction(interactiveConfig.getInteractiveFunction());
+    }
+
     @SuppressWarnings("unchecked")
     private Class<T> clazz(T resultFront) {
         return (Class<T>) resultFront.getClass();

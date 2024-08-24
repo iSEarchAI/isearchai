@@ -9,6 +9,7 @@ public class InteractiveConfig<T extends MLSolutionSet<E, MLElement>, E extends 
     private int firstInteraction;
     private int intervalInteraction;
     private InteractiveFunction<T> interactiveFunction;
+    private int currentInteraction = 0;
 
     public InteractiveConfig() {
     }
@@ -47,5 +48,14 @@ public class InteractiveConfig<T extends MLSolutionSet<E, MLElement>, E extends 
     public InteractiveConfig setInteractiveFunction(InteractiveFunction<T> interactiveFunction) {
         this.interactiveFunction = interactiveFunction;
         return this;
+    }
+
+    public InteractiveConfig setCurrentInteraction(int value) {
+        this.currentInteraction = value;
+        return this;
+    }
+
+    public int getCurrentInteraction() {
+        return this.currentInteraction;
     }
 }
