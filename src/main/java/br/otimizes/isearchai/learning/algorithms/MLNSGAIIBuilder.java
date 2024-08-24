@@ -1,7 +1,7 @@
-package br.otimizes.isearchai.learning.impl;
+package br.otimizes.isearchai.learning.algorithms;
 
 import br.otimizes.isearchai.interactive.InteractiveConfig;
-import br.otimizes.isearchai.learning.MLSolutionSet;
+import br.otimizes.isearchai.learning.ml.MLSolutionSet;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
@@ -19,7 +19,7 @@ import java.util.List;
 
 public class MLNSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<MLNSGAII<S>> {
     // no access modifier means access from classes within the same package
-    private final Problem<S> problem;
+    private Problem<S> problem;
     private int maxEvaluations;
     private int populationSize;
     protected int matingPoolSize;
@@ -32,6 +32,13 @@ public class MLNSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<
     private Comparator<S> dominanceComparator;
     private InteractiveConfig interactiveConfig;
     private MLSolutionSet solutionSet;
+
+    public MLNSGAIIBuilder() {
+        maxEvaluations = 25000;
+        selectionOperator = new BinaryTournamentSelection<S>(new RankingAndCrowdingDistanceComparator<S>());
+        evaluator = new SequentialSolutionListEvaluator<S>();
+        dominanceComparator = new DominanceComparator<>();
+    }
 
     /**
      * Builder constructor
@@ -55,6 +62,8 @@ public class MLNSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<
 
     public MLNSGAIIBuilder<S> setPopulationSize(int populationSize) {
         this.populationSize = populationSize;
+        this.matingPoolSize = populationSize;
+        this.offspringPopulationSize = populationSize;
 
         return this;
     }
@@ -85,6 +94,24 @@ public class MLNSGAIIBuilder<S extends Solution<?>> implements AlgorithmBuilder<
 
     public MLNSGAIIBuilder<S> setMaxEvaluations(int maxEvaluations) {
         this.maxEvaluations = maxEvaluations;
+
+        return this;
+    }
+
+    public MLNSGAIIBuilder<S> setProblem(Problem<S> problem) {
+        this.problem = problem;
+
+        return this;
+    }
+
+    public MLNSGAIIBuilder<S> setInteractiveConfig(InteractiveConfig interactiveConfig) {
+        this.interactiveConfig = interactiveConfig;
+
+        return this;
+    }
+
+    public MLNSGAIIBuilder<S> setSolutionSet(MLSolutionSet solutionSet) {
+        this.solutionSet = solutionSet;
 
         return this;
     }

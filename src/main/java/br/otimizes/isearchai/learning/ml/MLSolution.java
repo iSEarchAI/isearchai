@@ -1,6 +1,5 @@
-package br.otimizes.isearchai.learning;
+package br.otimizes.isearchai.learning.ml;
 
-import java.io.Serializable;
 import java.util.List;
 
 public interface MLSolution<T extends MLElement> {

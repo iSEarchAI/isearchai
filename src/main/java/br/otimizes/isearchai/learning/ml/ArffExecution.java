@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning;
+package br.otimizes.isearchai.learning.ml;
 
 import weka.core.Attribute;
 import weka.core.DenseInstance;

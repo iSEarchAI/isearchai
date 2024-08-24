@@ -1,6 +1,6 @@
 package br.otimizes.isearchai.interactive;
 
-import br.otimizes.isearchai.learning.*;
+import br.otimizes.isearchai.learning.ml.*;
 import com.rits.cloning.Cloner;
 
 import java.lang.reflect.Constructor;

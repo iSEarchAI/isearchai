@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning;
+package br.otimizes.isearchai.learning.ml;
 
 import weka.clusterers.*;
 import weka.core.DistanceFunction;

@@ -1,12 +1,11 @@
-package br.otimizes.isearchai.learning.nautilus;
+package br.otimizes.isearchai.learning.encoding.binary;
 
-import br.otimizes.isearchai.learning.MLElement;
+import br.otimizes.isearchai.learning.ml.MLElement;
 import org.uma.jmetal.util.binarySet.BinarySet;
 
 public class MLBinarySet extends BinarySet implements MLElement {
 
     private boolean freezed;
-
     /**
      * Constructor
      *

@@ -1,8 +1,8 @@
-package br.otimizes.isearchai.learning.impl;
+package br.otimizes.isearchai.learning.algorithms;
 
 import br.otimizes.isearchai.interactive.InteractWithDM;
 import br.otimizes.isearchai.interactive.InteractiveConfig;
-import br.otimizes.isearchai.learning.MLSolutionSet;
+import br.otimizes.isearchai.learning.ml.MLSolutionSet;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
@@ -32,6 +32,8 @@ public class MLNSGAII<S extends Solution<?>> extends NSGAII<S> {
     }
 
     private void setInteractiveConfig(InteractiveConfig interactiveConfig) {
+        if (interactiveConfig == null)
+            return;
         this.interactiveConfig = interactiveConfig;
         this.interaction.setMaxInteractions(interactiveConfig.getMaxInteractions());
         this.interaction.setFirstInteraction(interactiveConfig.getFirstInteraction());
@@ -59,9 +61,11 @@ public class MLNSGAII<S extends Solution<?>> extends NSGAII<S> {
     @Override
     protected List<S> replacement(List<S> population, List<S> offspringPopulation) {
         List<S> replacement = super.replacement(population, offspringPopulation);
-        MLSolutionSet mlSolutionSet = solutionSet.newInstance(replacement);
-        interaction.interactWithDM(mlSolutionSet, bestOfUserEvaluation, getcurrentGeneration());
-        interaction.subjectiveAnalyzeAlgorithmEvaluate(mlSolutionSet);
+        if (interaction != null && solutionSet != null) {
+            MLSolutionSet mlSolutionSet = solutionSet.newInstance(replacement);
+            interaction.interactWithDM(mlSolutionSet, bestOfUserEvaluation, getcurrentGeneration());
+            interaction.subjectiveAnalyzeAlgorithmEvaluate(mlSolutionSet);
+        }
         return replacement;
     }
 }

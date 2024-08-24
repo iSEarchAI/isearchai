@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning.nautilus;
+package br.otimizes.isearchai.learning.encoding.binary;
 
 import org.nautilus.core.encoding.NProblem;
 import org.nautilus.core.model.Instance;

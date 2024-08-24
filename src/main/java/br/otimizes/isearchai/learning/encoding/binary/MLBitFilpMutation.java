@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning.nautilus;
+package br.otimizes.isearchai.learning.encoding.binary;
 
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.util.JMetalException;
