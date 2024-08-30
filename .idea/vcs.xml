@@ -2,10 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/generated/adapt/OPLA-Tool" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/generated/jvalidation" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/generated/nautilus-framework" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/generated/nautilus-framework-plugin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/src/main/resources/nautilus-framework-plugin" vcs="Git" />
   </component>
 </project>

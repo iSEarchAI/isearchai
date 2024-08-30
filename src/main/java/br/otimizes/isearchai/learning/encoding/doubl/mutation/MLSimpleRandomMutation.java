@@ -1,33 +1,36 @@
-package br.otimizes.isearchai.learning.encoding.binary;
+package br.otimizes.isearchai.learning.encoding.doubl.mutation;
 
+import br.otimizes.isearchai.learning.encoding.doubl.MLDouble;
+import br.otimizes.isearchai.learning.encoding.doubl.MLDoubleSolution;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.pseudorandom.RandomGenerator;
 
-public class MLBitFilpMutation implements MutationOperator<MLBinarySolution> {
+public class MLSimpleRandomMutation implements MutationOperator<MLDoubleSolution> {
     private double mutationProbability;
     private RandomGenerator<Double> randomGenerator;
 
     /**
      * Constructor
      */
-    public MLBitFilpMutation(double mutationProbability) {
-        this(mutationProbability, () -> JMetalRandom.getInstance().nextDouble());
+    public MLSimpleRandomMutation(double probability) {
+        this(probability, () -> JMetalRandom.getInstance().nextDouble());
     }
 
     /**
      * Constructor
      */
-    public MLBitFilpMutation(double mutationProbability, RandomGenerator<Double> randomGenerator) {
-        if (mutationProbability < 0) {
+    public MLSimpleRandomMutation(double probability, RandomGenerator<Double> randomGenerator) {
+        if (probability < 0) {
             throw new JMetalException("Mutation probability is negative: " + mutationProbability);
         }
-        this.mutationProbability = mutationProbability;
+
+        this.mutationProbability = probability;
         this.randomGenerator = randomGenerator;
     }
 
-    /* Getter */
+    /* Getters */
     public double getMutationProbability() {
         return mutationProbability;
     }
@@ -41,27 +44,26 @@ public class MLBitFilpMutation implements MutationOperator<MLBinarySolution> {
      * Execute() method
      */
     @Override
-    public MLBinarySolution execute(MLBinarySolution solution) {
+    public MLDoubleSolution execute(MLDoubleSolution solution) throws JMetalException {
         if (null == solution) {
             throw new JMetalException("Null parameter");
         }
 
         doMutation(mutationProbability, solution);
+
         return solution;
     }
 
     /**
-     * Perform the mutation operation
-     *
-     * @param probability Mutation setProbability
-     * @param solution    The solution to mutate
+     * Implements the mutation operation
      */
-    public void doMutation(double probability, MLBinarySolution solution) {
+    private void doMutation(double probability, MLDoubleSolution solution) {
         for (int i = 0; i < solution.getNumberOfVariables(); i++) {
-            for (int j = 0; j < solution.getVariableValue(i).getBinarySetLength(); j++) {
-                if (randomGenerator.getRandomValue() <= probability) {
-                    solution.getVariableValue(i).flip(j);
-                }
+            if (randomGenerator.getRandomValue() <= probability) {
+                Double value = solution.getLowerBound(i) +
+                    ((solution.getUpperBound(i) - solution.getLowerBound(i)) * randomGenerator.getRandomValue());
+
+                solution.setVariableValue(i, new MLDouble(value));
             }
         }
     }

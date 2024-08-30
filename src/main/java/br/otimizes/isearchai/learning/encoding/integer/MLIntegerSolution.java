@@ -101,8 +101,7 @@ public class MLIntegerSolution extends NSolution<MLInteger> implements MLSolutio
 
     @Override
     public MLIntegerSolution copy() {
-//        return new MLDoubleSolution(this.getNumberOfObjectives(), this.getNumberOfVariables());
-        return null;
+        return new MLIntegerSolution(this.getNumberOfObjectives(), this.getNumberOfVariables());
     }
 
     public List<Integer> getLowerBounds() {

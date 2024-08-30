@@ -1,8 +1,10 @@
 package br.otimizes.isearchai.learning.ml.interfaces;
 
+import org.uma.jmetal.solution.Solution;
+
 import java.util.List;
 
-public interface MLSolution<T extends MLElement> {
+public interface MLSolution<T extends MLElement> extends Solution<T> {
     double[] getObjectives();
 
     int numberOfObjectives();

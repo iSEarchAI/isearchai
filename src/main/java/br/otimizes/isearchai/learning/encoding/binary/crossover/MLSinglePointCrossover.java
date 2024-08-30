@@ -1,5 +1,7 @@
-package br.otimizes.isearchai.learning.encoding.binary;
+package br.otimizes.isearchai.learning.encoding.binary.crossover;
 
+import br.otimizes.isearchai.learning.encoding.binary.MLBinarySet;
+import br.otimizes.isearchai.learning.encoding.binary.MLBinarySolution;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.pseudorandom.BoundedRandomGenerator;
