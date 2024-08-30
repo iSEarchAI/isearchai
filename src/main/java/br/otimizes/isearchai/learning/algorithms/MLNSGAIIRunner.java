@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public abstract class MLNSGAIIRunner<S extends MLSolution<?>> {
+public abstract class MLNSGAIIRunner<S extends MLSolution<?, ?>> {
 
     public List<S> population;
 

@@ -11,11 +11,11 @@ import java.util.HashSet;
  * Helper class which holds options related to interactivity.
  * @author Lucas
  */
-public class InteractiveHandler<T extends MLSolutionSet<E, MLElement>, E extends MLSolution<MLElement>> {
+public class InteractiveHandler<T extends MLSolutionSet<E, MLElement>, E extends MLSolution<MLElement, ?>> {
 
     public static class InteractionData {
         private int currentInteraction = 0;
-        private HashSet<MLSolution<MLElement>> bestOfUserEvaluation = new HashSet<>();
+        private HashSet<MLSolution<MLElement, ?>> bestOfUserEvaluation = new HashSet<>();
 
         public int getCurrentInteraction() {
             return currentInteraction;
@@ -26,11 +26,11 @@ public class InteractiveHandler<T extends MLSolutionSet<E, MLElement>, E extends
             return this;
         }
 
-        public HashSet<MLSolution<MLElement>> getBestOfUserEvaluation() {
+        public HashSet<MLSolution<MLElement, ?>> getBestOfUserEvaluation() {
             return bestOfUserEvaluation;
         }
 
-        public InteractionData setBestOfUserEvaluation(HashSet<MLSolution<MLElement>> bestOfUserEvaluation) {
+        public InteractionData setBestOfUserEvaluation(HashSet<MLSolution<MLElement, ?>> bestOfUserEvaluation) {
             this.bestOfUserEvaluation = bestOfUserEvaluation;
             return this;
         }

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * @author WmfSystem
  * Class that encompasses the methods of clustering, such as K-Means, DBSCAN and OPTICS
  */
-public class Clustering<T extends MLSolutionSet<MLSolution<MLElement>, MLElement>>  implements Serializable {
+public class Clustering<T extends MLSolutionSet<MLSolution<MLElement, ?>, MLElement>>  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

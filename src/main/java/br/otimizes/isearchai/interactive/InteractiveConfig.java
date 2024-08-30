@@ -4,7 +4,7 @@ import br.otimizes.isearchai.core.MLElement;
 import br.otimizes.isearchai.core.MLSolution;
 import br.otimizes.isearchai.core.MLSolutionSet;
 
-public class InteractiveConfig<T extends MLSolutionSet<E, MLElement>, E extends MLSolution<MLElement>> {
+public class InteractiveConfig<T extends MLSolutionSet<E, MLElement>, E extends MLSolution<MLElement, ?>> {
     private int maxInteractions;
     private int firstInteraction;
     private int intervalInteraction;

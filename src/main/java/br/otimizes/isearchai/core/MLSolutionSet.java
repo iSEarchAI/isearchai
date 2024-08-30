@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class MLSolutionSet<S extends MLSolution<E>, E extends MLElement> implements Serializable, Iterable<S> {
+public abstract class MLSolutionSet<S extends MLSolution<E, ?>, E extends MLElement> implements Serializable, Iterable<S> {
 
     protected List<S> solutions = new ArrayList<>();
 

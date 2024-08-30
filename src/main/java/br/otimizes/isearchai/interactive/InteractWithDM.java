@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Class containing DM interactivity procedures
  */
-public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLSolution<MLElement>> {
+public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLSolution<MLElement, ?>> {
     private SubjectiveAnalyzeAlgorithm subjectiveAnalyzeAlgorithm = null;
 
     Boolean interactive = true;

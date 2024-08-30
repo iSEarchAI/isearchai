@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class MLBinarySolution extends NSolution<MLBinarySet> implements MLSolution<MLBinarySet> {
+public class MLBinarySolution extends NSolution<MLBinarySet> implements MLSolution<MLBinarySet, MLBinarySet> {
     private int userEvaluation;
     private Boolean clusterNoise;
     public Boolean evaluatedByUser;

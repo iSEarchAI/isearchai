@@ -2,7 +2,7 @@ package br.otimizes.isearchai.core;
 
 import java.util.HashSet;
 
-public interface MLSearchAlgorithm<T extends MLSolutionSet<S, E>, S extends MLSolution<E>, E extends MLElement> {
+public interface MLSearchAlgorithm<T extends MLSolutionSet<S, E>, S extends MLSolution<E, ?>, E extends MLElement> {
 
     /**
      * Train the model

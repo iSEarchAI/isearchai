@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class MLDoubleSolution extends NSolution<MLDouble> implements MLSolution<MLDouble> {
+public class MLDoubleSolution extends NSolution<MLDouble> implements MLSolution<MLDouble, MLDouble> {
 
     private int userEvaluation;
     private Boolean clusterNoise;

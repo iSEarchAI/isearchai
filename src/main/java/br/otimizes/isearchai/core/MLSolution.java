@@ -4,7 +4,7 @@ import org.uma.jmetal.solution.Solution;
 
 import java.util.List;
 
-public interface MLSolution<T extends MLElement> extends Solution<T> {
+public interface MLSolution<T extends MLElement, S> extends Solution<S> {
     double[] getObjectives();
 
     int numberOfObjectives();

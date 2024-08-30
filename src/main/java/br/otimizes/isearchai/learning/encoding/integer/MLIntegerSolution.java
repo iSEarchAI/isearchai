@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class MLIntegerSolution extends NSolution<MLInteger> implements MLSolution<MLInteger> {
+public class MLIntegerSolution extends NSolution<MLInteger> implements MLSolution<MLInteger, MLInteger> {
 
     private int userEvaluation;
     private Boolean clusterNoise;
