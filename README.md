@@ -44,3 +44,6 @@ Since Nautilus already presented a comparison with other framework, below we pre
 
 ![ISearchAI modules](docs/modules.drawio.png)
 
+## USAGE
+
+If you are getting started to use the framework, you can use the [USAGE DOCUMENTATION HERE](USAGE.md).
