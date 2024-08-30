@@ -1,6 +1,6 @@
 package br.otimizes.isearchai.learning.encoding.doubl;
 
-import br.otimizes.isearchai.learning.ml.interfaces.MLSolutionSet;
+import br.otimizes.isearchai.core.MLSolutionSet;
 import org.nautilus.core.encoding.NSolution;
 
 import java.util.Iterator;

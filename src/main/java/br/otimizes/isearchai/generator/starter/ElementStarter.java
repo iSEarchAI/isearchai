@@ -1,7 +1,7 @@
 package br.otimizes.isearchai.generator.starter;
 
+import br.otimizes.isearchai.generator.model.Element;
 import br.otimizes.isearchai.generator.model.Generate;
-import br.otimizes.isearchai.generator.model.Item;
 import br.otimizes.isearchai.util.ObjMapUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ItemStarter {
+public class ElementStarter {
     public static void main(String[] args) throws JsonProcessingException {
         generateForFile("nrp-generate.json");
     }
@@ -23,13 +23,13 @@ public class ItemStarter {
     }
 
     public static void generate(Generate json) throws JsonProcessingException {
-        Item item = json.getItem();
-        String name = item.getName();
-        String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/Item.java");
-        fileClass = fileClass.replaceAll("\\$item\\.name", name);
+        Element element = json.getElement();
+        String name = element.getName();
+        String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/Element.java");
+        fileClass = fileClass.replaceAll("\\$element\\.name", name);
 
         List<String> objectives = new ArrayList<>();
-        for (String jsonNode : item.getObjectives()) {
+        for (String jsonNode : element.getObjectives()) {
             objectives.add(jsonNode.toLowerCase());
         }
         String objectivesAttributes = objectives.stream().map(str -> "public double " + str + ";").collect(Collectors.joining("\n\t"));
@@ -37,10 +37,10 @@ public class ItemStarter {
         String objectivesConstructor = objectives.stream().map(str -> "this." + str + " = " + str + ";").collect(Collectors.joining("\n\t\t"));
         String objectivesRandomParams = objectives.stream().map(str -> "Converter.round(random.nextDouble(1, 10), 1)").collect(Collectors.joining(","));
 
-        fileClass = fileClass.replace("$item.objectivesAttributes", objectivesAttributes);
-        fileClass = fileClass.replace("$item.objectivesParams", objectivesParams);
-        fileClass = fileClass.replace("$item.objectivesConstructor", objectivesConstructor);
-        fileClass = fileClass.replace("$item.objectivesRandomParams", objectivesRandomParams);
+        fileClass = fileClass.replace("$element.objectivesAttributes", objectivesAttributes);
+        fileClass = fileClass.replace("$element.objectivesParams", objectivesParams);
+        fileClass = fileClass.replace("$element.objectivesConstructor", objectivesConstructor);
+        fileClass = fileClass.replace("$element.objectivesRandomParams", objectivesRandomParams);
         System.out.println(fileClass);
         writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/" + name + ".java", fileClass);
     }
@@ -58,7 +58,7 @@ public class ItemStarter {
 
     public static String readFileFromResources(String fileName) {
         // Get the input stream of the file from resources
-        try (InputStream inputStream = ItemStarter.class.getClassLoader().getResourceAsStream(fileName);
+        try (InputStream inputStream = ElementStarter.class.getClassLoader().getResourceAsStream(fileName);
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
             if (inputStream == null) {

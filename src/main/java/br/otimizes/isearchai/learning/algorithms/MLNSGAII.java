@@ -2,7 +2,7 @@ package br.otimizes.isearchai.learning.algorithms;
 
 import br.otimizes.isearchai.interactive.InteractWithDM;
 import br.otimizes.isearchai.interactive.InteractiveConfig;
-import br.otimizes.isearchai.learning.ml.interfaces.MLSolutionSet;
+import br.otimizes.isearchai.core.MLSolutionSet;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;

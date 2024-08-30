@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning.ml.interfaces;
+package br.otimizes.isearchai.core;
 
 import org.uma.jmetal.solution.Solution;
 

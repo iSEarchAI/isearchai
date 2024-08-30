@@ -1,6 +1,6 @@
 package br.otimizes.isearchai.learning.encoding.binary;
 
-import br.otimizes.isearchai.learning.ml.interfaces.MLElement;
+import br.otimizes.isearchai.core.MLElement;
 import org.uma.jmetal.util.binarySet.BinarySet;
 
 public class MLBinarySet extends BinarySet implements MLElement {

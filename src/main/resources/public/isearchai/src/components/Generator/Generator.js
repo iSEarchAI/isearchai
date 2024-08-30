@@ -43,8 +43,7 @@ const steps = [
                             <li>Note that every objective function has a type and the definition of how it is
                                 calculated.
                             </li>
-                            <li>The calculation formula is composed of two parts (A and B).</li>
-                            <li>So, the final formula generated will be at form (invert or not) * (A [*,/,+,-] B)</li>
+                            <li>The formula generated will be at form (invert or not) * (A [*,/,+,-] B ...)</li>
                             <li><b>* In the formula, 'sum' represents the objective function itself *</b></li>
                         </ul>
                     </li>
@@ -85,13 +84,13 @@ const steps = [
         jsx: (ctx) => (
             <>
                 {/*{ctx.state.generate.solution.name}*/}
-                <TextField id="outlined-basic" label="Item Name" variant="outlined"
-                           name='generate.item.name'
+                <TextField id="outlined-basic" label="Element Name" variant="outlined"
+                           name='generate.element.name'
                            InputProps={{
                                endAdornment: (<InputAdornment position={"end"}><Tooltip
                                    title="Put a name without spaces and uppercase at beginning"><InfoIcon/></Tooltip></InputAdornment>)
                            }}
-                           value={ctx.state.generate.item.name} onChange={ctx.updateState}/>
+                           value={ctx.state.generate.element.name} onChange={ctx.updateState}/>
             </>
         ),
         onContinue: (ctx) => {
@@ -244,7 +243,7 @@ const steps = [
                                 {/*            id="free-solo-demo"*/}
                                 {/*            freeSolo*/}
                                 {/*            value={obj.calculate.a.value}*/}
-                                {/*            options={ctx.state.generate.objectives.map((option) => option.name + "").concat([ctx.state.generate.item.name, ctx.state.generate.solution.name, 'sum'])}*/}
+                                {/*            options={ctx.state.generate.objectives.map((option) => option.name + "").concat([ctx.state.generate.element.name, ctx.state.generate.solution.name, 'sum'])}*/}
                                 {/*            renderInput={(params) => <TextField {...params}*/}
                                 {/*                                                label="First part of formula"/>}*/}
                                 {/*        />*/}
@@ -276,7 +275,7 @@ const steps = [
                                 {/*            id="free-solo-demo"*/}
                                 {/*            freeSolo*/}
                                 {/*            value={obj.calculate.b.value}*/}
-                                {/*            options={ctx.state.generate.objectives.map((option) => option.name + "").concat([ctx.state.generate.item.name, ctx.state.generate.solution.name])}*/}
+                                {/*            options={ctx.state.generate.objectives.map((option) => option.name + "").concat([ctx.state.generate.element.name, ctx.state.generate.solution.name])}*/}
                                 {/*            renderInput={(params) => <TextField {...params}*/}
                                 {/*                                                label="Second part of formula"/>}*/}
                                 {/*        />*/}
@@ -373,7 +372,7 @@ class Generator extends Component {
                     }
                 }
             ],
-            "item": {
+            "element": {
                 "name": "Task",
                 "objectives": ["Cost", "Profit", "Importance"]
             },
@@ -385,7 +384,7 @@ class Generator extends Component {
 
     expressionItems = (currentExpression) => {
         let vars = this.state.generate.objectives.map((option) => option.name + "")
-            .concat([this.state.generate.item.name, this.state.generate.solution.name, 'sum']);
+            .concat([this.state.generate.element.name, this.state.generate.solution.name, 'sum']);
         let operators = ['+', '-', '*', '/'];
         if (currentExpression.length === 0 || this.isMathOperator(currentExpression[currentExpression.length - 1]))
             return vars;

@@ -1,6 +1,6 @@
 package br.otimizes.isearchai.learning.encoding.integer;
 
-import br.otimizes.isearchai.learning.ml.interfaces.MLElement;
+import br.otimizes.isearchai.core.MLElement;
 
 import java.lang.annotation.Native;
 

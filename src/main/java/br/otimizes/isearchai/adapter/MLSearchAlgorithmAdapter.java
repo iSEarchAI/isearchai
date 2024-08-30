@@ -1,7 +1,7 @@
 package br.otimizes.isearchai.adapter;
 
 import br.otimizes.isearchai.interactive.InteractWithDM;
-import br.otimizes.isearchai.learning.ml.interfaces.MLSearchAlgorithm;
+import br.otimizes.isearchai.core.MLSearchAlgorithm;
 
 public class MLSearchAlgorithmAdapter extends FrameworkAdapter<MLSearchAlgorithmAdapter> {
 

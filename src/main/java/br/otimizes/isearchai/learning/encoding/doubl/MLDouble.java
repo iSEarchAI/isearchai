@@ -1,6 +1,6 @@
 package br.otimizes.isearchai.learning.encoding.doubl;
 
-import br.otimizes.isearchai.learning.ml.interfaces.MLElement;
+import br.otimizes.isearchai.core.MLElement;
 import sun.misc.DoubleConsts;
 import sun.misc.FloatingDecimal;
 

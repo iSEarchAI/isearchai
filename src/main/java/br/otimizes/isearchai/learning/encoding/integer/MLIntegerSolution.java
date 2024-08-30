@@ -1,6 +1,6 @@
 package br.otimizes.isearchai.learning.encoding.integer;
 
-import br.otimizes.isearchai.learning.ml.interfaces.MLSolution;
+import br.otimizes.isearchai.core.MLSolution;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import org.nautilus.core.encoding.NSolution;

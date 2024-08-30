@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning.ml.interfaces;
+package br.otimizes.isearchai.core;
 
 import br.otimizes.isearchai.learning.ml.clustering.DistributeUserEvaluation;
 import org.apache.commons.lang3.ArrayUtils;

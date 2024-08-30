@@ -26,7 +26,7 @@ public class Starter {
         try {
             extractAndinstallDependencies();
             ObjectiveStarter.generate(file);
-            ItemStarter.generate(file);
+            ElementStarter.generate(file);
             SolutionStarter.generate(file);
             TXTInstanceStarter.generate(file);
             ProblemExtensionStarter.generate(file);
@@ -40,7 +40,7 @@ public class Starter {
         try {
             extractAndinstallDependencies();
             ObjectiveStarter.generateForFile("nrp-generate.json");
-            ItemStarter.generateForFile("nrp-generate.json");
+            ElementStarter.generateForFile("nrp-generate.json");
             SolutionStarter.generateForFile("nrp-generate.json");
             TXTInstanceStarter.generateForFile("nrp-generate.json");
             ProblemExtensionStarter.generateForFile("nrp-generate.json");
@@ -63,7 +63,7 @@ public class Starter {
         try {
             new PathUtils()
                 .withIgnoreFiles(Arrays.asList(
-                    "TXTInstance.java", "Item.java", "Solution.java", "Objective.java", "ProblemExtension.java"
+                    "TXTInstance.java", "Element.java", "Solution.java", "Objective.java", "ProblemExtension.java"
                 ))
                 .copyDirectoryRecursively(sourceDirectory, targetDirectory);
             System.out.println("Directory copied successfully.");

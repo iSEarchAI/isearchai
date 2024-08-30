@@ -1,10 +1,10 @@
 package br.otimizes.isearchai.learning.ml.subjective;
 
 import br.otimizes.isearchai.learning.ml.basis.ArffExecution;
-import br.otimizes.isearchai.learning.ml.interfaces.MLSolutionSet;
+import br.otimizes.isearchai.core.MLSolutionSet;
 import br.otimizes.isearchai.learning.ml.clustering.DistributeUserEvaluation;
-import br.otimizes.isearchai.learning.ml.interfaces.MLElement;
-import br.otimizes.isearchai.learning.ml.interfaces.MLSolution;
+import br.otimizes.isearchai.core.MLElement;
+import br.otimizes.isearchai.core.MLSolution;
 import org.apache.commons.lang3.ArrayUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Evaluation;

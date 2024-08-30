@@ -2,11 +2,11 @@ package br.otimizes.isearchai.generator.model;
 
 import java.util.List;
 
-public class Item {
+public class Element {
     private String name;
     public List<String> objectives;
 
-    public Item() {
+    public Element() {
     }
 
     public String getName() {

@@ -1,8 +1,8 @@
 package br.otimizes.isearchai.interactive;
 
-import br.otimizes.isearchai.learning.ml.interfaces.MLElement;
-import br.otimizes.isearchai.learning.ml.interfaces.MLSolution;
-import br.otimizes.isearchai.learning.ml.interfaces.MLSolutionSet;
+import br.otimizes.isearchai.core.MLElement;
+import br.otimizes.isearchai.core.MLSolution;
+import br.otimizes.isearchai.core.MLSolutionSet;
 
 public class InteractiveConfig<T extends MLSolutionSet<E, MLElement>, E extends MLSolution<MLElement>> {
     private int maxInteractions;

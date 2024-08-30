@@ -1,10 +1,9 @@
 package br.otimizes.isearchai.learning.encoding.binary;
 
-import br.otimizes.isearchai.learning.ml.interfaces.MLSolution;
+import br.otimizes.isearchai.core.MLSolution;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import org.nautilus.core.encoding.NSolution;
-import org.uma.jmetal.solution.BinarySolution;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 

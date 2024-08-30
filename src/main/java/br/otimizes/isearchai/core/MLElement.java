@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning.ml.interfaces;
+package br.otimizes.isearchai.core;
 
 public interface MLElement {
     boolean setFreezeFromDM(boolean v);

@@ -26,9 +26,9 @@ br/otimizes/isearchai/simulator/ResultsWriter.java
 
 package br.otimizes.isearchai.interactive;
 
-import br.otimizes.isearchai.learning.ml.interfaces.MLElement;
-import br.otimizes.isearchai.learning.ml.interfaces.MLSolution;
-import br.otimizes.isearchai.learning.ml.interfaces.MLSolutionSet;
+import br.otimizes.isearchai.core.MLElement;
+import br.otimizes.isearchai.core.MLSolution;
+import br.otimizes.isearchai.core.MLSolutionSet;
 
 /**
  * Interface that allows to adapt the method of interaction with the user
@@ -40,9 +40,9 @@ public interface InteractiveFunction<T extends MLSolutionSet<S, MLElement>, S ex
 
 package br.otimizes.isearchai.interactive;
 
-import br.otimizes.isearchai.learning.ml.interfaces.MLElement;
-import br.otimizes.isearchai.learning.ml.interfaces.MLSolution;
-import br.otimizes.isearchai.learning.ml.interfaces.MLSolutionSet;
+import br.otimizes.isearchai.core.MLElement;
+import br.otimizes.isearchai.core.MLSolution;
+import br.otimizes.isearchai.core.MLSolutionSet;
 import br.otimizes.isearchai.learning.ml.subjective.SubjectiveAnalyzeAlgorithm;
 
 import java.util.HashSet;

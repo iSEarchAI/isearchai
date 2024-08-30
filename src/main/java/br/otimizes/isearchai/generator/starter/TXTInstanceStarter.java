@@ -24,13 +24,13 @@ public class TXTInstanceStarter {
 
     public static void generate(Generate json) throws JsonProcessingException {
         String solutionName = json.getSolution().getName();
-        String itemName = json.getItem().getName();
+        String elementName = json.getElement().getName();
         String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/instance/TXTInstance.java");
         fileClass = fileClass.replaceAll("\\$solution\\.name", solutionName);
-        fileClass = fileClass.replaceAll("\\$item\\.name", itemName);
+        fileClass = fileClass.replaceAll("\\$element\\.name", elementName);
 
         List<String> objectives = new ArrayList<>();
-        for (String jsonNode : json.getItem().getObjectives()) {
+        for (String jsonNode : json.getElement().getObjectives()) {
             objectives.add(jsonNode.toLowerCase());
         }
         String objectivesAttributes = objectives.stream().map(str -> "public double sumOf" + str).collect(Collectors.joining(";\n\t")) + ";";
@@ -48,17 +48,17 @@ public class TXTInstanceStarter {
         String dataGet = objectives.stream().map(str -> "\"\" + data.get" + str + "(i)").collect(Collectors.joining(","));
 
 
-        fileClass = fileClass.replace("$item.objectivesAttributes", objectivesAttributes);
-        fileClass = fileClass.replace("$item.listAttributes", listAttributes);
-        fileClass = fileClass.replace("$item.objectivesParams", objectivesParams);
-        fileClass = fileClass.replace("$item.objectivesConstructor", objectivesConstructor);
-        fileClass = fileClass.replace("$item.valuesGet", valuesGet);
-        fileClass = fileClass.replace("$item.solutionFor", solutionFor);
-        fileClass = fileClass.replace("$item.solutionStream", solutionStream);
-        fileClass = fileClass.replace("$item.getters", getters);
-        fileClass = fileClass.replace("$item.geti", geti);
-        fileClass = fileClass.replace("$item.dataGet", dataGet);
-        fileClass = fileClass.replace("$item.objStrList", objectives.stream().map(str -> "\"" + str + "\"").collect(Collectors.joining(",")));
+        fileClass = fileClass.replace("$element.objectivesAttributes", objectivesAttributes);
+        fileClass = fileClass.replace("$element.listAttributes", listAttributes);
+        fileClass = fileClass.replace("$element.objectivesParams", objectivesParams);
+        fileClass = fileClass.replace("$element.objectivesConstructor", objectivesConstructor);
+        fileClass = fileClass.replace("$element.valuesGet", valuesGet);
+        fileClass = fileClass.replace("$element.solutionFor", solutionFor);
+        fileClass = fileClass.replace("$element.solutionStream", solutionStream);
+        fileClass = fileClass.replace("$element.getters", getters);
+        fileClass = fileClass.replace("$element.geti", geti);
+        fileClass = fileClass.replace("$element.dataGet", dataGet);
+        fileClass = fileClass.replace("$element.objStrList", objectives.stream().map(str -> "\"" + str + "\"").collect(Collectors.joining(",")));
         System.out.println(fileClass);
 
         writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/instance/TXTInstance.java", fileClass);

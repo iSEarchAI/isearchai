@@ -20,18 +20,18 @@ public class SolutionStarter {
 
     public static void generate(Generate json) throws JsonProcessingException {
         String solutionName = json.getSolution().getName();
-        String itemName = json.getItem().getName();
+        String elementName = json.getElement().getName();
         String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/model/Solution.java");
         fileClass = fileClass.replaceAll("\\$solution\\.name", solutionName);
-        fileClass = fileClass.replaceAll("\\$item\\.name", itemName);
+        fileClass = fileClass.replaceAll("\\$element\\.name", elementName);
 
 
         String methodTemplate = " public double get$objective() {\n" +
             "\n" +
             "        double sum = 0.0;\n" +
             "\n" +
-            "        for ($item.name item : items) {\n" +
-            "            sum += item.$attr;\n" +
+            "        for ($element.name element : elements) {\n" +
+            "            sum += element.$attr;\n" +
             "        }\n" +
             "\n" +
             "        return sum;\n" +
@@ -39,8 +39,8 @@ public class SolutionStarter {
 
         String methods = "";
 
-        for (String jsonNode : json.getItem().getObjectives()) {
-            methods += methodTemplate.replace("$item.name", itemName)
+        for (String jsonNode : json.getElement().getObjectives()) {
+            methods += methodTemplate.replace("$element.name", elementName)
                 .replace("$objective", jsonNode)
                 .replace("$attr", jsonNode.toLowerCase()) + "\n\n\t";
         }

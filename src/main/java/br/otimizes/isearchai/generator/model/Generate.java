@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Generate {
     private List<Objective> objectives;
-    private Item item;
+    private Element element;
     private Solution solution;
 
     public Generate() {
@@ -19,12 +19,12 @@ public class Generate {
     }
 
 
-    public Item getItem() {
-        return item;
+    public Element getElement() {
+        return element;
     }
 
-    public void setItem(Item item) {
-        this.item = item;
+    public void setItem(Element element) {
+        this.element = element;
     }
 
     public Solution getSolution() {

@@ -1,6 +1,6 @@
 package br.otimizes.isearchai.adapter;
 
-import br.otimizes.isearchai.learning.ml.interfaces.MLSolution;
+import br.otimizes.isearchai.core.MLSolution;
 
 public class MLSolutionAdapter extends FrameworkAdapter<MLSolutionAdapter> {
 
