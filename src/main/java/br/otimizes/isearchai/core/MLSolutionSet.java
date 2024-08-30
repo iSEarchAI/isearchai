@@ -14,15 +14,6 @@ public abstract class MLSolutionSet<S extends MLSolution<E>, E extends MLElement
     /**
      * Copies the objectives and Elements Number of the solution set to a matrix
      * Objectives, nrClasses, nrConcerns, nrInterfaces, nrPackages, nrVariationPoints, nrVariants, nrVariabilities, nrConcerns,
-     * nrAbstractions, nrAggregation, nrAssociations, nrCompositions, nrDependencies, nrGeneralizations, nrRealizations, nrUsage
-     *
-     * @return matrix containing the objectives
-     */
-    public abstract double[][] writeObjectivesAndElementsNumberToMatrix();
-
-    /**
-     * Copies the objectives and Elements Number of the solution set to a matrix
-     * Objectives, nrClasses, nrConcerns, nrInterfaces, nrPackages, nrVariationPoints, nrVariants, nrVariabilities, nrConcerns,
      * nrAbstractions, nrAggregations, nrAssociations, nrCompositions, nrDependencies, nrGeneralizations, nrRealizations, nrUsage
      *
      * @return matrix containing the objectives
@@ -345,6 +336,15 @@ public abstract class MLSolutionSet<S extends MLSolution<E>, E extends MLElement
     public boolean add(S solution) {
         return this.solutions.add(solution);
     }
+
+    /**
+     * Copies the objectives and Elements Number of the solution set to a matrix
+     * Objectives, nrClasses, nrConcerns, nrInterfaces, nrPackages, nrVariationPoints, nrVariants, nrVariabilities, nrConcerns,
+     * nrAbstractions, nrAggregation, nrAssociations, nrCompositions, nrDependencies, nrGeneralizations, nrRealizations, nrUsage
+     *
+     * @return matrix containing the objectives
+     */
+    public abstract double[][] writeObjectivesAndElementsNumberToMatrix();
 
     public abstract double[] writeObjectivesFromElements(E MLElement, S MLSolution);
 
