@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning.encoding.binary.crossover;
+package br.otimizes.isearchai.learning.algorithms.binary.crossover;
 
 import br.otimizes.isearchai.learning.encoding.binary.MLBinarySet;
 import br.otimizes.isearchai.learning.encoding.binary.MLBinarySolution;

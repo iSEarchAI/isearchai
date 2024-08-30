@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning.encoding.integer.crossover;
+package br.otimizes.isearchai.learning.algorithms.integer.crossover;
 
 import br.otimizes.isearchai.learning.encoding.integer.MLInteger;
 import br.otimizes.isearchai.learning.encoding.integer.MLIntegerSolution;

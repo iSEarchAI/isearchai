@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning.encoding.binary.mutation;
+package br.otimizes.isearchai.learning.algorithms.binary.mutation;
 
 import br.otimizes.isearchai.learning.encoding.binary.MLBinarySolution;
 import org.uma.jmetal.operator.MutationOperator;

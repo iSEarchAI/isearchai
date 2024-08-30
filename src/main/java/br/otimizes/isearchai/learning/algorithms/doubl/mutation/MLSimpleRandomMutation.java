@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning.encoding.doubl.mutation;
+package br.otimizes.isearchai.learning.algorithms.doubl.mutation;
 
 import br.otimizes.isearchai.learning.encoding.doubl.MLDouble;
 import br.otimizes.isearchai.learning.encoding.doubl.MLDoubleSolution;

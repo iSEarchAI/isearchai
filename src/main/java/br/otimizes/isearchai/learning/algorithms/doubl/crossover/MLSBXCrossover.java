@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning.encoding.doubl.crossover;
+package br.otimizes.isearchai.learning.algorithms.doubl.crossover;
 
 import br.otimizes.isearchai.learning.encoding.doubl.MLDouble;
 import br.otimizes.isearchai.learning.encoding.doubl.MLDoubleSolution;

@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning.encoding.integer.mutation;
+package br.otimizes.isearchai.learning.algorithms.integer.mutation;
 
 import br.otimizes.isearchai.learning.encoding.integer.MLInteger;
 import br.otimizes.isearchai.learning.encoding.integer.MLIntegerSolution;
