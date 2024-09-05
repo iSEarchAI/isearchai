@@ -6,6 +6,8 @@ public class Generate {
     private List<Objective> objectives;
     private Element element;
     private Solution solution;
+    private Problem problem;
+    private SearchAlgorithm searchAlgorithm;
 
     public Generate() {
     }
@@ -33,5 +35,21 @@ public class Generate {
 
     public void setSolution(Solution solution) {
         this.solution = solution;
+    }
+
+    public Problem getProblem() {
+        return problem;
+    }
+
+    public void setProblem(Problem problem) {
+        this.problem = problem;
+    }
+
+    public SearchAlgorithm getSearchAlgorithm() {
+        return searchAlgorithm;
+    }
+
+    public void setSearchAlgorithm(SearchAlgorithm searchAlgorithm) {
+        this.searchAlgorithm = searchAlgorithm;
     }
 }

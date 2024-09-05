@@ -30,6 +30,8 @@ public class Starter {
             SolutionStarter.generate(file);
             TXTInstanceStarter.generate(file);
             ProblemExtensionStarter.generate(file);
+            ProblemStarter.generate(file);
+            SearchAlgorithmStarter.generate(file);
             ZipUtils.zipFolder("generated/nautilus-framework-plugin", "generated/nautilus-framework-plugin.zip");
         } catch (IOException e) {
             e.printStackTrace();
@@ -44,6 +46,8 @@ public class Starter {
             SolutionStarter.generateForFile("nrp-generate.json");
             TXTInstanceStarter.generateForFile("nrp-generate.json");
             ProblemExtensionStarter.generateForFile("nrp-generate.json");
+            ProblemStarter.generateForFile("nrp-generate.json");
+            SearchAlgorithmStarter.generateForFile("nrp-generate.json");
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,6 @@
 package br.otimizes.isearchai.learning.algorithms.binary;
 
-import br.otimizes.isearchai.learning.algorithms.MLNSGAIIRunner;
+import br.otimizes.isearchai.learning.algorithms.options.nsgaii.MLNSGAIIRunner;
 import br.otimizes.isearchai.learning.encoding.binary.MLBinarySolution;
 import br.otimizes.isearchai.learning.encoding.binary.MLBinarySolutionSet;
 import br.otimizes.isearchai.learning.algorithms.binary.crossover.MLSinglePointCrossover;

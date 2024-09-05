@@ -1,6 +1,6 @@
 package br.otimizes.isearchai.learning.algorithms.integer;
 
-import br.otimizes.isearchai.learning.algorithms.MLNSGAIIRunner;
+import br.otimizes.isearchai.learning.algorithms.options.nsgaii.MLNSGAIIRunner;
 import br.otimizes.isearchai.learning.encoding.integer.MLIntegerSolution;
 import br.otimizes.isearchai.learning.encoding.integer.MLIntegerSolutionSet;
 import br.otimizes.isearchai.learning.algorithms.integer.crossover.MLIntegerSBXCrossover;

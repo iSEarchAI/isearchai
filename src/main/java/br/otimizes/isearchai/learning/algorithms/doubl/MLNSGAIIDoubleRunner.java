@@ -1,6 +1,6 @@
 package br.otimizes.isearchai.learning.algorithms.doubl;
 
-import br.otimizes.isearchai.learning.algorithms.MLNSGAIIRunner;
+import br.otimizes.isearchai.learning.algorithms.options.nsgaii.MLNSGAIIRunner;
 import br.otimizes.isearchai.learning.encoding.doubl.MLDoubleSolution;
 import br.otimizes.isearchai.learning.encoding.doubl.MLDoubleSolutionSet;
 import br.otimizes.isearchai.learning.algorithms.doubl.crossover.MLSBXCrossover;

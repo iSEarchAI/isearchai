@@ -1,4 +1,4 @@
-package br.otimizes.isearchai.learning.algorithms;
+package br.otimizes.isearchai.learning.algorithms.options.nsgaii;
 
 import br.otimizes.isearchai.interactive.InteractWithDM;
 import br.otimizes.isearchai.interactive.InteractiveConfig;

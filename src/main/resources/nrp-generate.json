@@ -1,4 +1,10 @@
 {
+    "problem": {
+        "type": "BINARY"
+    },
+    "searchAlgorithm": {
+        "runner": "NSGAII"
+    },
     "objectives": [
         {
             "name": "Cost",
@@ -48,7 +54,7 @@
             }
         }
     ],
-    "item": {
+    "element": {
         "name": "Task",
         "objectives": [
             "Cost",
