@@ -98,6 +98,55 @@ const steps = [
         }
     },
     {
+        label: 'Search Problem',
+        description: `Set the type of your solution and which algorithm you want to use to optimize it.`,
+        jsx: (ctx) => (
+            <div>
+                <Grid container columns={16}>
+                    <Grid xs={2} spacing={1}>
+                        <Tooltip title="Use Double for no integer objective functions and binary for composed solutions"
+                                 placement={'top'}>
+                            <FormControl size="small">
+                                <InputLabel id="obj-type-label">Type</InputLabel>
+                                <Select
+                                    labelId="obj-type-label"
+                                    className={styles.Select}
+                                    value={ctx.state.generate.problem.type}
+                                    label="Type"
+                                    variant="outlined"
+                                >
+                                    <MenuItem value="BINARY">BINARY</MenuItem>
+                                    <MenuItem value="INTEGER">INTEGER</MenuItem>
+                                    <MenuItem value="DOUBLE">DOUBLE</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Tooltip>
+                    </Grid>
+                    <Grid xs={2} spacing={1}>
+                        <Tooltip title="Select your algorithm" placement={'top'}>
+                            <FormControl size="small">
+                                <InputLabel id="obj-type-label">Search Algorithm</InputLabel>
+                                <Select
+                                    labelId="obj-type-label"
+                                    className={styles.Select}
+                                    value={ctx.state.generate.searchAlgorithm.runner}
+                                    label="Type"
+                                    variant="outlined"
+                                >
+                                    <MenuItem value="NSGAII">NSGAII</MenuItem>
+                                    <MenuItem value="NSGAIII">NSGAIII</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Tooltip>
+                    </Grid>
+                </Grid>
+            </div>
+        ),
+        onContinue: (ctx) => {
+            console.log("onContinueee", ctx)
+        }
+    },
+    {
         label: 'Objective functions',
         description: `Set the objective functions needed to optimize`,
         jsx: (ctx) => (
@@ -109,7 +158,7 @@ const steps = [
                         <Grid container spacing={1} columns={16}>
                             <Grid xs={4}>
                                 <TextField id="outlined-basic" label="Name"
-                                           style={{'marginLeft':'15px'}}
+                                           style={{'marginLeft': '15px'}}
                                            InputProps={{
                                                endAdornment: (<InputAdornment position={"end"}><Tooltip
                                                    title="Put a name without spaces and uppercase at beginning"><InfoIcon/></Tooltip></InputAdornment>)
@@ -322,6 +371,12 @@ class Generator extends Component {
         activeStep: 0,
         loading: false,
         generate: {
+            "problem": {
+                "type": "DOUBLE"
+            },
+            "searchAlgorithm": {
+                "runner": "NSGAII"
+            },
             "objectives": [
                 {
                     "name": "Cost",
