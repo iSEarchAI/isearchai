@@ -66,7 +66,12 @@ public abstract class MLNSGAIIRunner<S extends MLSolution<?, ?>> {
     public InteractiveConfig getInteractiveConfig() {
         return getInteractiveFunction()
             .setFirstInteraction(getFirstInteraction())
+            .setOptions(getSubjectiveAnalyzeOptions())
             .setIntervalInteraction(getIntervalInteraction()).setMaxInteractions(getMaxInteractions());
+    }
+
+    public SubjectiveAnalyzeOptions getSubjectiveAnalyzeOptions() {
+        return new SubjectiveAnalyzeMLP();
     }
 
     public abstract Problem<S> getProblem();

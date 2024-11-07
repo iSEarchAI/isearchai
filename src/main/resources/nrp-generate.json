@@ -64,5 +64,10 @@
     },
     "solution": {
         "name": "Requirement"
+    },
+    "interaction": {
+        "max": 3,
+        "interval": 3,
+        "first": 3
     }
 }

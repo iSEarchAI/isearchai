@@ -1,14 +1,14 @@
 package br.otimizes.isearchai.learning.ml.subjective;
 
-import br.otimizes.isearchai.learning.ml.basis.ArffExecution;
-import br.otimizes.isearchai.core.MLSolutionSet;
-import br.otimizes.isearchai.learning.ml.clustering.DistributeUserEvaluation;
 import br.otimizes.isearchai.core.MLElement;
 import br.otimizes.isearchai.core.MLSolution;
+import br.otimizes.isearchai.core.MLSolutionSet;
+import br.otimizes.isearchai.learning.algorithms.options.nsgaii.SubjectiveAnalyzeOptions;
+import br.otimizes.isearchai.learning.ml.basis.ArffExecution;
+import br.otimizes.isearchai.learning.ml.clustering.DistributeUserEvaluation;
 import org.apache.commons.lang3.ArrayUtils;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Evaluation;
-import weka.classifiers.functions.MultilayerPerceptron;
 import weka.core.DenseInstance;
 import weka.core.Instances;
 
@@ -24,22 +24,13 @@ public class SubjectiveAnalyzeAlgorithm {
     //https://stackoverflow.com/questions/28694971/using-neural-network-class-in-weka-in-java-code
     private static final long serialVersionUID = 1L;
 
+    public SubjectiveAnalyzeOptions options;
     private MLSolutionSet resultFront;
     private ClassifierAlgorithm algorithm;
-    private int numObjectives;
     private ArffExecution scoreArffExecution;
     private AbstractClassifier scoreAlgorithm;
-    private Evaluation scoreEvaluation;
     private ArffExecution architecturalArffExecution;
     private AbstractClassifier architecturalAlgorithm;
-    private Evaluation architectureEvaluation;
-    private int trainingTime = 2500;
-    private DistributeUserEvaluation distributeUserEvaluation = DistributeUserEvaluation.ALL;
-    private EvaluationModels evaluationModel = EvaluationModels.CROSS_VALIDATION;
-    private double momentum = 0.2;
-    private double learningRate = 0.3;
-    private String hiddenLayers;
-    private List<MLElement> evaluatedMLElements;
     private List<MLSolutionSet> interactions = new ArrayList<>();
     private boolean trained = false;
     public static int currentEvaluation = 0;
@@ -49,32 +40,25 @@ public class SubjectiveAnalyzeAlgorithm {
     public SubjectiveAnalyzeAlgorithm() {
     }
 
-    public SubjectiveAnalyzeAlgorithm(MLSolutionSet resultFront, ClassifierAlgorithm algorithm, DistributeUserEvaluation distributeUserEvaluation) {
-        this.distributeUserEvaluation = distributeUserEvaluation;
+    public SubjectiveAnalyzeAlgorithm(MLSolutionSet resultFront, SubjectiveAnalyzeOptions options) {
         this.resultFront = resultFront;
-        this.algorithm = algorithm;
         distributeUserEvaluations(resultFront);
         this.scoreArffExecution = new ArffExecution(resultFront.writeObjectivesAndElementsNumberToMatrix(),
             resultFront.writeUserEvaluationsToMatrix(), null);
         this.architecturalArffExecution = new ArffExecution(resultFront.writeObjectivesAndAllElementsNumberToMatrix(),
             resultFront.writeElementsEvaluationsToMatrix(), null, true);
-        this.numObjectives = this.resultFront.get(0).numberOfObjectives();
+        this.options = options;
+        updateArffExecutionOptions();
     }
 
-    public SubjectiveAnalyzeAlgorithm(MLSolutionSet resultFront, ClassifierAlgorithm algorithm) {
-        this.resultFront = resultFront;
-        this.algorithm = algorithm;
-        distributeUserEvaluations(resultFront);
-        this.scoreArffExecution = new ArffExecution(resultFront.writeObjectivesAndElementsNumberToMatrix(),
-            resultFront.writeUserEvaluationsToMatrix(), null);
-        this.architecturalArffExecution = new ArffExecution(resultFront.writeObjectivesAndAllElementsNumberToMatrix(),
-            resultFront.writeElementsEvaluationsToMatrix(), null, true);
-        this.numObjectives = this.resultFront.get(0).numberOfObjectives();
+    private void updateArffExecutionOptions() {
+        this.options.setScoreArffExecution(scoreArffExecution);
+        this.options.setArchitecturalArffExecution(architecturalArffExecution);
     }
 
     private void distributeUserEvaluations(MLSolutionSet resultFront) {
         if (ClassifierAlgorithm.CLUSTERING_MLP.equals(this.algorithm)) {
-            resultFront.distributeUserEvaluation(distributeUserEvaluation);
+            resultFront.distributeUserEvaluation(options.getDistributeUserEvaluation());
         }
     }
 
@@ -106,7 +90,6 @@ public class SubjectiveAnalyzeAlgorithm {
      */
     public MLSolutionSet getAlgorithm(MLSolutionSet MLSolutionSet, boolean inOnMiddle) {
         currentEvaluation++;
-        long startsIn = new Date().getTime();
         if (scoreAlgorithm == null) {
             scoreAlgorithm = newScoreAlgorithm();
             architecturalAlgorithm = newArchitecturalAlgorithm();
@@ -123,22 +106,12 @@ public class SubjectiveAnalyzeAlgorithm {
     }
 
 
-    private MultilayerPerceptron newScoreAlgorithm() {
-        MultilayerPerceptron scoreAlgorithm = new MultilayerPerceptron();
-        scoreAlgorithm.setHiddenLayers(getHiddenLayers());
-        scoreAlgorithm.setTrainingTime(getTrainingTime());
-        scoreAlgorithm.setLearningRate(getLearningRate());
-        scoreAlgorithm.setMomentum(getMomentum());
-        return scoreAlgorithm;
+    private AbstractClassifier newScoreAlgorithm() {
+        return options.scoreAlgorithm();
     }
 
-    private MultilayerPerceptron newArchitecturalAlgorithm() {
-        MultilayerPerceptron architecturalAlgorithm = new MultilayerPerceptron();
-        architecturalAlgorithm.setHiddenLayers(getArchitecturalAlgorithmHiddenLayers());
-        architecturalAlgorithm.setTrainingTime(getTrainingTime());
-        architecturalAlgorithm.setLearningRate(getLearningRate());
-        architecturalAlgorithm.setMomentum(getMomentum());
-        return architecturalAlgorithm;
+    private AbstractClassifier newArchitecturalAlgorithm() {
+        return options.architecturalAlgorithm();
     }
 
     private void joinSolutionSet(MLSolutionSet MLSolutionSet, boolean inOnMiddle) {
@@ -162,6 +135,7 @@ public class SubjectiveAnalyzeAlgorithm {
         newArffScoreAlgorithm.getData().setClassIndex(newArffScoreAlgorithm.getAttrIndices());
         resultFront.addAll(MLSolutionSet);
         scoreArffExecution.getData().addAll(newArffScoreAlgorithm.getData());
+        updateArffExecutionOptions();
     }
 
     private void setArffExecutionClassIndex(ArffExecution subjectiveArffExecution) {
@@ -246,10 +220,8 @@ public class SubjectiveAnalyzeAlgorithm {
 
         data = ArrayUtils.addAll(data, characteristics);
         data = ArrayUtils.addAll(data, objectives);
-        data = ArrayUtils.addAll(data, new double[]{
-            MLSolution.containsElementsEvaluation() ? 1 : 0,
-            MLElement.isFreezeByDM() ? 1 : 0
-        });
+        data = ArrayUtils.addAll(data, MLSolution.containsElementsEvaluation() ? 1 : 0,
+            MLElement.isFreezeByDM() ? 1 : 0);
         return data;
     }
 
@@ -261,17 +233,8 @@ public class SubjectiveAnalyzeAlgorithm {
             int testSize = data.numInstances() - trainSize;
             Instances train = new Instances(data, 0, trainSize);
             Instances test = new Instances(data, trainSize, testSize);
-
             architecturalAlgorithm.buildClassifier(train);
-            architectureEvaluation = new Evaluation(test);
-            switch (evaluationModel) {
-                case TRAINING_SET:
-                    architectureEvaluation.evaluateModel(architecturalAlgorithm, test);
-                    break;
-                case CROSS_VALIDATION:
-                    architectureEvaluation.crossValidateModel(architecturalAlgorithm, test, 10, new Random(1));
-                    break;
-            }
+            options.getEvaluationModel().build(architecturalAlgorithm, test, options);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -281,20 +244,11 @@ public class SubjectiveAnalyzeAlgorithm {
         return 0.66;
     }
 
-
     private void buildScoreAlgorithm() {
         if (scoreArffExecution.getData() == null) return;
         try {
             scoreAlgorithm.buildClassifier(scoreArffExecution.getData());
-            scoreEvaluation = new Evaluation(scoreArffExecution.getData());
-            switch (evaluationModel) {
-                case TRAINING_SET:
-                    scoreEvaluation.evaluateModel(scoreAlgorithm, scoreArffExecution.getData());
-                    break;
-                case CROSS_VALIDATION:
-                    scoreEvaluation.crossValidateModel(scoreAlgorithm, scoreArffExecution.getData(), 5, new Random(1));
-                    break;
-            }
+            options.getEvaluationModel().build(scoreAlgorithm, scoreArffExecution.getData(), options);
             logSubjectiveModelEvaluation();
         } catch (Exception e) {
             e.printStackTrace();
@@ -308,126 +262,12 @@ public class SubjectiveAnalyzeAlgorithm {
         return serialVersionUID;
     }
 
-
-    public MLSolutionSet getResultFront() {
-        return resultFront;
-    }
-
-    public void setResultFront(MLSolutionSet resultFront) {
-        this.resultFront = resultFront;
-    }
-
     public ClassifierAlgorithm getAlgorithm() {
         return algorithm;
     }
 
     public void setAlgorithm(ClassifierAlgorithm algorithm) {
         this.algorithm = algorithm;
-    }
-
-    public ArffExecution getScoreArffExecution() {
-        return scoreArffExecution;
-    }
-
-    public void setScoreArffExecution(ArffExecution scoreArffExecution) {
-        this.scoreArffExecution = scoreArffExecution;
-    }
-
-    public int getNumObjectives() {
-        return numObjectives;
-    }
-
-    public void setNumObjectives(int numObjectives) {
-        this.numObjectives = numObjectives;
-    }
-
-
-    public AbstractClassifier getScoreAlgorithm() {
-        return scoreAlgorithm;
-    }
-
-    public void setScoreAlgorithm(AbstractClassifier scoreAlgorithm) {
-        this.scoreAlgorithm = scoreAlgorithm;
-    }
-
-    public int getTrainingTime() {
-        return trainingTime;
-    }
-
-    public void setTrainingTime(int trainingTime) {
-        this.trainingTime = trainingTime;
-    }
-
-    public DistributeUserEvaluation getDistributeUserEvaluation() {
-        return distributeUserEvaluation;
-    }
-
-    public void setDistributeUserEvaluation(DistributeUserEvaluation distributeUserEvaluation) {
-        this.distributeUserEvaluation = distributeUserEvaluation;
-    }
-
-    public EvaluationModels getEvaluationModel() {
-        return evaluationModel;
-    }
-
-    public void setEvaluationModel(EvaluationModels evaluationModel) {
-        this.evaluationModel = evaluationModel;
-    }
-
-    public double getMomentum() {
-        return momentum;
-    }
-
-    public void setMomentum(double momentum) {
-        this.momentum = momentum;
-    }
-
-    public double getLearningRate() {
-        return learningRate;
-    }
-
-    public void setLearningRate(double learningRate) {
-        this.learningRate = learningRate;
-    }
-
-    public String getHiddenLayers() {
-        return hiddenLayers == null ? String.valueOf(Math.round(scoreArffExecution.getAttrIndices())) : hiddenLayers;
-    }
-
-    public String getArchitecturalAlgorithmHiddenLayers() {
-        return hiddenLayers == null ? String.valueOf(Math.round(architecturalArffExecution.getAttrIndices())) : hiddenLayers;
-    }
-
-    public void setHiddenLayers(String hiddenLayers) {
-        this.hiddenLayers = hiddenLayers;
-    }
-
-    public ArffExecution getArchitecturalArffExecution() {
-        return architecturalArffExecution;
-    }
-
-    public void setArchitecturalArffExecution(ArffExecution architecturalArffExecution) {
-        this.architecturalArffExecution = architecturalArffExecution;
-    }
-
-    public List<MLElement> getEvaluatedElements() {
-        return evaluatedMLElements;
-    }
-
-    public void setEvaluatedElements(List<MLElement> evaluatedMLElements) {
-        this.evaluatedMLElements = evaluatedMLElements;
-    }
-
-    public void addInteraction(MLSolutionSet offspringPopulation) {
-        interactions.add(offspringPopulation);
-    }
-
-    public AbstractClassifier getArchitecturalAlgorithm() {
-        return architecturalAlgorithm;
-    }
-
-    public void setArchitecturalAlgorithm(MultilayerPerceptron architecturalAlgorithm) {
-        this.architecturalAlgorithm = architecturalAlgorithm;
     }
 
     public List<MLSolutionSet> getInteractions() {
@@ -444,37 +284,5 @@ public class SubjectiveAnalyzeAlgorithm {
 
     public void setTrained(boolean trained) {
         this.trained = trained;
-    }
-
-    public Evaluation getScoreEvaluation() {
-        return scoreEvaluation;
-    }
-
-    public void setScoreEvaluation(Evaluation scoreEvaluation) {
-        this.scoreEvaluation = scoreEvaluation;
-    }
-
-    public Evaluation getArchitectureEvaluation() {
-        return architectureEvaluation;
-    }
-
-    public void setArchitectureEvaluation(Evaluation architectureEvaluation) {
-        this.architectureEvaluation = architectureEvaluation;
-    }
-
-    public List<MLElement> getFreezedElements() {
-        return freezedMLElements;
-    }
-
-    public void setFreezedElements(List<MLElement> freezedMLElements) {
-        this.freezedMLElements = freezedMLElements;
-    }
-
-    public List<MLElement> getNotFreezedElements() {
-        return notFreezedMLElements;
-    }
-
-    public void setNotFreezedElements(List<MLElement> notFreezedMLElements) {
-        this.notFreezedMLElements = notFreezedMLElements;
     }
 }

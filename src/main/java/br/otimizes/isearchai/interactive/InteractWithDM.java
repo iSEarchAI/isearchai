@@ -3,7 +3,6 @@ package br.otimizes.isearchai.interactive;
 import br.otimizes.isearchai.core.MLElement;
 import br.otimizes.isearchai.core.MLSolution;
 import br.otimizes.isearchai.core.MLSolutionSet;
-import br.otimizes.isearchai.learning.ml.subjective.ClassifierAlgorithm;
 import br.otimizes.isearchai.learning.ml.subjective.SubjectiveAnalyzeAlgorithm;
 import com.rits.cloning.Cloner;
 
@@ -21,23 +20,16 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
     private SubjectiveAnalyzeAlgorithm subjectiveAnalyzeAlgorithm = null;
 
     Boolean interactive = true;
-    int currentInteraction;
     int generation;
-    int maxInteractions;
-    int firstInteraction;
-    int intervalInteraction;
+    private InteractiveConfig config;
     InteractiveFunction<T> interactiveFunction;
 
     public InteractWithDM() {
     }
 
     public InteractWithDM(InteractiveConfig interactiveConfig) {
-        this.setMaxInteractions(interactiveConfig.getMaxInteractions());
-        this.setFirstInteraction(interactiveConfig.getFirstInteraction());
-        this.setIntervalInteraction(interactiveConfig.getIntervalInteraction());
         this.setInteractive(true);
-        this.setCurrentInteraction(interactiveConfig.getCurrentInteraction());
-        this.setInteractiveFunction(interactiveConfig.getInteractiveFunction());
+        this.config = interactiveConfig;
     }
 
     @SuppressWarnings("unchecked")
@@ -50,14 +42,23 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
                                            int firstInteraction,
                                            int intervalInteraction, InteractiveFunction<T> interactiveFunction,
                                            int currentInteraction, HashSet<E> bestOfUserEvaluation) throws Exception {
+        this.config = new InteractiveConfig();
         this.setGeneration(generation);
-        this.setMaxInteractions(maxInteractions);
-        this.setFirstInteraction(firstInteraction);
-        this.setIntervalInteraction(intervalInteraction);
-        this.setCurrentInteraction(currentInteraction);
+        this.config.setMaxInteractions(maxInteractions);
+        this.config.setFirstInteraction(firstInteraction);
+        this.config.setIntervalInteraction(intervalInteraction);
+        this.config.setCurrentInteraction(currentInteraction);
         this.setInteractiveFunction(interactiveFunction);
         return this.interactWithDM(generation, solutionSet, maxInteractions, firstInteraction, intervalInteraction,
             interactiveFunction, currentInteraction, bestOfUserEvaluation);
+    }
+
+    public int getGeneration() {
+        return generation;
+    }
+
+    public void setGeneration(int generation) {
+        this.generation = generation;
     }
 
     public void subjectiveAnalyzeAlgorithmEvaluate(T solutionSet) {
@@ -72,20 +73,20 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
     }
 
     public synchronized int interactWithDMUpdatingInteraction(T solutionSet, HashSet<E> bestOfUserEvaluation, int generation) {
-        setCurrentInteraction(interactWithDM(solutionSet, bestOfUserEvaluation, generation));
-        return getCurrentInteraction();
+        this.config.setCurrentInteraction(interactWithDM(solutionSet, bestOfUserEvaluation, generation));
+        return this.config.getCurrentInteraction();
     }
 
     public synchronized int interactWithDM(T solutionSet, HashSet<E> bestOfUserEvaluation, int generation) {
         setGeneration(generation);
         if (!getInteractive())
-            return getCurrentInteraction();
+            return this.config.getCurrentInteraction();
         for (E solution : solutionSet) {
             solution.setEvaluation(0);
         }
-        boolean isOnInteraction = (generation % intervalInteraction == 0 && generation >= firstInteraction)
-            || generation == firstInteraction;
-        boolean inTrainingDuring = currentInteraction < maxInteractions && isOnInteraction;
+        boolean isOnInteraction = (generation % this.config.getIntervalInteraction() == 0 && generation >= this.config.getFirstInteraction())
+            || generation == this.config.getFirstInteraction();
+        boolean inTrainingDuring = this.config.getCurrentInteraction() < this.config.getMaxInteractions() && isOnInteraction;
         if (inTrainingDuring) {
             Cloner cloner = new Cloner();
             List<E> solutions = cloner.shallowClone(solutionSet.getSolutions());
@@ -93,7 +94,7 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
             solutionSet = interactiveFunction.run(newS);
             if (subjectiveAnalyzeAlgorithm == null) {
                 subjectiveAnalyzeAlgorithm = new SubjectiveAnalyzeAlgorithm(getMlSolutionSet(solutionSet, solutionSet.getSolutions()),
-                    ClassifierAlgorithm.CLUSTERING_MLP);
+                    this.config.getOptions());
                 subjectiveAnalyzeAlgorithm.run(null, false);
             } else {
                 subjectiveAnalyzeAlgorithm.run(getMlSolutionSet(solutionSet, solutionSet.getSolutions()), false);
@@ -101,25 +102,25 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
             bestOfUserEvaluation.addAll(solutionSet.getSolutions().stream().filter(p -> (p.getEvaluation() >= 5
                     && p.getEvaluatedByUser()) || (p.containsElementsEvaluation() && p.getEvaluatedByUser()))
                 .collect(Collectors.toList()));
-            currentInteraction++;
+            this.config.setCurrentInteraction(this.config.getCurrentInteraction() + 1);
         }
 
-        boolean inTrainingAPosteriori = currentInteraction < maxInteractions && Math.abs((currentInteraction
-            * intervalInteraction) + (intervalInteraction / 2)) == generation && generation > firstInteraction;
+        boolean inTrainingAPosteriori = this.config.getCurrentInteraction() < this.config.getMaxInteractions() && Math.abs((this.config.getCurrentInteraction()
+            * this.config.getIntervalInteraction()) + (this.config.getIntervalInteraction() / 2)) == generation && generation > this.config.getFirstInteraction();
         if (inTrainingAPosteriori) {
             subjectiveAnalyzeAlgorithm.run(getMlSolutionSet(solutionSet, solutionSet.getSolutions()), true);
         }
 
         if (subjectiveAnalyzeAlgorithm != null) {
             subjectiveAnalyzeAlgorithm.setTrained(!subjectiveAnalyzeAlgorithm.isTrained()
-                && currentInteraction >= maxInteractions);
+                && this.config.getCurrentInteraction() >= this.config.getMaxInteractions());
             boolean isTrainFinished = subjectiveAnalyzeAlgorithm.isTrained() &&
-                currentInteraction >= maxInteractions && isOnInteraction;
+                this.config.getCurrentInteraction() >= this.config.getMaxInteractions() && isOnInteraction;
             if (isTrainFinished) {
                 subjectiveAnalyzeAlgorithm.evaluateSolutionSetScoreAndArchitecturalAlgorithm(getMlSolutionSet(solutionSet, solutionSet.getSolutions()), true);
             }
         }
-        return currentInteraction;
+        return this.config.getCurrentInteraction();
     }
 
     private T getMlSolutionSet(T solutionSet, List<E> solutions) {
@@ -149,46 +150,6 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
 
     public void setInteractive(Boolean interactive) {
         this.interactive = interactive;
-    }
-
-    public int getCurrentInteraction() {
-        return currentInteraction;
-    }
-
-    public void setCurrentInteraction(int currentInteraction) {
-        this.currentInteraction = currentInteraction;
-    }
-
-    public int getGeneration() {
-        return generation;
-    }
-
-    public void setGeneration(int generation) {
-        this.generation = generation;
-    }
-
-    public int getMaxInteractions() {
-        return maxInteractions;
-    }
-
-    public void setMaxInteractions(int maxInteractions) {
-        this.maxInteractions = maxInteractions;
-    }
-
-    public int getFirstInteraction() {
-        return firstInteraction;
-    }
-
-    public void setFirstInteraction(int firstInteraction) {
-        this.firstInteraction = firstInteraction;
-    }
-
-    public int getIntervalInteraction() {
-        return intervalInteraction;
-    }
-
-    public void setIntervalInteraction(int intervalInteraction) {
-        this.intervalInteraction = intervalInteraction;
     }
 
     public InteractiveFunction<T> getInteractiveFunction() {

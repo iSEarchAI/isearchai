@@ -3,6 +3,7 @@ package br.otimizes.isearchai.interactive;
 import br.otimizes.isearchai.core.MLElement;
 import br.otimizes.isearchai.core.MLSolution;
 import br.otimizes.isearchai.core.MLSolutionSet;
+import br.otimizes.isearchai.learning.algorithms.options.nsgaii.SubjectiveAnalyzeOptions;
 
 public class InteractiveConfig<T extends MLSolutionSet<E, MLElement>, E extends MLSolution<MLElement, ?>> {
     private int maxInteractions;
@@ -10,6 +11,7 @@ public class InteractiveConfig<T extends MLSolutionSet<E, MLElement>, E extends 
     private int intervalInteraction;
     private InteractiveFunction<T> interactiveFunction;
     private int currentInteraction = 0;
+    private SubjectiveAnalyzeOptions options;
 
     public InteractiveConfig() {
     }
@@ -57,5 +59,15 @@ public class InteractiveConfig<T extends MLSolutionSet<E, MLElement>, E extends 
 
     public int getCurrentInteraction() {
         return this.currentInteraction;
+    }
+
+
+    public SubjectiveAnalyzeOptions getOptions() {
+        return options;
+    }
+
+    public InteractiveConfig setOptions(SubjectiveAnalyzeOptions options) {
+        this.options = options;
+        return this;
     }
 }
