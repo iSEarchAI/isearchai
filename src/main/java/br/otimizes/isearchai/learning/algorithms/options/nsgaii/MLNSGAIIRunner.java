@@ -3,6 +3,7 @@ package br.otimizes.isearchai.learning.algorithms.options.nsgaii;
 import br.otimizes.isearchai.interactive.InteractiveConfig;
 import br.otimizes.isearchai.core.MLSolution;
 import br.otimizes.isearchai.core.MLSolutionSet;
+import br.otimizes.isearchai.learning.InteractionRunner;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
@@ -65,9 +66,10 @@ public abstract class MLNSGAIIRunner<S extends MLSolution<?, ?>> {
 
     public InteractiveConfig getInteractiveConfig() {
         return getInteractiveFunction()
-            .setFirstInteraction(getFirstInteraction())
+            .setFirstInteraction(this.getInteraction().getFirstInteraction())
             .setOptions(getSubjectiveAnalyzeOptions())
-            .setIntervalInteraction(getIntervalInteraction()).setMaxInteractions(getMaxInteractions());
+            .setIntervalInteraction(this.getInteraction().getIntervalInteraction())
+            .setMaxInteractions(this.getInteraction().getMaxInteractions());
     }
 
     public SubjectiveAnalyzeOptions getSubjectiveAnalyzeOptions() {
@@ -85,22 +87,11 @@ public abstract class MLNSGAIIRunner<S extends MLSolution<?, ?>> {
     }
 
     public InteractiveConfig getInteractiveFunction() {
-        return new InteractiveConfig().setInteractiveFunction(this::getInteraction);
+        return new InteractiveConfig().setInteractiveFunction(s -> this.getInteraction().getInteraction(s));
     }
 
-    public MLSolutionSet<S, ?> getInteraction(MLSolutionSet solutionSet) {
-        System.out.println("Interacting...");
-        MLSolutionSet<S, ?> solutions = solutionSet;
-        for (S solution : solutions) {
-            if (solution.getObjective(0) < .2) {
-                solution.setEvaluation(4);
-            } else if (solution.getObjective(1) < .4) {
-                solution.setEvaluation(3);
-            } else {
-                solution.setEvaluation(2);
-            }
-        }
-        return solutions;
+    public InteractionRunner<S> getInteraction() {
+        return new InteractionRunner<>();
     }
 
     public int getMaxEvaluations() {
@@ -109,18 +100,6 @@ public abstract class MLNSGAIIRunner<S extends MLSolution<?, ?>> {
 
     public int getPopulationSize() {
         return 100;
-    }
-
-    public int getMaxInteractions() {
-        return 3;
-    }
-
-    public int getIntervalInteraction() {
-        return 3;
-    }
-
-    public int getFirstInteraction() {
-        return 3;
     }
 
     public abstract SelectionOperator<List<S>, S> getSelectionOperator();

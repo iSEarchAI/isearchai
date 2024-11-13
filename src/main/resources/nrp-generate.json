@@ -66,8 +66,8 @@
         "name": "Requirement"
     },
     "interaction": {
-        "max": 3,
-        "interval": 3,
-        "first": 3
+        "max": 4,
+        "interval": 5,
+        "first": 6
     }
 }

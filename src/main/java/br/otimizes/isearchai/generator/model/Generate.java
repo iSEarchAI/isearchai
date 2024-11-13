@@ -8,6 +8,7 @@ public class Generate {
     private Solution solution;
     private Problem problem;
     private SearchAlgorithm searchAlgorithm;
+    private Interaction interaction;
 
     public Generate() {
     }
@@ -51,5 +52,18 @@ public class Generate {
 
     public void setSearchAlgorithm(SearchAlgorithm searchAlgorithm) {
         this.searchAlgorithm = searchAlgorithm;
+    }
+
+
+    public void setElement(Element element) {
+        this.element = element;
+    }
+
+    public Interaction getInteraction() {
+        return interaction;
+    }
+
+    public void setInteraction(Interaction interaction) {
+        this.interaction = interaction;
     }
 }

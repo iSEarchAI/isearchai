@@ -363,6 +363,43 @@ const steps = [
             console.log("onContinueee", ctx)
         }
     },
+    {
+        label: 'Interaction',
+        description:
+            'Set the interactive parameters of your approach.',
+        jsx: (ctx) => (
+            <>
+                <TextField id="outlined-basic" label="Max interactions" variant="outlined"
+                           style={{"padding-right": "5px"}}
+                           name='generate.interaction.max'
+                           InputProps={{
+                               endAdornment: (<InputAdornment position={"end"}><Tooltip
+                                   title="Specify the amount of interactions"><InfoIcon/></Tooltip></InputAdornment>)
+                           }}
+                           value={ctx.state.generate.interaction.max} onChange={ctx.updateState}/>
+
+                <TextField id="outlined-basic" label="First interaction" variant="outlined"
+                           style={{"padding-right": "5px"}}
+                           name='generate.interaction.first'
+                           InputProps={{
+                               endAdornment: (<InputAdornment position={"end"}><Tooltip
+                                   title="Specify the first interaction"><InfoIcon/></Tooltip></InputAdornment>)
+                           }}
+                           value={ctx.state.generate.interaction.first} onChange={ctx.updateState}/>
+
+                <TextField id="outlined-basic" label="Interval of interaction" variant="outlined"
+                           name='generate.interaction.interval'
+                           InputProps={{
+                               endAdornment: (<InputAdornment position={"end"}><Tooltip
+                                   title="Specify the interval of interaction"><InfoIcon/></Tooltip></InputAdornment>)
+                           }}
+                           value={ctx.state.generate.interaction.interval} onChange={ctx.updateState}/>
+            </>
+        ),
+        onContinue: (ctx) => {
+            console.log("onContinueee", ctx)
+        }
+    },
 ];
 
 class Generator extends Component {
@@ -433,6 +470,11 @@ class Generator extends Component {
             },
             "solution": {
                 "name": "Requirement"
+            },
+            "interaction": {
+                "max": 3,
+                "first": 3,
+                "interval": 3
             }
         }
     }

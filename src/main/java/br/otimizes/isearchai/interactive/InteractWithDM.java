@@ -22,7 +22,6 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
     Boolean interactive = true;
     int generation;
     private InteractiveConfig config;
-    InteractiveFunction<T> interactiveFunction;
 
     public InteractWithDM() {
     }
@@ -48,7 +47,7 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
         this.config.setFirstInteraction(firstInteraction);
         this.config.setIntervalInteraction(intervalInteraction);
         this.config.setCurrentInteraction(currentInteraction);
-        this.setInteractiveFunction(interactiveFunction);
+        this.config.setInteractiveFunction(interactiveFunction);
         return this.interactWithDM(generation, solutionSet, maxInteractions, firstInteraction, intervalInteraction,
             interactiveFunction, currentInteraction, bestOfUserEvaluation);
     }
@@ -91,7 +90,7 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
             Cloner cloner = new Cloner();
             List<E> solutions = cloner.shallowClone(solutionSet.getSolutions());
             T newS = getMlSolutionSet(solutionSet, solutions);
-            solutionSet = interactiveFunction.run(newS);
+            solutionSet = (T) this.config.getInteractiveFunction().run(newS);
             if (subjectiveAnalyzeAlgorithm == null) {
                 subjectiveAnalyzeAlgorithm = new SubjectiveAnalyzeAlgorithm(getMlSolutionSet(solutionSet, solutionSet.getSolutions()),
                     this.config.getOptions());
@@ -150,13 +149,5 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
 
     public void setInteractive(Boolean interactive) {
         this.interactive = interactive;
-    }
-
-    public InteractiveFunction<T> getInteractiveFunction() {
-        return interactiveFunction;
-    }
-
-    public void setInteractiveFunction(InteractiveFunction<T> interactiveFunction) {
-        this.interactiveFunction = interactiveFunction;
     }
 }
