@@ -1,6 +1,6 @@
 {
     "problem": {
-        "type": "BINARY"
+        "type": "INTEGER"
     },
     "searchAlgorithm": {
         "runner": "NSGAII"

@@ -1,6 +1,7 @@
 package br.otimizes.isearchai.generator.starter;
 
 import br.otimizes.isearchai.generator.model.Generate;
+import br.otimizes.isearchai.generator.model.ProblemType;
 import br.otimizes.isearchai.util.ObjMapUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -26,6 +27,7 @@ public class TXTInstanceStarter {
         String solutionName = json.getSolution().getName();
         String elementName = json.getElement().getName();
         String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/instance/TXTInstance.java");
+        fileClass = fileClass.replace("$txtInstanceBody", json.getProblem().getType().getTXTInstanceBody());
         fileClass = fileClass.replaceAll("\\$solution\\.name", solutionName);
         fileClass = fileClass.replaceAll("\\$element\\.name", elementName);
 
@@ -33,7 +35,7 @@ public class TXTInstanceStarter {
         for (String jsonNode : json.getElement().getObjectives()) {
             objectives.add(jsonNode.toLowerCase());
         }
-        String objectivesAttributes = objectives.stream().map(str -> "public double sumOf" + str).collect(Collectors.joining(";\n\t")) + ";";
+        String objectivesAttributes = objectives.stream().map(str -> "public double sumOf" + str + " = 1").collect(Collectors.joining(";\n\t")) + ";";
         String listAttributes = objectives.stream().map(str -> "public List<Double> solution" + str).collect(Collectors.joining(";\n\t")) + ";";
         String objectivesParams = objectives.stream().map(str -> "double" + str).collect(Collectors.joining(","));
         String objectivesConstructor = objectives.stream().map(str -> "this.solution" + str + " = new ArrayList<>()").collect(Collectors.joining(";\n\t")) + ";";
@@ -44,7 +46,7 @@ public class TXTInstanceStarter {
         String solutionFor = objectives.stream().map(str -> "this.solution" + str + ".add(solution.get" + capitalizeFirstLetter(str) + "());\n\t\t\t").collect(Collectors.joining(""));
         String solutionStream = objectives.stream().map(str -> "this.sumOf" + str + " = this.solution" + str + ".stream().mapToDouble(e -> e).sum()").collect(Collectors.joining(";\n\t")) + ";";
         String getters = objectives.stream().map(str -> "public double getSumOf" + capitalizeFirstLetter(str) + "() {return this.sumOf" + str + ";}").collect(Collectors.joining("\n\n\t"));
-        String geti = objectives.stream().map(str -> "public double get" + str + "(int solutionId) {return this.solution" + str + ".get(solutionId);}").collect(Collectors.joining("\n\n\t"));
+        String geti = objectives.stream().map(str -> "public double get" + str + "(int solutionId) {return " + (json.getProblem().getType().equals(ProblemType.BINARY) ? "this.solution" + str + ".get(solutionId)" : "1") + ";}").collect(Collectors.joining("\n\n\t"));
         String dataGet = objectives.stream().map(str -> "\"\" + data.get" + str + "(i)").collect(Collectors.joining(","));
 
 

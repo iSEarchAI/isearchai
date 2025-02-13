@@ -35,6 +35,7 @@ public class SearchAlgorithmStarter {
 
 
         fileClass = fileClass.replace("$searchAlgorithm.imports", imports);
+        fileClass = fileClass.replace("$searchlgorithm.solutionTxt", type.equals(ProblemType.BINARY) ? "r025.txt" : "1-to-020-w-005.txt");
         fileClass = fileClass.replace("$searchAlgorithm.extends", searchAlgorithmClass.getSimpleName());
         fileClass = fileClass.replace("$searchAlgorithm.solution", type.getSolution().getSimpleName());
         writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/runner/Runner.java", fileClass);

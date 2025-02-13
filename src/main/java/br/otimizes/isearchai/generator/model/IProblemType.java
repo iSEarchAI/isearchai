@@ -7,6 +7,9 @@ public interface IProblemType {
     Class getSolution();
     Class getSolutionSet();
     Class getProblem();
+    Class getNautilusSolution();
+    String getVariablesAsListBody();
+    String getTXTInstanceBody();
 
     String getBody();
     List<Class> getRunners();

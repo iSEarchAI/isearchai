@@ -2,6 +2,7 @@ package br.otimizes.isearchai.generator.starter;
 
 import br.otimizes.isearchai.generator.model.Generate;
 import br.otimizes.isearchai.generator.model.Objective;
+import br.otimizes.isearchai.generator.model.ProblemType;
 import br.otimizes.isearchai.util.ObjMapUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -24,12 +25,20 @@ public class ProblemExtensionStarter {
 
         String methods = "";
         String imports = "";
+        ProblemType type = json.getProblem().getType();
+        Class nautilusSolution = type.getNautilusSolution();
         for (Objective jsonNode : json.getObjectives()) {
             methods += "objectives.add(new " + jsonNode.getName() + "());\n\t\t";
             imports += "import org.nautilus.plugin.nrp.encoding.objective." + jsonNode.getName() + ";\n";
+            imports += "import " + nautilusSolution.getName() + ";\n";
         }
         fileClass = fileClass.replace("$methods", methods);
+
+        fileClass = fileClass.replaceAll("\\$nautilusSolution\\.name", nautilusSolution.getSimpleName());
         fileClass = fileClass.replace("$imports", imports);
+        fileClass = fileClass.replace("$getVariablesAsListCode", type.getVariablesAsListBody());
+
+
         System.out.println(fileClass);
         writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/extension/problem/ProblemExtension.java", fileClass);
     }
