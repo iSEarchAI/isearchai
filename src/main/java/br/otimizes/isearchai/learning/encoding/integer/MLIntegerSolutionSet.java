@@ -6,8 +6,14 @@ import org.nautilus.core.encoding.NSolution;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * The type Ml integer solution set.
+ */
 public class MLIntegerSolutionSet extends MLSolutionSet<MLIntegerSolution, MLInteger> {
 
+    /**
+     * Instantiates a new Ml integer solution set.
+     */
     public MLIntegerSolutionSet() {
     }
 

@@ -12,11 +12,25 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+/**
+ * The type Starter.
+ */
 public class Starter {
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @throws IOException the io exception
+     */
     public static void main(String[] args) throws IOException {
         generateForFile();
     }
 
+    /**
+     * Generate.
+     *
+     * @param file the file
+     */
     public static void generate(Generate file) {
         try {
             FileUtils.deleteDirectory(new File("generated/nautilus-framework-plugin"));
@@ -39,6 +53,9 @@ public class Starter {
         }
     }
 
+    /**
+     * Generate for file.
+     */
     public static void generateForFile() {
         try {
             extractAndinstallDependencies();

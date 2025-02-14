@@ -2,7 +2,16 @@ package br.otimizes.isearchai.adapter;
 
 import java.io.IOException;
 
+/**
+ * The type Adapter.
+ */
 public class Adapter {
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @throws IOException the io exception
+     */
     public static void main(String[] args) throws IOException {
         System.out.println();
         Adapter adapter = new Adapter("/home/wmfsystem/Documents/Doutorado/0_framework/code/OPLA-Tool/modules/architecture-representation",
@@ -25,10 +34,25 @@ public class Adapter {
     private String searchAlgorithmProject;
     private String searchAlgorithmClazz;
 
+    /**
+     * Instantiates a new Adapter.
+     */
     public Adapter() {
     }
 
 
+    /**
+     * Instantiates a new Adapter.
+     *
+     * @param elementProject         the element project
+     * @param elementClazz           the element clazz
+     * @param solutionProject        the solution project
+     * @param solutionClazz          the solution clazz
+     * @param solutionSetProject     the solution set project
+     * @param solutionSetClazz       the solution set clazz
+     * @param searchAlgorithmProject the search algorithm project
+     * @param searchAlgorithmClazz   the search algorithm clazz
+     */
     public Adapter(String elementProject, String elementClazz,
                    String solutionProject, String solutionClazz,
                    String solutionSetProject, String solutionSetClazz,
@@ -43,6 +67,9 @@ public class Adapter {
         this.searchAlgorithmClazz = searchAlgorithmClazz;
     }
 
+    /**
+     * Implement.
+     */
     public void implement() {
         MLElementAdapter mlElementParser = implementMLElement();
         MLSolutionAdapter mlSolutionParser = implementMlSolution(mlElementParser);
@@ -50,6 +77,11 @@ public class Adapter {
         implementMlSearchAlgorithm(mlElementParser, mlSolutionParser, mlSolutionSetParser);
     }
 
+    /**
+     * Implement ml element ml element adapter.
+     *
+     * @return the ml element adapter
+     */
     public MLElementAdapter implementMLElement() {
         return new MLElementAdapter().setSourceClazz(elementProject, elementClazz)
             .withTypeParameter("E")
@@ -57,6 +89,12 @@ public class Adapter {
             .writeFile();
     }
 
+    /**
+     * Implement ml solution ml solution adapter.
+     *
+     * @param mlElementParser the ml element parser
+     * @return the ml solution adapter
+     */
     public MLSolutionAdapter implementMlSolution(MLElementAdapter mlElementParser) {
         return new MLSolutionAdapter().setSourceClazz(solutionProject, solutionClazz)
             .withTypeParameter("S")
@@ -64,6 +102,13 @@ public class Adapter {
             .writeFile();
     }
 
+    /**
+     * Implement ml solution set ml solution set adapter.
+     *
+     * @param mlElementParser  the ml element parser
+     * @param mlSolutionParser the ml solution parser
+     * @return the ml solution set adapter
+     */
     public MLSolutionSetAdapter implementMlSolutionSet(MLElementAdapter mlElementParser, MLSolutionAdapter mlSolutionParser) {
         return new MLSolutionSetAdapter().setSourceClazz(solutionSetProject, solutionSetClazz)
             .withTypeParameter("T")
@@ -71,6 +116,14 @@ public class Adapter {
             .writeFile();
     }
 
+    /**
+     * Implement ml search algorithm ml search algorithm adapter.
+     *
+     * @param mlElementParser     the ml element parser
+     * @param mlSolutionParser    the ml solution parser
+     * @param mlSolutionSetParser the ml solution set parser
+     * @return the ml search algorithm adapter
+     */
     public MLSearchAlgorithmAdapter implementMlSearchAlgorithm(MLElementAdapter mlElementParser, MLSolutionAdapter mlSolutionParser,
                                                                MLSolutionSetAdapter mlSolutionSetParser) {
         return new MLSearchAlgorithmAdapter().setSourceClazz(searchAlgorithmProject, searchAlgorithmClazz)

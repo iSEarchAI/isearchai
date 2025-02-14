@@ -7,21 +7,44 @@ import org.uma.jmetal.util.binarySet.BinarySet;
 
 import java.util.List;
 
+/**
+ * The type Ml binary problem.
+ */
 public class MLBinaryProblem extends NProblem<MLBinarySolution> {
 
     private static final long serialVersionUID = 8418817221014037519L;
 
+    /**
+     * The Bits per variable.
+     */
     protected List<Integer> bitsPerVariable;
 
+    /**
+     * Instantiates a new Ml binary problem.
+     *
+     * @param instance   the instance
+     * @param objectives the objectives
+     */
     public MLBinaryProblem(Instance instance, List<AbstractObjective> objectives) {
         super(instance, objectives);
     }
 
 
+    /**
+     * Gets number of bits.
+     *
+     * @param index the index
+     * @return the number of bits
+     */
     public int getNumberOfBits(int index) {
         return bitsPerVariable.get(index);
     }
 
+    /**
+     * Gets total number of bits.
+     *
+     * @return the total number of bits
+     */
     public int getTotalNumberOfBits() {
 
         int count = 0;
@@ -33,10 +56,20 @@ public class MLBinaryProblem extends NProblem<MLBinarySolution> {
         return count;
     }
 
+    /**
+     * Gets bits per variable.
+     *
+     * @return the bits per variable
+     */
     public List<Integer> getBitsPerVariable() {
         return bitsPerVariable;
     }
 
+    /**
+     * Sets bits per variable.
+     *
+     * @param bitsPerVariable the bits per variable
+     */
     public void setBitsPerVariable(List<Integer> bitsPerVariable) {
         this.bitsPerVariable = bitsPerVariable;
     }

@@ -12,14 +12,26 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * The type Ml binary solution.
+ */
 public class MLBinarySolution extends NSolution<MLBinarySet> implements MLSolution<MLBinarySet, MLBinarySet> {
     private int userEvaluation;
     private Boolean clusterNoise;
+    /**
+     * The Evaluated by user.
+     */
     public Boolean evaluatedByUser;
     private Double clusterId;
 
+    /**
+     * The Bits per variable.
+     */
     protected List<Integer> bitsPerVariable;
 
+    /**
+     * Instantiates a new Ml binary solution.
+     */
     public MLBinarySolution() {
         super();
 
@@ -28,6 +40,8 @@ public class MLBinarySolution extends NSolution<MLBinarySet> implements MLSoluti
 
     /**
      * Copy constructor
+     *
+     * @param solution the solution
      */
     public MLBinarySolution(MLBinarySolution solution) {
         super(solution.getNumberOfObjectives(), solution.getNumberOfVariables());
@@ -49,7 +63,7 @@ public class MLBinarySolution extends NSolution<MLBinarySet> implements MLSoluti
      *
      * @param numberOfObjectives The number of objectives
      * @param numberOfVariables  The number of variables
-     * @param bitsPerVariable
+     * @param bitsPerVariable    the bits per variable
      */
     public MLBinarySolution(int numberOfObjectives, int numberOfVariables, List<Integer> bitsPerVariable) {
         super(numberOfObjectives, numberOfVariables);
@@ -78,10 +92,21 @@ public class MLBinarySolution extends NSolution<MLBinarySet> implements MLSoluti
         return new MLBinarySolution(this);
     }
 
+    /**
+     * Gets number of bits.
+     *
+     * @param index the index
+     * @return the number of bits
+     */
     public int getNumberOfBits(int index) {
         return getVariableValue(index).getBinarySetLength();
     }
 
+    /**
+     * Gets total number of bits.
+     *
+     * @return the total number of bits
+     */
     public int getTotalNumberOfBits() {
 
         int sum = 0;
@@ -93,14 +118,27 @@ public class MLBinarySolution extends NSolution<MLBinarySet> implements MLSoluti
         return sum;
     }
 
+    /**
+     * Gets bits per variable.
+     *
+     * @return the bits per variable
+     */
     public List<Integer> getBitsPerVariable() {
         return bitsPerVariable;
     }
 
+    /**
+     * Sets bits per variable.
+     *
+     * @param bitsPerVariable the bits per variable
+     */
     public void setBitsPerVariable(List<Integer> bitsPerVariable) {
         this.bitsPerVariable = bitsPerVariable;
     }
 
+    /**
+     * Initialize binary variables.
+     */
     protected void initializeBinaryVariables() {
 
         for (int i = 0; i < getNumberOfVariables(); i++) {
@@ -108,6 +146,12 @@ public class MLBinarySolution extends NSolution<MLBinarySet> implements MLSoluti
         }
     }
 
+    /**
+     * Create new bit set ml binary set.
+     *
+     * @param numberOfBits the number of bits
+     * @return the ml binary set
+     */
     protected MLBinarySet createNewBitSet(int numberOfBits) {
 
         MLBinarySet bitSet = new MLBinarySet(numberOfBits);

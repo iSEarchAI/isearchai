@@ -13,16 +13,29 @@ import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 
 import java.util.List;
 
+/**
+ * The type Mlnsgaii integer runner.
+ */
 public abstract class MLNSGAIIIntegerRunner extends MLNSGAIIRunner<MLIntegerSolution> {
 
     public MutationOperator<MLIntegerSolution> getMutation() {
         return new MLIntegerPolynomialMutation(getMutationProbability(), getMutationDistributionIndex());
     }
 
+    /**
+     * Gets mutation distribution index.
+     *
+     * @return the mutation distribution index
+     */
     public double getMutationDistributionIndex() {
         return 20.0;
     }
 
+    /**
+     * Gets crossover distribution index.
+     *
+     * @return the crossover distribution index
+     */
     public double getCrossoverDistributionIndex() {
         return 20.0;
     }

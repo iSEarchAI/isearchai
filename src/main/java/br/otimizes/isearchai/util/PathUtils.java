@@ -6,10 +6,18 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Path utils.
+ */
 public class PathUtils {
 
     private List<String> ignoreFiles = new ArrayList<>();
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         Path sourceDirectory = Paths.get("src/main/resources/nautilus-framework-plugin"); // Replace with the source folder path
         Path targetDirectory = Paths.get("generated/nautilus-framework-plugin"); // Replace with the target folder path
@@ -22,6 +30,14 @@ public class PathUtils {
         }
     }
 
+    /**
+     * Copy directory recursively.
+     *
+     * @param source the source
+     * @param target the target
+     * @param ignore the ignore
+     * @throws IOException the io exception
+     */
     public void copyDirectoryRecursively(Path source, Path target, String...ignore) throws IOException {
         Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
             @Override
@@ -49,6 +65,12 @@ public class PathUtils {
         });
     }
 
+    /**
+     * With ignore files path utils.
+     *
+     * @param ignoreFiles the ignore files
+     * @return the path utils
+     */
     public PathUtils withIgnoreFiles(List<String> ignoreFiles) {
         this.ignoreFiles = ignoreFiles;
         return this;

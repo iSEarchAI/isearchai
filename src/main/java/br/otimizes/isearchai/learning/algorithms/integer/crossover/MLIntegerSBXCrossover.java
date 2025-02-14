@@ -10,6 +10,9 @@ import org.uma.jmetal.util.pseudorandom.RandomGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Ml integer sbx crossover.
+ */
 public class MLIntegerSBXCrossover  implements CrossoverOperator<MLIntegerSolution> {
     /** EPS defines the minimum difference allowed between real values */
     private static final double EPS = 1.0e-14;
@@ -19,12 +22,21 @@ public class MLIntegerSBXCrossover  implements CrossoverOperator<MLIntegerSoluti
 
     private RandomGenerator<Double> randomGenerator ;
 
-    /** Constructor */
+    /**
+     * Constructor  @param crossoverProbability the crossover probability
+     *
+     * @param distributionIndex the distribution index
+     */
     public MLIntegerSBXCrossover(double crossoverProbability, double distributionIndex) {
         this(crossoverProbability, distributionIndex, () -> JMetalRandom.getInstance().nextDouble());
     }
 
-    /** Constructor */
+    /**
+     * Constructor  @param crossoverProbability the crossover probability
+     *
+     * @param distributionIndex the distribution index
+     * @param randomGenerator   the random generator
+     */
     public MLIntegerSBXCrossover(double crossoverProbability, double distributionIndex, RandomGenerator<Double> randomGenerator) {
         if (crossoverProbability < 0) {
             throw new JMetalException("Crossover probability is negative: " + crossoverProbability) ;
@@ -37,20 +49,40 @@ public class MLIntegerSBXCrossover  implements CrossoverOperator<MLIntegerSoluti
         this.randomGenerator = randomGenerator ;
     }
 
+    /**
+     * Gets crossover probability.
+     *
+     * @return the crossover probability
+     */
     /* Getters */
     public double getCrossoverProbability() {
         return crossoverProbability;
     }
 
+    /**
+     * Gets distribution index.
+     *
+     * @return the distribution index
+     */
     public double getDistributionIndex() {
         return distributionIndex;
     }
 
+    /**
+     * Sets distribution index.
+     *
+     * @param distributionIndex the distribution index
+     */
     /* Setters */
     public void setDistributionIndex(double distributionIndex) {
         this.distributionIndex = distributionIndex;
     }
 
+    /**
+     * Sets crossover probability.
+     *
+     * @param crossoverProbability the crossover probability
+     */
     public void setCrossoverProbability(double crossoverProbability) {
         this.crossoverProbability = crossoverProbability;
     }
@@ -67,7 +99,13 @@ public class MLIntegerSBXCrossover  implements CrossoverOperator<MLIntegerSoluti
         return doCrossover(crossoverProbability, solutions.get(0), solutions.get(1)) ;
     }
 
-    /** doCrossover method */
+    /**
+     * doCrossover method  @param probability the probability
+     *
+     * @param parent1 the parent 1
+     * @param parent2 the parent 2
+     * @return the list
+     */
     public List<MLIntegerSolution> doCrossover(
         double probability, MLIntegerSolution parent1, MLIntegerSolution parent2) {
         List<MLIntegerSolution> offspring = new ArrayList<MLIntegerSolution>(2);

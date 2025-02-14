@@ -12,19 +12,34 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * The type Ml integer solution.
+ */
 public class MLIntegerSolution extends NSolution<MLInteger> implements MLSolution<MLInteger, MLInteger> {
 
     private int userEvaluation;
     private Boolean clusterNoise;
+    /**
+     * The Evaluated by user.
+     */
     public Boolean evaluatedByUser;
     private Double clusterId;
 
     private static final long serialVersionUID = 8545681239007623730L;
 
+    /**
+     * The Lower bounds.
+     */
     protected List<Integer> lowerBounds;
 
+    /**
+     * The Upper bounds.
+     */
     protected List<Integer> upperBounds;
 
+    /**
+     * Instantiates a new Ml integer solution.
+     */
     public MLIntegerSolution() {
         super();
 
@@ -37,6 +52,8 @@ public class MLIntegerSolution extends NSolution<MLInteger> implements MLSolutio
      *
      * @param numberOfObjectives The number of objectives
      * @param numberOfVariables  The number of variables
+     * @param lowerBounds        the lower bounds
+     * @param upperBounds        the upper bounds
      */
     public MLIntegerSolution(
         int numberOfObjectives,
@@ -56,6 +73,12 @@ public class MLIntegerSolution extends NSolution<MLInteger> implements MLSolutio
         initializeDoubleVariables();
     }
 
+    /**
+     * Instantiates a new Ml integer solution.
+     *
+     * @param numberOfObjectives the number of objectives
+     * @param numberOfVariables  the number of variables
+     */
     public MLIntegerSolution(int numberOfObjectives, int numberOfVariables) {
         this(numberOfObjectives,
             numberOfVariables,
@@ -65,6 +88,8 @@ public class MLIntegerSolution extends NSolution<MLInteger> implements MLSolutio
 
     /**
      * Copy constructor
+     *
+     * @param solution the solution
      */
     public MLIntegerSolution(NIntegerSolution solution) {
         super(solution.getNumberOfObjectives(), solution.getNumberOfVariables());
@@ -83,6 +108,9 @@ public class MLIntegerSolution extends NSolution<MLInteger> implements MLSolutio
         setAttributes(new HashMap<Object, Object>(solution.getAttributes()));
     }
 
+    /**
+     * Initialize double variables.
+     */
     protected void initializeDoubleVariables() {
 
         for (int i = 0; i < getNumberOfVariables(); i++) {
@@ -91,10 +119,22 @@ public class MLIntegerSolution extends NSolution<MLInteger> implements MLSolutio
         }
     }
 
+    /**
+     * Gets lower bound.
+     *
+     * @param index the index
+     * @return the lower bound
+     */
     public Integer getLowerBound(int index) {
         return lowerBounds.get(index);
     }
 
+    /**
+     * Gets upper bound.
+     *
+     * @param index the index
+     * @return the upper bound
+     */
     public Integer getUpperBound(int index) {
         return upperBounds.get(index);
     }
@@ -104,26 +144,58 @@ public class MLIntegerSolution extends NSolution<MLInteger> implements MLSolutio
         return new MLIntegerSolution(this.getNumberOfObjectives(), this.getNumberOfVariables());
     }
 
+    /**
+     * Gets lower bounds.
+     *
+     * @return the lower bounds
+     */
     public List<Integer> getLowerBounds() {
         return lowerBounds;
     }
 
+    /**
+     * Sets lower bounds.
+     *
+     * @param lowerBounds the lower bounds
+     */
     public void setLowerBounds(List<Integer> lowerBounds) {
         this.lowerBounds = lowerBounds;
     }
 
+    /**
+     * Gets upper bounds.
+     *
+     * @return the upper bounds
+     */
     public List<Integer> getUpperBounds() {
         return upperBounds;
     }
 
+    /**
+     * Sets upper bounds.
+     *
+     * @param upperBounds the upper bounds
+     */
     public void setUpperBounds(List<Integer> upperBounds) {
         this.upperBounds = upperBounds;
     }
 
+    /**
+     * Sets lower bound.
+     *
+     * @param index the index
+     * @param value the value
+     */
     public void setLowerBound(int index, Integer value) {
         this.lowerBounds.set(index, value);
     }
 
+    /**
+     * Sets upper bound.
+     *
+     * @param index the index
+     * @param value the value
+     */
     public void setUpperBound(int index, Integer value) {
         this.upperBounds.set(index, value);
     }

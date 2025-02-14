@@ -15,17 +15,34 @@ import java.util.stream.Collectors;
 
 /**
  * Class containing DM interactivity procedures
+ *
+ * @param <T> the type parameter
+ * @param <E> the type parameter
  */
 public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLSolution<MLElement, ?>> {
     private SubjectiveAnalyzeAlgorithm subjectiveAnalyzeAlgorithm = null;
 
+    /**
+     * The Interactive.
+     */
     Boolean interactive = true;
+    /**
+     * The Generation.
+     */
     int generation;
     private InteractiveConfig config;
 
+    /**
+     * Instantiates a new Interact with dm.
+     */
     public InteractWithDM() {
     }
 
+    /**
+     * Instantiates a new Interact with dm.
+     *
+     * @param interactiveConfig the interactive config
+     */
     public InteractWithDM(InteractiveConfig interactiveConfig) {
         this.setInteractive(true);
         this.config = interactiveConfig;
@@ -37,6 +54,20 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
     }
 
 
+    /**
+     * Interact with dm int.
+     *
+     * @param generation           the generation
+     * @param solutionSet          the solution set
+     * @param maxInteractions      the max interactions
+     * @param firstInteraction     the first interaction
+     * @param intervalInteraction  the interval interaction
+     * @param interactiveFunction  the interactive function
+     * @param currentInteraction   the current interaction
+     * @param bestOfUserEvaluation the best of user evaluation
+     * @return the int
+     * @throws Exception the exception
+     */
     public synchronized int interactWithDM(int generation, T solutionSet, int maxInteractions,
                                            int firstInteraction,
                                            int intervalInteraction, InteractiveFunction<T> interactiveFunction,
@@ -52,14 +83,29 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
             interactiveFunction, currentInteraction, bestOfUserEvaluation);
     }
 
+    /**
+     * Gets generation.
+     *
+     * @return the generation
+     */
     public int getGeneration() {
         return generation;
     }
 
+    /**
+     * Sets generation.
+     *
+     * @param generation the generation
+     */
     public void setGeneration(int generation) {
         this.generation = generation;
     }
 
+    /**
+     * Subjective analyze algorithm evaluate.
+     *
+     * @param solutionSet the solution set
+     */
     public void subjectiveAnalyzeAlgorithmEvaluate(T solutionSet) {
         SubjectiveAnalyzeAlgorithm subjectiveAnalyzeAlgorithm = getSubjectiveAnalyzeAlgorithm();
         if (getInteractive() && subjectiveAnalyzeAlgorithm != null && subjectiveAnalyzeAlgorithm.isTrained()) {
@@ -71,11 +117,27 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
         }
     }
 
+    /**
+     * Interact with dm updating interaction int.
+     *
+     * @param solutionSet          the solution set
+     * @param bestOfUserEvaluation the best of user evaluation
+     * @param generation           the generation
+     * @return the int
+     */
     public synchronized int interactWithDMUpdatingInteraction(T solutionSet, HashSet<E> bestOfUserEvaluation, int generation) {
         this.config.setCurrentInteraction(interactWithDM(solutionSet, bestOfUserEvaluation, generation));
         return this.config.getCurrentInteraction();
     }
 
+    /**
+     * Interact with dm int.
+     *
+     * @param solutionSet          the solution set
+     * @param bestOfUserEvaluation the best of user evaluation
+     * @param generation           the generation
+     * @return the int
+     */
     public synchronized int interactWithDM(T solutionSet, HashSet<E> bestOfUserEvaluation, int generation) {
         setGeneration(generation);
         if (!getInteractive())
@@ -134,19 +196,39 @@ public class InteractWithDM<T extends MLSolutionSet<E, MLElement>, E extends MLS
         }
     }
 
+    /**
+     * Gets subjective analyze algorithm.
+     *
+     * @return the subjective analyze algorithm
+     */
     public SubjectiveAnalyzeAlgorithm getSubjectiveAnalyzeAlgorithm() {
         return subjectiveAnalyzeAlgorithm;
     }
 
+    /**
+     * Sets subjective analyze algorithm.
+     *
+     * @param subjectiveAnalyzeAlgorithm the subjective analyze algorithm
+     */
     public void setSubjectiveAnalyzeAlgorithm(SubjectiveAnalyzeAlgorithm subjectiveAnalyzeAlgorithm) {
         this.subjectiveAnalyzeAlgorithm = subjectiveAnalyzeAlgorithm;
     }
 
 
+    /**
+     * Gets interactive.
+     *
+     * @return the interactive
+     */
     public Boolean getInteractive() {
         return interactive != null && interactive;
     }
 
+    /**
+     * Sets interactive.
+     *
+     * @param interactive the interactive
+     */
     public void setInteractive(Boolean interactive) {
         this.interactive = interactive;
     }

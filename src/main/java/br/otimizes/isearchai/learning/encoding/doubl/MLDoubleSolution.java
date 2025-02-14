@@ -12,19 +12,34 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * The type Ml double solution.
+ */
 public class MLDoubleSolution extends NSolution<MLDouble> implements MLSolution<MLDouble, MLDouble> {
 
     private int userEvaluation;
     private Boolean clusterNoise;
+    /**
+     * The Evaluated by user.
+     */
     public Boolean evaluatedByUser;
     private Double clusterId;
 
     private static final long serialVersionUID = 8545681239007623730L;
 
+    /**
+     * The Lower bounds.
+     */
     protected List<Double> lowerBounds;
 
+    /**
+     * The Upper bounds.
+     */
     protected List<Double> upperBounds;
 
+    /**
+     * Instantiates a new Ml double solution.
+     */
     public MLDoubleSolution() {
         super();
 
@@ -37,6 +52,8 @@ public class MLDoubleSolution extends NSolution<MLDouble> implements MLSolution<
      *
      * @param numberOfObjectives The number of objectives
      * @param numberOfVariables  The number of variables
+     * @param lowerBounds        the lower bounds
+     * @param upperBounds        the upper bounds
      */
     public MLDoubleSolution(
         int numberOfObjectives,
@@ -56,6 +73,12 @@ public class MLDoubleSolution extends NSolution<MLDouble> implements MLSolution<
         initializeDoubleVariables();
     }
 
+    /**
+     * Instantiates a new Ml double solution.
+     *
+     * @param numberOfObjectives the number of objectives
+     * @param numberOfVariables  the number of variables
+     */
     public MLDoubleSolution(int numberOfObjectives, int numberOfVariables) {
         this(numberOfObjectives,
             numberOfVariables,
@@ -65,6 +88,8 @@ public class MLDoubleSolution extends NSolution<MLDouble> implements MLSolution<
 
     /**
      * Copy constructor
+     *
+     * @param solution the solution
      */
     public MLDoubleSolution(NDoubleSolution solution) {
         super(solution.getNumberOfObjectives(), solution.getNumberOfVariables());
@@ -83,6 +108,9 @@ public class MLDoubleSolution extends NSolution<MLDouble> implements MLSolution<
         setAttributes(new HashMap<Object, Object>(solution.getAttributes()));
     }
 
+    /**
+     * Initialize double variables.
+     */
     protected void initializeDoubleVariables() {
 
         for (int i = 0; i < getNumberOfVariables(); i++) {
@@ -91,10 +119,22 @@ public class MLDoubleSolution extends NSolution<MLDouble> implements MLSolution<
         }
     }
 
+    /**
+     * Gets lower bound.
+     *
+     * @param index the index
+     * @return the lower bound
+     */
     public Double getLowerBound(int index) {
         return lowerBounds.get(index);
     }
 
+    /**
+     * Gets upper bound.
+     *
+     * @param index the index
+     * @return the upper bound
+     */
     public Double getUpperBound(int index) {
         return upperBounds.get(index);
     }
@@ -105,26 +145,58 @@ public class MLDoubleSolution extends NSolution<MLDouble> implements MLSolution<
         return null;
     }
 
+    /**
+     * Gets lower bounds.
+     *
+     * @return the lower bounds
+     */
     public List<Double> getLowerBounds() {
         return lowerBounds;
     }
 
+    /**
+     * Sets lower bounds.
+     *
+     * @param lowerBounds the lower bounds
+     */
     public void setLowerBounds(List<Double> lowerBounds) {
         this.lowerBounds = lowerBounds;
     }
 
+    /**
+     * Gets upper bounds.
+     *
+     * @return the upper bounds
+     */
     public List<Double> getUpperBounds() {
         return upperBounds;
     }
 
+    /**
+     * Sets upper bounds.
+     *
+     * @param upperBounds the upper bounds
+     */
     public void setUpperBounds(List<Double> upperBounds) {
         this.upperBounds = upperBounds;
     }
 
+    /**
+     * Sets lower bound.
+     *
+     * @param index the index
+     * @param value the value
+     */
     public void setLowerBound(int index, Double value) {
         this.lowerBounds.set(index, value);
     }
 
+    /**
+     * Sets upper bound.
+     *
+     * @param index the index
+     * @param value the value
+     */
     public void setUpperBound(int index, Double value) {
         this.upperBounds.set(index, value);
     }

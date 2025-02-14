@@ -13,16 +13,37 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * The type Objective starter.
+ */
 public class ObjectiveStarter {
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @throws JsonProcessingException the json processing exception
+     */
     public static void main(String[] args) throws JsonProcessingException {
         generateForFile("nrp-generate.json");
     }
 
+    /**
+     * Generate for file.
+     *
+     * @param file the file
+     * @throws JsonProcessingException the json processing exception
+     */
     public static void generateForFile(String file) throws JsonProcessingException {
         String jsonFile = readFileFromResources(file);
         generate(ObjMapUtils.mapper().readValue(jsonFile, Generate.class));
     }
 
+    /**
+     * Generate.
+     *
+     * @param jsonFile the json file
+     * @throws JsonProcessingException the json processing exception
+     */
     public static void generate(Generate jsonFile) throws JsonProcessingException {
         List<Objective> objectives = jsonFile.getObjectives();
         for (Objective objective : objectives) {
@@ -62,6 +83,12 @@ public class ObjectiveStarter {
         }
     }
 
+    /**
+     * Write file.
+     *
+     * @param filePath the file path
+     * @param content  the content
+     */
     public static void writeFile(String filePath, String content) {
         File file = new File(filePath);
 
@@ -73,6 +100,12 @@ public class ObjectiveStarter {
         }
     }
 
+    /**
+     * Read file from resources string.
+     *
+     * @param fileName the file name
+     * @return the string
+     */
     public static String readFileFromResources(String fileName) {
         // Get the input stream of the file from resources
         try (InputStream inputStream = ObjectiveStarter.class.getClassLoader().getResourceAsStream(fileName);

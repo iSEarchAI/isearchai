@@ -12,6 +12,9 @@ import org.uma.jmetal.util.pseudorandom.RandomGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Mlsbx crossover.
+ */
 public class MLSBXCrossover implements CrossoverOperator<MLDoubleSolution> {
     /**
      * EPS defines the minimum difference allowed between real values
@@ -26,6 +29,9 @@ public class MLSBXCrossover implements CrossoverOperator<MLDoubleSolution> {
 
     /**
      * Constructor
+     *
+     * @param crossoverProbability the crossover probability
+     * @param distributionIndex    the distribution index
      */
     public MLSBXCrossover(double crossoverProbability, double distributionIndex) {
         this(crossoverProbability, distributionIndex, new RepairDoubleSolutionAtBounds());
@@ -33,6 +39,10 @@ public class MLSBXCrossover implements CrossoverOperator<MLDoubleSolution> {
 
     /**
      * Constructor
+     *
+     * @param crossoverProbability the crossover probability
+     * @param distributionIndex    the distribution index
+     * @param randomGenerator      the random generator
      */
     public MLSBXCrossover(double crossoverProbability, double distributionIndex, RandomGenerator<Double> randomGenerator) {
         this(crossoverProbability, distributionIndex, new RepairDoubleSolutionAtBounds(), randomGenerator);
@@ -40,6 +50,10 @@ public class MLSBXCrossover implements CrossoverOperator<MLDoubleSolution> {
 
     /**
      * Constructor
+     *
+     * @param crossoverProbability the crossover probability
+     * @param distributionIndex    the distribution index
+     * @param solutionRepair       the solution repair
      */
     public MLSBXCrossover(double crossoverProbability, double distributionIndex, RepairDoubleSolution solutionRepair) {
         this(crossoverProbability, distributionIndex, solutionRepair, () -> JMetalRandom.getInstance().nextDouble());
@@ -47,6 +61,11 @@ public class MLSBXCrossover implements CrossoverOperator<MLDoubleSolution> {
 
     /**
      * Constructor
+     *
+     * @param crossoverProbability the crossover probability
+     * @param distributionIndex    the distribution index
+     * @param solutionRepair       the solution repair
+     * @param randomGenerator      the random generator
      */
     public MLSBXCrossover(double crossoverProbability, double distributionIndex, RepairDoubleSolution solutionRepair, RandomGenerator<Double> randomGenerator) {
         if (crossoverProbability < 0) {
@@ -62,20 +81,40 @@ public class MLSBXCrossover implements CrossoverOperator<MLDoubleSolution> {
         this.randomGenerator = randomGenerator;
     }
 
+    /**
+     * Gets crossover probability.
+     *
+     * @return the crossover probability
+     */
     /* Getters */
     public double getCrossoverProbability() {
         return crossoverProbability;
     }
 
+    /**
+     * Gets distribution index.
+     *
+     * @return the distribution index
+     */
     public double getDistributionIndex() {
         return distributionIndex;
     }
 
+    /**
+     * Sets crossover probability.
+     *
+     * @param probability the probability
+     */
     /* Setters */
     public void setCrossoverProbability(double probability) {
         this.crossoverProbability = probability;
     }
 
+    /**
+     * Sets distribution index.
+     *
+     * @param distributionIndex the distribution index
+     */
     public void setDistributionIndex(double distributionIndex) {
         this.distributionIndex = distributionIndex;
     }
@@ -96,6 +135,11 @@ public class MLSBXCrossover implements CrossoverOperator<MLDoubleSolution> {
 
     /**
      * doCrossover method
+     *
+     * @param probability the probability
+     * @param parent1     the parent 1
+     * @param parent2     the parent 2
+     * @return the list
      */
     public List<MLDoubleSolution> doCrossover(
         double probability, MLDoubleSolution parent1, MLDoubleSolution parent2) {

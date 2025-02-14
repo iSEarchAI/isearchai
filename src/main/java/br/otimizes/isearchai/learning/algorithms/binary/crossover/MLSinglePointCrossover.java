@@ -11,6 +11,9 @@ import org.uma.jmetal.util.pseudorandom.RandomGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Ml single point crossover.
+ */
 public class MLSinglePointCrossover implements CrossoverOperator<MLBinarySolution> {
     private double crossoverProbability;
     private RandomGenerator<Double> crossoverRandomGenerator;
@@ -18,6 +21,8 @@ public class MLSinglePointCrossover implements CrossoverOperator<MLBinarySolutio
 
     /**
      * Constructor
+     *
+     * @param crossoverProbability the crossover probability
      */
     public MLSinglePointCrossover(double crossoverProbability) {
         this(crossoverProbability, () -> JMetalRandom.getInstance().nextDouble(), (a, b) -> JMetalRandom.getInstance().nextInt(a, b));
@@ -25,6 +30,9 @@ public class MLSinglePointCrossover implements CrossoverOperator<MLBinarySolutio
 
     /**
      * Constructor
+     *
+     * @param crossoverProbability the crossover probability
+     * @param randomGenerator      the random generator
      */
     public MLSinglePointCrossover(double crossoverProbability, RandomGenerator<Double> randomGenerator) {
         this(crossoverProbability, randomGenerator, BoundedRandomGenerator.fromDoubleToInteger(randomGenerator));
@@ -32,6 +40,10 @@ public class MLSinglePointCrossover implements CrossoverOperator<MLBinarySolutio
 
     /**
      * Constructor
+     *
+     * @param crossoverProbability     the crossover probability
+     * @param crossoverRandomGenerator the crossover random generator
+     * @param pointRandomGenerator     the point random generator
      */
     public MLSinglePointCrossover(double crossoverProbability, RandomGenerator<Double> crossoverRandomGenerator, BoundedRandomGenerator<Integer> pointRandomGenerator) {
         if (crossoverProbability < 0) {
@@ -42,11 +54,21 @@ public class MLSinglePointCrossover implements CrossoverOperator<MLBinarySolutio
         this.pointRandomGenerator = pointRandomGenerator;
     }
 
+    /**
+     * Gets crossover probability.
+     *
+     * @return the crossover probability
+     */
     /* Getter */
     public double getCrossoverProbability() {
         return crossoverProbability;
     }
 
+    /**
+     * Sets crossover probability.
+     *
+     * @param crossoverProbability the crossover probability
+     */
     /* Setter */
     public void setCrossoverProbability(double crossoverProbability) {
         this.crossoverProbability = crossoverProbability;

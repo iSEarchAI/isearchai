@@ -7,12 +7,17 @@ import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.pseudorandom.RandomGenerator;
 
+/**
+ * The type Ml simple random mutation.
+ */
 public class MLSimpleRandomMutation implements MutationOperator<MLDoubleSolution> {
     private double mutationProbability;
     private RandomGenerator<Double> randomGenerator;
 
     /**
      * Constructor
+     *
+     * @param probability the probability
      */
     public MLSimpleRandomMutation(double probability) {
         this(probability, () -> JMetalRandom.getInstance().nextDouble());
@@ -20,6 +25,9 @@ public class MLSimpleRandomMutation implements MutationOperator<MLDoubleSolution
 
     /**
      * Constructor
+     *
+     * @param probability     the probability
+     * @param randomGenerator the random generator
      */
     public MLSimpleRandomMutation(double probability, RandomGenerator<Double> randomGenerator) {
         if (probability < 0) {
@@ -30,11 +38,21 @@ public class MLSimpleRandomMutation implements MutationOperator<MLDoubleSolution
         this.randomGenerator = randomGenerator;
     }
 
+    /**
+     * Gets mutation probability.
+     *
+     * @return the mutation probability
+     */
     /* Getters */
     public double getMutationProbability() {
         return mutationProbability;
     }
 
+    /**
+     * Sets mutation probability.
+     *
+     * @param mutationProbability the mutation probability
+     */
     /* Setters */
     public void setMutationProbability(double mutationProbability) {
         this.mutationProbability = mutationProbability;

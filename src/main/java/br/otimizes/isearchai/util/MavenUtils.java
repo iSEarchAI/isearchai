@@ -5,8 +5,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * The type Maven utils.
+ */
 public class MavenUtils {
 
+    /**
+     * Clean install.
+     *
+     * @param folder the folder
+     */
     public static void cleanInstall(String folder) {
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.directory(new File(folder));

@@ -220,75 +220,7 @@ public enum ProblemType implements IProblemType {
 
         @Override
         public String getTXTInstanceBody() {
-            return "protected int lowerBound;\n" +
-                "\n" +
-                "\tprotected int upperBound;\n" +
-                "\n" +
-                "\tprotected int numberOfVariables;\n" +
-                "\t$element.objectivesAttributes\n" +
-                "\n" +
-                "\tpublic TXTInstance(Path path) {\n" +
-                "\n" +
-                "\t\tPreconditions.checkNotNull(path, \"The path should not be null\");\n" +
-                "\t\tPreconditions.checkArgument(Files.exists(path), \"The path does not exists\");\n" +
-                "\n" +
-                "\t\tInstanceReader reader = new InstanceReader(path);\n" +
-                "\n" +
-                "\t\tthis.lowerBound = reader.getInteger();\n" +
-                "\t\tthis.upperBound = reader.getInteger();\n" +
-                "\t\tthis.numberOfVariables = reader.getInteger();\n" +
-                "\t}\n" +
-                "\n" +
-                "\tpublic int getLowerBound() {\n" +
-                "\t\treturn lowerBound;\n" +
-                "\t}\n" +
-                "\n" +
-                "\tpublic void setLowerBound(int lowerBound) {\n" +
-                "\t\tthis.lowerBound = lowerBound;\n" +
-                "\t}\n" +
-                "\n" +
-                "\tpublic int getUpperBound() {\n" +
-                "\t\treturn upperBound;\n" +
-                "\t}\n" +
-                "\n" +
-                "\tpublic void setUpperBound(int upperBound) {\n" +
-                "\t\tthis.upperBound = upperBound;\n" +
-                "\t}\n" +
-                "\n" +
-                "\tpublic int getNumberOfVariables() {\n" +
-                "\t\treturn numberOfVariables;\n" +
-                "\t}\n" +
-                "\n" +
-                "\n" +
-                "\tpublic int getSumOfSolution() {\n" +
-                "        return numberOfVariables;\n" +
-                "    }" +
-                "\n\n" +
-                "\t$element.geti" +
-                "\n\n" +
-                "\t$element.getters" +
-                "\n" +
-                "\tpublic void setNumberOfVariables(int numberOfVariables) {\n" +
-                "\t\tthis.numberOfVariables = numberOfVariables;\n" +
-                "\t}\n" +
-                "\n" +
-                "\t@Override\n" +
-                "    public List<Tab> getTabs(Instance data) {\n" +
-                "        return Arrays.asList(getContentTab(data));\n" +
-                "    }\n" +
-                "\n" +
-                "    protected Tab getContentTab(Instance data) {\n" +
-                "\n" +
-                "        TXTInstance d = (TXTInstance) data;\n" +
-                "\n" +
-                "        TableTabContent table = new TableTabContent(\"Key\", \"Value\");\n" +
-                "\n" +
-                "        table.addRow(\"Lower Bound\", d.getLowerBound());\n" +
-                "        table.addRow(\"Upper Bound\", d.getUpperBound());\n" +
-                "        table.addRow(\"Number of Variables\", d.getNumberOfVariables());\n" +
-                "\n" +
-                "        return new Tab(\"Content\", table);\n" +
-                "    }";
+            return getTXTInstanceBodyTemplate().replaceAll("\\$templateType","int");
         }
 
         @Override
@@ -339,7 +271,7 @@ public enum ProblemType implements IProblemType {
 
         @Override
         public String getTXTInstanceBody() {
-            return INTEGER.getTXTInstanceBody();
+            return getTXTInstanceBodyTemplate().replaceAll("\\$templateType","double");
         }
 
         @Override
@@ -375,5 +307,77 @@ public enum ProblemType implements IProblemType {
         public List<Class> getRunners() {
             return Arrays.asList(MLNSGAIIDoubleRunner.class);
         }
+    };
+
+    public static String getTXTInstanceBodyTemplate() {
+        return "protected $templateType lowerBound;\n" +
+            "\n" +
+            "\tprotected $templateType upperBound;\n" +
+            "\n" +
+            "\tprotected int numberOfVariables;\n" +
+            "\t$element.objectivesAttributes\n" +
+            "\n" +
+            "\tpublic TXTInstance(Path path) {\n" +
+            "\n" +
+            "\t\tPreconditions.checkNotNull(path, \"The path should not be null\");\n" +
+            "\t\tPreconditions.checkArgument(Files.exists(path), \"The path does not exists\");\n" +
+            "\n" +
+            "\t\tInstanceReader reader = new InstanceReader(path);\n" +
+            "\n" +
+            "\t\tthis.lowerBound = reader.getInteger();\n" +
+            "\t\tthis.upperBound = reader.getInteger();\n" +
+            "\t\tthis.numberOfVariables = reader.getInteger();\n" +
+            "\t}\n" +
+            "\n" +
+            "\tpublic $templateType getLowerBound() {\n" +
+            "\t\treturn lowerBound;\n" +
+            "\t}\n" +
+            "\n" +
+            "\tpublic void setLowerBound($templateType lowerBound) {\n" +
+            "\t\tthis.lowerBound = lowerBound;\n" +
+            "\t}\n" +
+            "\n" +
+            "\tpublic $templateType getUpperBound() {\n" +
+            "\t\treturn upperBound;\n" +
+            "\t}\n" +
+            "\n" +
+            "\tpublic void setUpperBound($templateType upperBound) {\n" +
+            "\t\tthis.upperBound = upperBound;\n" +
+            "\t}\n" +
+            "\n" +
+            "\tpublic int getNumberOfVariables() {\n" +
+            "\t\treturn numberOfVariables;\n" +
+            "\t}\n" +
+            "\n" +
+            "\n" +
+            "\tpublic int getSumOfSolution() {\n" +
+            "        return numberOfVariables;\n" +
+            "    }" +
+            "\n\n" +
+            "\t$element.geti" +
+            "\n\n" +
+            "\t$element.getters" +
+            "\n" +
+            "\tpublic void setNumberOfVariables(int numberOfVariables) {\n" +
+            "\t\tthis.numberOfVariables = numberOfVariables;\n" +
+            "\t}\n" +
+            "\n" +
+            "\t@Override\n" +
+            "    public List<Tab> getTabs(Instance data) {\n" +
+            "        return Arrays.asList(getContentTab(data));\n" +
+            "    }\n" +
+            "\n" +
+            "    protected Tab getContentTab(Instance data) {\n" +
+            "\n" +
+            "        TXTInstance d = (TXTInstance) data;\n" +
+            "\n" +
+            "        TableTabContent table = new TableTabContent(\"Key\", \"Value\");\n" +
+            "\n" +
+            "        table.addRow(\"Lower Bound\", d.getLowerBound());\n" +
+            "        table.addRow(\"Upper Bound\", d.getUpperBound());\n" +
+            "        table.addRow(\"Number of Variables\", d.getNumberOfVariables());\n" +
+            "\n" +
+            "        return new Tab(\"Content\", table);\n" +
+            "    }";
     }
 }

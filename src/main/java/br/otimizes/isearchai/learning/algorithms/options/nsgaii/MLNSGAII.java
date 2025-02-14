@@ -15,12 +15,35 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * The type Mlnsgaii.
+ *
+ * @param <S> the type parameter
+ */
 public class MLNSGAII<S extends Solution<?>> extends NSGAII<S> {
     private InteractWithDM interaction;
     private MLSolutionSet solutionSet;
 
+    /**
+     * The Best of user evaluation.
+     */
     HashSet<Solution> bestOfUserEvaluation = new HashSet<>();
 
+    /**
+     * Instantiates a new Mlnsgaii.
+     *
+     * @param problem                 the problem
+     * @param maxEvaluations          the max evaluations
+     * @param populationSize          the population size
+     * @param matingPoolSize          the mating pool size
+     * @param offspringPopulationSize the offspring population size
+     * @param crossoverOperator       the crossover operator
+     * @param mutationOperator        the mutation operator
+     * @param selectionOperator       the selection operator
+     * @param evaluator               the evaluator
+     * @param interactiveConfig       the interactive config
+     * @param solutionSet             the solution set
+     */
     public MLNSGAII(Problem<S> problem, int maxEvaluations, int populationSize, int matingPoolSize, int offspringPopulationSize,
                     CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator, SelectionOperator<List<S>, S>
                         selectionOperator, SolutionListEvaluator<S> evaluator, InteractiveConfig interactiveConfig, MLSolutionSet solutionSet) {
@@ -35,6 +58,22 @@ public class MLNSGAII<S extends Solution<?>> extends NSGAII<S> {
             this.interaction = new InteractWithDM(interactiveConfig);
     }
 
+    /**
+     * Instantiates a new Mlnsgaii.
+     *
+     * @param problem                 the problem
+     * @param maxEvaluations          the max evaluations
+     * @param populationSize          the population size
+     * @param matingPoolSize          the mating pool size
+     * @param offspringPopulationSize the offspring population size
+     * @param crossoverOperator       the crossover operator
+     * @param mutationOperator        the mutation operator
+     * @param selectionOperator       the selection operator
+     * @param dominanceComparator     the dominance comparator
+     * @param evaluator               the evaluator
+     * @param interactiveConfig       the interactive config
+     * @param solutionSet             the solution set
+     */
     public MLNSGAII(Problem<S> problem, int maxEvaluations, int populationSize, int matingPoolSize, int offspringPopulationSize,
                     CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator, SelectionOperator<List<S>, S>
                         selectionOperator, Comparator<S> dominanceComparator, SolutionListEvaluator<S> evaluator, InteractiveConfig interactiveConfig, MLSolutionSet solutionSet) {

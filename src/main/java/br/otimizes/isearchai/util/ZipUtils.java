@@ -12,7 +12,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * The type Zip utils.
+ */
 public class ZipUtils {
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         String sourceFolder = "path/to/your/folder"; // Change to your folder path
         String zipFilePath = "path/to/your/output.zip"; // Change to your output zip path
@@ -26,12 +34,25 @@ public class ZipUtils {
     }
 
 
+    /**
+     * Extract zip file from resources.
+     *
+     * @param zipFileName the zip file name
+     * @param outputDir   the output dir
+     * @throws IOException the io exception
+     */
     public static void extractZipFileFromResources(String zipFileName, String outputDir) throws IOException {
         // Get the input stream of the zip file from resources
         InputStream resourceAsStream = Starter.class.getClassLoader().getResourceAsStream(zipFileName);
         unzip(outputDir, resourceAsStream);
     }
 
+    /**
+     * Unzip.
+     *
+     * @param outputDir        the output dir
+     * @param resourceAsStream the resource as stream
+     */
     public static void unzip(String outputDir, InputStream resourceAsStream) {
         // Create the directory if it doesn't exist
         File dir = new File(outputDir);
@@ -77,6 +98,13 @@ public class ZipUtils {
         }
     }
 
+    /**
+     * Zip folder.
+     *
+     * @param sourceFolder the source folder
+     * @param zipFilePath  the zip file path
+     * @throws IOException the io exception
+     */
     public static void zipFolder(String sourceFolder, String zipFilePath) throws IOException {
         Path sourceFolderPath = Paths.get(sourceFolder);
         try (ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipFilePath))) {

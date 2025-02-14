@@ -7,8 +7,17 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * The type Ml solution set.
+ *
+ * @param <S> the type parameter
+ * @param <E> the type parameter
+ */
 public abstract class MLSolutionSet<S extends MLSolution<E, ?>, E extends MLElement> implements Serializable, Iterable<S> {
 
+    /**
+     * The Solutions.
+     */
     protected List<S> solutions = new ArrayList<>();
 
     /**
@@ -71,7 +80,7 @@ public abstract class MLSolutionSet<S extends MLSolution<E, ?>, E extends MLElem
      * Reduce one dimensional in three dimensional array
      *
      * @param treeDimensionalArray array of objectives
-     * @return bi-dimensional array of objectives
+     * @return bi -dimensional array of objectives
      */
     public double[][] reduceThreeDimensionalArray(double[][][] treeDimensionalArray) {
         if (treeDimensionalArray.length <= 0) return new double[][]{};
@@ -86,7 +95,7 @@ public abstract class MLSolutionSet<S extends MLSolution<E, ?>, E extends MLElem
      * Reduce one dimension from bi dimensional array
      *
      * @param biDimensionalArray array of objectives
-     * @return one-dimensional array of objectives
+     * @return one -dimensional array of objectives
      */
     public double[] reduceBiDimensionalArray(double[][] biDimensionalArray) {
         if (biDimensionalArray.length <= 0) return new double[]{};
@@ -109,6 +118,12 @@ public abstract class MLSolutionSet<S extends MLSolution<E, ?>, E extends MLElem
     }
 
 
+    /**
+     * New instance ml solution set.
+     *
+     * @param solutions the solutions
+     * @return the ml solution set
+     */
     public MLSolutionSet newInstance(List solutions) {
         try {
             MLSolutionSet clone = this.getClass().newInstance();
@@ -266,6 +281,11 @@ public abstract class MLSolutionSet<S extends MLSolution<E, ?>, E extends MLElem
         }
     }
 
+    /**
+     * Gets min.
+     *
+     * @return the min
+     */
     public S getMin() {
         S solution = solutions.get(0);
         for (int i = 0; i < solution.getObjectives().length; i++) {
@@ -278,6 +298,11 @@ public abstract class MLSolutionSet<S extends MLSolution<E, ?>, E extends MLElem
         return solution;
     }
 
+    /**
+     * Gets max.
+     *
+     * @return the max
+     */
     public S getMax() {
         S solution = solutions.get(0);
         for (int i = 0; i < solution.getObjectives().length; i++) {
@@ -290,26 +315,57 @@ public abstract class MLSolutionSet<S extends MLSolution<E, ?>, E extends MLElem
         return solution;
     }
 
+    /**
+     * Get s.
+     *
+     * @param i the
+     * @return the s
+     */
     public S get(int i) {
         return this.solutions.get(i);
     }
 
+    /**
+     * Gets solutions.
+     *
+     * @return the solutions
+     */
     public List<S> getSolutions() {
         return solutions;
     }
 
+    /**
+     * Sets solutions.
+     *
+     * @param MLSolutions the ml solutions
+     */
     public void setSolutions(List<S> MLSolutions) {
         this.solutions = MLSolutions;
     }
 
+    /**
+     * Size int.
+     *
+     * @return the int
+     */
     public int size() {
         return this.solutions.size();
     }
 
+    /**
+     * Remove.
+     *
+     * @param integer the integer
+     */
     public void remove(Integer integer) {
         this.solutions.remove(integer);
     }
 
+    /**
+     * Add all.
+     *
+     * @param MLSolutionSet the ml solution set
+     */
     public void addAll(MLSolutionSet<S, E> MLSolutionSet) {
         this.solutions.addAll(MLSolutionSet.getSolutions());
     }
@@ -333,6 +389,12 @@ public abstract class MLSolutionSet<S extends MLSolution<E, ?>, E extends MLElem
         return objectives;
     }
 
+    /**
+     * Add boolean.
+     *
+     * @param solution the solution
+     * @return the boolean
+     */
     public boolean add(S solution) {
         return this.solutions.add(solution);
     }
@@ -346,10 +408,30 @@ public abstract class MLSolutionSet<S extends MLSolution<E, ?>, E extends MLElem
      */
     public abstract double[][] writeObjectivesAndElementsNumberToMatrix();
 
+    /**
+     * Write objectives from elements double [ ].
+     *
+     * @param MLElement  the ml element
+     * @param MLSolution the ml solution
+     * @return the double [ ]
+     */
     public abstract double[] writeObjectivesFromElements(E MLElement, S MLSolution);
 
+    /**
+     * Write characteristics from element double [ ].
+     *
+     * @param MLElement  the ml element
+     * @param MLSolution the ml solution
+     * @return the double [ ]
+     */
     public abstract double[] writeCharacteristicsFromElement(E MLElement, S MLSolution);
 
+    /**
+     * Gets all elements from solution.
+     *
+     * @param MLSolution the ml solution
+     * @return the all elements from solution
+     */
     public abstract List<E> getAllElementsFromSolution(S MLSolution);
 
 

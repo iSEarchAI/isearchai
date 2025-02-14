@@ -6,8 +6,14 @@ import org.nautilus.core.encoding.NSolution;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * The type Ml binary solution set.
+ */
 public class MLBinarySolutionSet extends MLSolutionSet<MLBinarySolution, MLBinarySet> {
 
+    /**
+     * Instantiates a new Ml binary solution set.
+     */
     public MLBinarySolutionSet() {
     }
 

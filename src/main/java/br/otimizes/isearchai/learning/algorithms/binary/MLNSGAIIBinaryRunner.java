@@ -13,6 +13,9 @@ import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 
 import java.util.List;
 
+/**
+ * The type Mlnsgaii binary runner.
+ */
 public abstract class MLNSGAIIBinaryRunner extends MLNSGAIIRunner<MLBinarySolution> {
 
     public MutationOperator<MLBinarySolution> getMutation() {

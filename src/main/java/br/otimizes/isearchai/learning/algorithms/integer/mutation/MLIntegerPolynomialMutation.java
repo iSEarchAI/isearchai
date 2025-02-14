@@ -10,6 +10,9 @@ import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.pseudorandom.RandomGenerator;
 
+/**
+ * The type Ml integer polynomial mutation.
+ */
 public class MLIntegerPolynomialMutation implements MutationOperator<MLIntegerSolution> {
     private static final double DEFAULT_PROBABILITY = 0.01;
     private static final double DEFAULT_DISTRIBUTION_INDEX = 20.0;
@@ -29,6 +32,9 @@ public class MLIntegerPolynomialMutation implements MutationOperator<MLIntegerSo
 
     /**
      * Constructor
+     *
+     * @param problem           the problem
+     * @param distributionIndex the distribution index
      */
     public MLIntegerPolynomialMutation(IntegerProblem problem, double distributionIndex) {
         this(1.0 / problem.getNumberOfVariables(), distributionIndex);
@@ -36,6 +42,9 @@ public class MLIntegerPolynomialMutation implements MutationOperator<MLIntegerSo
 
     /**
      * Constructor
+     *
+     * @param mutationProbability the mutation probability
+     * @param distributionIndex   the distribution index
      */
     public MLIntegerPolynomialMutation(double mutationProbability, double distributionIndex) {
         this(mutationProbability, distributionIndex, new RepairDoubleSolutionAtBounds());
@@ -43,6 +52,10 @@ public class MLIntegerPolynomialMutation implements MutationOperator<MLIntegerSo
 
     /**
      * Constructor
+     *
+     * @param mutationProbability the mutation probability
+     * @param distributionIndex   the distribution index
+     * @param solutionRepair      the solution repair
      */
     public MLIntegerPolynomialMutation(double mutationProbability, double distributionIndex,
                                        RepairDoubleSolution solutionRepair) {
@@ -51,6 +64,11 @@ public class MLIntegerPolynomialMutation implements MutationOperator<MLIntegerSo
 
     /**
      * Constructor
+     *
+     * @param mutationProbability the mutation probability
+     * @param distributionIndex   the distribution index
+     * @param solutionRepair      the solution repair
+     * @param randomGenerator     the random generator
      */
     public MLIntegerPolynomialMutation(double mutationProbability, double distributionIndex,
                                        RepairDoubleSolution solutionRepair, RandomGenerator<Double> randomGenerator) {
@@ -66,20 +84,40 @@ public class MLIntegerPolynomialMutation implements MutationOperator<MLIntegerSo
         this.randomGenerator = randomGenerator;
     }
 
+    /**
+     * Gets mutation probability.
+     *
+     * @return the mutation probability
+     */
     /* Getters */
     public double getMutationProbability() {
         return mutationProbability;
     }
 
+    /**
+     * Gets distribution index.
+     *
+     * @return the distribution index
+     */
     public double getDistributionIndex() {
         return distributionIndex;
     }
 
+    /**
+     * Sets distribution index.
+     *
+     * @param distributionIndex the distribution index
+     */
     /* Setters */
     public void setDistributionIndex(double distributionIndex) {
         this.distributionIndex = distributionIndex;
     }
 
+    /**
+     * Sets mutation probability.
+     *
+     * @param mutationProbability the mutation probability
+     */
     public void setMutationProbability(double mutationProbability) {
         this.mutationProbability = mutationProbability;
     }

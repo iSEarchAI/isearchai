@@ -8,20 +8,41 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * The type Interaction starter.
+ */
 public class InteractionStarter {
 
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @throws JsonProcessingException the json processing exception
+     */
     public static void main(String[] args) throws JsonProcessingException {
 
         generateForFile("nrp-generate.json");
     }
 
+    /**
+     * Generate for file.
+     *
+     * @param file the file
+     * @throws JsonProcessingException the json processing exception
+     */
     public static void generateForFile(String file) throws JsonProcessingException {
         String jsonFile = readFileFromResources(file);
         generate(ObjMapUtils.mapper().readValue(jsonFile, Generate.class));
 
     }
 
+    /**
+     * Generate.
+     *
+     * @param json the json
+     * @throws JsonProcessingException the json processing exception
+     */
     public static void generate(Generate json) throws JsonProcessingException {
         String fileClass = readFileFromResources("nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/runner/MyInteractionRunner.java");
 
@@ -42,6 +63,12 @@ public class InteractionStarter {
         writeFile("generated/nautilus-framework-plugin/src/main/java/org/nautilus/plugin/nrp/encoding/runner/MyInteractionRunner.java", fileClass);
     }
 
+    /**
+     * Write file.
+     *
+     * @param filePath the file path
+     * @param content  the content
+     */
     public static void writeFile(String filePath, String content) {
         File file = new File(filePath);
 
@@ -53,6 +80,12 @@ public class InteractionStarter {
         }
     }
 
+    /**
+     * Read file from resources string.
+     *
+     * @param fileName the file name
+     * @return the string
+     */
     public static String readFileFromResources(String fileName) {
         // Get the input stream of the file from resources
         try (InputStream inputStream = InteractionStarter.class.getClassLoader().getResourceAsStream(fileName);

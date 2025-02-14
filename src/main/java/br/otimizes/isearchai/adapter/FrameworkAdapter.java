@@ -25,24 +25,70 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The type Framework adapter.
+ *
+ * @param <E> the type parameter
+ */
 public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
 
+    /**
+     * The Framework clazz.
+     */
     protected String frameworkClazz;
+    /**
+     * The Framework package.
+     */
     protected String frameworkPackage;
+    /**
+     * The Java clazz.
+     */
     protected Class javaClazz;
+    /**
+     * The Project path.
+     */
     protected String projectPath;
+    /**
+     * The Source clazz path.
+     */
     protected String sourceClazzPath;
+    /**
+     * The Source root.
+     */
     protected SourceRoot sourceRoot;
+    /**
+     * The Framework root.
+     */
     protected SourceRoot frameworkRoot;
+    /**
+     * The Source unit.
+     */
     protected CompilationUnit sourceUnit;
+    /**
+     * The Framework unit.
+     */
     protected CompilationUnit frameworkUnit;
+    /**
+     * The Type parameter.
+     */
     protected String typeParameter;
 
+    /**
+     * Instantiates a new Framework adapter.
+     *
+     * @param frameworkPackage the framework package
+     * @param frameworkClazz   the framework clazz
+     */
     public FrameworkAdapter(String frameworkPackage, String frameworkClazz) {
         this.frameworkClazz = frameworkClazz;
         this.frameworkPackage = frameworkPackage;
     }
 
+    /**
+     * Instantiates a new Framework adapter.
+     *
+     * @param javaClazz the java clazz
+     */
     public FrameworkAdapter(Class javaClazz) {
         this.javaClazz = javaClazz;
         this.frameworkClazz = javaClazz.getSimpleName();
@@ -50,6 +96,13 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
         this.frameworkUnit = getFrameworkUnit(this.frameworkPackage, this.frameworkClazz);
     }
 
+    /**
+     * Gets framework unit.
+     *
+     * @param implementationPackage the implementation package
+     * @param implementationClazz   the implementation clazz
+     * @return the framework unit
+     */
     public CompilationUnit getFrameworkUnit(String implementationPackage, String implementationClazz) {
         frameworkRoot = new SourceRoot(CodeGenerationUtils.mavenModuleRoot(MLElementAdapter.class).resolve("./"));
         try {
@@ -61,6 +114,11 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
     }
 
 
+    /**
+     * Write file e.
+     *
+     * @return the e
+     */
     public E writeFile() {
         try {
             FileWriter writer = new FileWriter(getFileName());
@@ -73,14 +131,31 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
         return (E) this;
     }
 
+    /**
+     * Gets fully qualified name.
+     *
+     * @return the fully qualified name
+     */
     public String getFullyQualifiedName() {
         return getMainClassFromSource().getFullyQualifiedName().get();
     }
 
+    /**
+     * Gets simple qualified name.
+     *
+     * @return the simple qualified name
+     */
     public String getSimpleQualifiedName() {
         return getMainClassFromSource().getNameAsString();
     }
 
+    /**
+     * Sets source clazz.
+     *
+     * @param projectPath the project path
+     * @param clazzPath   the clazz path
+     * @return the source clazz
+     */
     public E setSourceClazz(String projectPath, String clazzPath) {
         this.setProjectPath(projectPath);
         this.setSourceClazzPath(clazzPath);
@@ -96,14 +171,30 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
         return (ClassOrInterfaceDeclaration) sourceUnit.getTypes().stream().findFirst().get();
     }
 
+    /**
+     * Has import boolean.
+     *
+     * @return the boolean
+     */
     public boolean hasImport() {
         return sourceUnit.getImports().stream().anyMatch(importDeclaration -> importDeclaration.getNameAsString().equals(getIdentifier()));
     }
 
+    /**
+     * Implement e.
+     *
+     * @return the e
+     */
     public E implement() {
         return this.implement(null);
     }
 
+    /**
+     * Implement e.
+     *
+     * @param qualifieds the qualifieds
+     * @return the e
+     */
     public E implement(FrameworkAdapter... qualifieds) {
         if (!hasImplementationClazz()) {
             ClassOrInterfaceType implementation = new ClassOrInterfaceType(null, frameworkClazz);
@@ -159,6 +250,12 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
         }
     }
 
+    /**
+     * Extend e.
+     *
+     * @param qualifieds the qualifieds
+     * @return the e
+     */
     public E extend(FrameworkAdapter... qualifieds) {
         if (!hasExtensionClazz()) {
             ClassOrInterfaceType implementation = new ClassOrInterfaceType(null, frameworkClazz);
@@ -190,6 +287,13 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
         return getMainClassFromFramework().getMethods();
     }
 
+    /**
+     * Gets cloned method.
+     *
+     * @param method     the method
+     * @param qualifieds the qualifieds
+     * @return the cloned method
+     */
     MethodDeclaration getClonedMethod(MethodDeclaration method, FrameworkAdapter... qualifieds) {
         MethodDeclaration methodStub = method.clone();
         methodStub.setAbstract(false);
@@ -245,26 +349,57 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
         return methodStub;
     }
 
+    /**
+     * Gets main class from framework.
+     *
+     * @return the main class from framework
+     */
     public ClassOrInterfaceDeclaration getMainClassFromFramework() {
         return getMainClassOrInterfaceFrom(frameworkUnit);
     }
 
+    /**
+     * Gets main class from source.
+     *
+     * @return the main class from source
+     */
     public ClassOrInterfaceDeclaration getMainClassFromSource() {
         return getMainClassOrInterfaceFrom(sourceUnit);
     }
 
+    /**
+     * Has implementation clazz boolean.
+     *
+     * @return the boolean
+     */
     public boolean hasImplementationClazz() {
         return getMainClassFromSource().getImplementedTypes().stream().anyMatch(type -> type.getName().getId().equals(frameworkClazz));
     }
 
+    /**
+     * Has extension clazz boolean.
+     *
+     * @return the boolean
+     */
     public boolean hasExtensionClazz() {
         return getMainClassFromSource().getExtendedTypes().stream().anyMatch(type -> type.getName().getId().equals(frameworkClazz));
     }
 
+    /**
+     * Has implementation method boolean.
+     *
+     * @param method the method
+     * @return the boolean
+     */
     public boolean hasImplementationMethod(MethodDeclaration method) {
         return getMainClassFromSource().getMethodsByName(method.getNameAsString()).stream().anyMatch(impMethod -> impMethod.getSignature().asString().equals(method.getSignature().asString()));
     }
 
+    /**
+     * List all classes source.
+     *
+     * @throws IOException the io exception
+     */
     public void listAllClassesSource() throws IOException {
         // Recursively parse all Java files in the modules directory
         List<ParseResult<CompilationUnit>> parseResults = sourceRoot.tryToParse("");
@@ -282,6 +417,13 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
     }
 
 
+    /**
+     * Add private field e.
+     *
+     * @param clazzToAdd the clazz to add
+     * @param fieldName  the field name
+     * @return the e
+     */
     public E addPrivateField(Class clazzToAdd, String fieldName) {
         String fieldType = clazzToAdd.getSimpleName();
         ClassOrInterfaceDeclaration clazzFromSource = getMainClassFromSource();
@@ -295,6 +437,13 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
         return (E) this;
     }
 
+    /**
+     * Add getter e.
+     *
+     * @param fieldName the field name
+     * @param fieldType the field type
+     * @return the e
+     */
     public E addGetter(String fieldName, String fieldType) {
         String getter = "get" + StringUtils.camelcase(fieldName);
         ClassOrInterfaceDeclaration clazzFromSource = getMainClassFromSource();
@@ -307,6 +456,13 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
         return (E) this;
     }
 
+    /**
+     * Add setter e.
+     *
+     * @param fieldName the field name
+     * @param fieldType the field type
+     * @return the e
+     */
     public E addSetter(String fieldName, String fieldType) {
         String setter = "set" + StringUtils.camelcase(fieldName);
         ClassOrInterfaceDeclaration clazzFromSource = getMainClassFromSource();
@@ -319,10 +475,22 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
         return (E) this;
     }
 
+    /**
+     * Gets type from framework.
+     *
+     * @param clazz the clazz
+     * @return the type from framework
+     */
     public TypeDeclaration<?> getTypeFromFramework(Class clazz) {
         return getTypeFromFramework(clazz.getName());
     }
 
+    /**
+     * Gets type from framework.
+     *
+     * @param clazz the clazz
+     * @return the type from framework
+     */
     public TypeDeclaration<?> getTypeFromFramework(String clazz) {
         // Recursively parse all Java files in the modules directory
         AtomicReference<TypeDeclaration<?>> toReturn = new AtomicReference<>();
@@ -352,6 +520,11 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
         return toReturn.get();
     }
 
+    /**
+     * List all classes framework.
+     *
+     * @throws IOException the io exception
+     */
     public void listAllClassesFramework() throws IOException {
         // Recursively parse all Java files in the modules directory
         List<ParseResult<CompilationUnit>> parseResults = frameworkRoot.tryToParse("");
@@ -374,55 +547,120 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
     }
 
 
+    /**
+     * Gets framework clazz.
+     *
+     * @return the framework clazz
+     */
     public String getFrameworkClazz() {
         return frameworkClazz;
     }
 
+    /**
+     * Sets framework clazz.
+     *
+     * @param frameworkClazz the framework clazz
+     */
     public void setFrameworkClazz(String frameworkClazz) {
         this.frameworkClazz = frameworkClazz;
     }
 
+    /**
+     * Gets framework package.
+     *
+     * @return the framework package
+     */
     public String getFrameworkPackage() {
         return frameworkPackage;
     }
 
+    /**
+     * Sets framework package.
+     *
+     * @param frameworkPackage the framework package
+     */
     public void setFrameworkPackage(String frameworkPackage) {
         this.frameworkPackage = frameworkPackage;
     }
 
+    /**
+     * Gets java clazz.
+     *
+     * @return the java clazz
+     */
     public Class getJavaClazz() {
         return javaClazz;
     }
 
+    /**
+     * Sets java clazz.
+     *
+     * @param javaClazz the java clazz
+     */
     public void setJavaClazz(Class javaClazz) {
         this.javaClazz = javaClazz;
     }
 
+    /**
+     * Gets project path.
+     *
+     * @return the project path
+     */
     public String getProjectPath() {
         return projectPath;
     }
 
+    /**
+     * Sets project path.
+     *
+     * @param projectPath the project path
+     */
     public void setProjectPath(String projectPath) {
         this.projectPath = projectPath;
     }
 
+    /**
+     * Gets source clazz path.
+     *
+     * @return the source clazz path
+     */
     public String getSourceClazzPath() {
         return sourceClazzPath;
     }
 
+    /**
+     * Sets source clazz path.
+     *
+     * @param sourceClazzPath the source clazz path
+     */
     public void setSourceClazzPath(String sourceClazzPath) {
         this.sourceClazzPath = sourceClazzPath;
     }
 
+    /**
+     * Gets file name.
+     *
+     * @return the file name
+     */
     public String getFileName() {
         return projectPath + "/" + sourceClazzPath;
     }
 
 
+    /**
+     * Gets identifier.
+     *
+     * @return the identifier
+     */
     public String getIdentifier() {
         return frameworkPackage + "." + frameworkClazz;
     }
 
+    /**
+     * Replace comments e.
+     *
+     * @return the e
+     */
     public E replaceComments() {
         List<Comment> allContainedComments = getMainClassFromSource().getAllContainedComments();
         for (Comment comment : allContainedComments) {
@@ -437,11 +675,22 @@ public class FrameworkAdapter<E extends FrameworkAdapter<E>> {
         return (E) this;
     }
 
+    /**
+     * With type parameter e.
+     *
+     * @param typeParameter the type parameter
+     * @return the e
+     */
     public E withTypeParameter(String typeParameter) {
         this.typeParameter = typeParameter;
         return (E) this;
     }
 
+    /**
+     * Gets type parameter.
+     *
+     * @return the type parameter
+     */
     public String getTypeParameter() {
         return typeParameter;
     }

@@ -7,8 +7,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 
+/**
+ * The type Obj map utils.
+ */
 public class ObjMapUtils {
 
+    /**
+     * Mapper object mapper.
+     *
+     * @return the object mapper
+     */
     public static ObjectMapper mapper() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);

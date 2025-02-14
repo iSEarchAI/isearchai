@@ -6,8 +6,14 @@ import org.nautilus.core.encoding.NSolution;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * The type Ml double solution set.
+ */
 public class MLDoubleSolutionSet extends MLSolutionSet<MLDoubleSolution, MLDouble> {
 
+    /**
+     * Instantiates a new Ml double solution set.
+     */
     public MLDoubleSolutionSet() {
     }
 

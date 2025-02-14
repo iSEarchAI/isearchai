@@ -13,12 +13,20 @@ import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 
 import java.util.List;
 
+/**
+ * The type Mlnsgaii double runner.
+ */
 public abstract class MLNSGAIIDoubleRunner extends MLNSGAIIRunner<MLDoubleSolution> {
 
     public MutationOperator<MLDoubleSolution> getMutation() {
         return new MLSimpleRandomMutation(getMutationProbability());
     }
 
+    /**
+     * Gets crossover distribution index.
+     *
+     * @return the crossover distribution index
+     */
     public double getCrossoverDistributionIndex() {
         return 20.0;
     }
