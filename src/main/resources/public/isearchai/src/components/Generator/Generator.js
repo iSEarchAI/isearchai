@@ -102,16 +102,18 @@ const steps = [
         description: `Set the type of your solution and which algorithm you want to use to optimize it.`,
         jsx: (ctx) => (
             <div>
-                <Grid container columns={16}>
-                    <Grid xs={2} spacing={1}>
+                <Grid container columns={16} spacing={2}>
+                    <Grid xs={12} sm={8} md={6} sx={{pb: 2}}>
                         <Tooltip title="Use Double for no integer objective functions and binary for composed solutions"
                                  placement={'top'}>
-                            <FormControl size="small">
+                            <FormControl size="medium" fullWidth>
                                 <InputLabel id="obj-type-label">Type</InputLabel>
                                 <Select
                                     labelId="obj-type-label"
                                     className={styles.Select}
                                     value={ctx.state.generate.problem.type}
+                                    name='generate.problem.type'
+                                    onChange={ctx.updateState}
                                     label="Type"
                                     variant="outlined"
                                 >
@@ -122,14 +124,16 @@ const steps = [
                             </FormControl>
                         </Tooltip>
                     </Grid>
-                    <Grid xs={2} spacing={1}>
+                    <Grid xs={12} sm={8} md={6} sx={{pb: 2}}>
                         <Tooltip title="Select your algorithm" placement={'top'}>
-                            <FormControl size="small">
+                            <FormControl size="medium" fullWidth>
                                 <InputLabel id="obj-type-label">Search Algorithm</InputLabel>
                                 <Select
                                     labelId="obj-type-label"
                                     className={styles.Select}
                                     value={ctx.state.generate.searchAlgorithm.runner}
+                                    name='generate.searchAlgorithm.runner'
+                                    onChange={ctx.updateState}
                                     label="Type"
                                     variant="outlined"
                                 >
@@ -155,9 +159,11 @@ const steps = [
                                                                         className={styles.ObjectiveFunctionItem}>
                     <Paper elevation={1} className={styles.Paper}>
                         <div className={styles.Label}>{obj.name}</div>
-                        <Grid container spacing={1} columns={16}>
-                            <Grid xs={4}>
+                        <br/><br/>
+                        <Grid container spacing={2} columns={16}>
+                            <Grid xs={12} sm={4} md={4} sx={{pb: 2}}>
                                 <TextField id="outlined-basic" label="Name"
+                                           fullWidth
                                            style={{'marginLeft': '15px'}}
                                            InputProps={{
                                                endAdornment: (<InputAdornment position={"end"}><Tooltip
@@ -165,11 +171,12 @@ const steps = [
                                            }}
                                            variant="outlined" value={obj.name}/>
                             </Grid>
-                            <Grid xs={2} spacing={1}>
+                            <Grid xs={12} sm={4} md={4} sx={{pb: 2, pl: 2}}>
                                 <Tooltip title="Use Double for no integer objective functions" placement={'top'}>
-                                    <FormControl size="small">
+                                    <FormControl fullWidth>
                                         <InputLabel id="obj-type-label">Type</InputLabel>
                                         <Select
+                                            fullWidth
                                             labelId="obj-type-label"
                                             className={styles.Select}
                                             value={obj.type}
@@ -182,11 +189,13 @@ const steps = [
                                     </FormControl>
                                 </Tooltip>
                             </Grid>
-                            <Grid xs={4}>
+                            <Grid xs={12} sm={4} md={4} sx={{pb: 2, pl: 2}}>
                                 <Tooltip title="Select what you will use to increment the objective function value ">
                                     <Autocomplete
+                                        fullWidth
                                         id="free-solo-demo"
                                         freeSolo
+                                        disablePortal
                                         value={obj.process.incrementWith}
                                         options={ctx.state.generate.objectives.map((option) => option.name + "").concat(['1', '2', '3'])}
                                         renderInput={(params) => <TextField {...params} label="Increment With"/>}
@@ -197,7 +206,7 @@ const steps = [
                         <div className={styles.Label}>The formula to calculate the objective function value</div>
                         <div>
                             <Grid container columns={16}>
-                                <Grid xs={2}>
+                                <Grid xs={12} sm={4} md={4} sx={{pb: 2, pl: 2}}>
                                     {/*<TextField id="outlined-basic" label="Invert" variant="outlined"*/}
                                     {/*           value={obj.calculate.invert || 'false'}/>*/}
                                     <Tooltip
@@ -217,7 +226,7 @@ const steps = [
                                         </FormControl>
                                     </Tooltip>
                                 </Grid>
-                                <Grid xs={2}>
+                                <Grid xs={12} sm={4} md={4} sx={{pb: 2, pl: 2}}>
                                     {/*<TextField id="outlined-basic" label="Invert" variant="outlined"*/}
                                     {/*           value={obj.calculate.invert || 'false'}/>*/}
                                     <Tooltip title="'True' adds an inversion in the formula (-1 in the beginning)">
@@ -236,11 +245,11 @@ const steps = [
                                         </FormControl>
                                     </Tooltip>
                                 </Grid>
-                                <Grid xs={10}>
+                                <Grid xs={12} sm={12} md={4} sx={{pb: 2, pl: 2}}>
                                     <Tooltip
                                         placement={"top"}
                                         title="This is the formula of the objective function. For example, Cost / Importance">
-                                        <FormControl sx={{m: 1, minWidth: 400}}>
+                                        <FormControl sx={{m: 1, minWidth: 300}} fullWidth>
                                             <InputLabel id="demo-multiple-chip-label">Expression</InputLabel>
                                             <Select
                                                 labelId="demo-multiple-chip-label"
@@ -369,31 +378,38 @@ const steps = [
             'Set the interactive parameters of your approach.',
         jsx: (ctx) => (
             <>
-                <TextField id="outlined-basic" label="Max interactions" variant="outlined"
-                           style={{"padding-right": "5px"}}
-                           name='generate.interaction.max'
-                           InputProps={{
-                               endAdornment: (<InputAdornment position={"end"}><Tooltip
-                                   title="Specify the amount of interactions"><InfoIcon/></Tooltip></InputAdornment>)
-                           }}
-                           value={ctx.state.generate.interaction.max} onChange={ctx.updateState}/>
+                <Grid container columns={16} spacing={2}>
+                    <Grid xs={12} sm={4} md={4} sx={{pb: 2}}>
+                        <TextField id="outlined-basic" label="Max interactions" variant="outlined"
+                                   style={{"padding-right": "5px"}}
+                                   name='generate.interaction.max'
+                                   InputProps={{
+                                       endAdornment: (<InputAdornment position={"end"}><Tooltip
+                                           title="Specify the amount of interactions"><InfoIcon/></Tooltip></InputAdornment>)
+                                   }}
+                                   value={ctx.state.generate.interaction.max} onChange={ctx.updateState}/>
+                    </Grid>
+                    <Grid xs={12} sm={4} md={4} sx={{pb: 2}}>
+                        <TextField id="outlined-basic" label="First interaction" variant="outlined"
+                                   style={{"padding-right": "5px"}}
+                                   name='generate.interaction.first'
+                                   InputProps={{
+                                       endAdornment: (<InputAdornment position={"end"}><Tooltip
+                                           title="Specify the first interaction"><InfoIcon/></Tooltip></InputAdornment>)
+                                   }}
+                                   value={ctx.state.generate.interaction.first} onChange={ctx.updateState}/>
 
-                <TextField id="outlined-basic" label="First interaction" variant="outlined"
-                           style={{"padding-right": "5px"}}
-                           name='generate.interaction.first'
-                           InputProps={{
-                               endAdornment: (<InputAdornment position={"end"}><Tooltip
-                                   title="Specify the first interaction"><InfoIcon/></Tooltip></InputAdornment>)
-                           }}
-                           value={ctx.state.generate.interaction.first} onChange={ctx.updateState}/>
-
-                <TextField id="outlined-basic" label="Interval of interaction" variant="outlined"
-                           name='generate.interaction.interval'
-                           InputProps={{
-                               endAdornment: (<InputAdornment position={"end"}><Tooltip
-                                   title="Specify the interval of interaction"><InfoIcon/></Tooltip></InputAdornment>)
-                           }}
-                           value={ctx.state.generate.interaction.interval} onChange={ctx.updateState}/>
+                    </Grid>
+                    <Grid xs={12} sm={4} md={4} sx={{pb: 2}}>
+                        <TextField id="outlined-basic" label="Interval of interaction" variant="outlined"
+                                   name='generate.interaction.interval'
+                                   InputProps={{
+                                       endAdornment: (<InputAdornment position={"end"}><Tooltip
+                                           title="Specify the interval of interaction"><InfoIcon/></Tooltip></InputAdornment>)
+                                   }}
+                                   value={ctx.state.generate.interaction.interval} onChange={ctx.updateState}/>
+                    </Grid>
+                </Grid>
             </>
         ),
         onContinue: (ctx) => {
@@ -499,6 +515,7 @@ class Generator extends Component {
     }
 
     updateState = (event) => {
+        console.log("<<<<<<<<<<<<<<", event)
         let path = event.target.name;
         let value = event.target.value;
         this.updateStateAt(path, value);
