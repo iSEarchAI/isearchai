@@ -247,51 +247,35 @@ const steps = [
                                 </Grid>
                                 <Grid xs={12} sm={12} md={4} sx={{pb: 2, pl: 2}}>
                                     <Tooltip
-                                        placement={"top"}
-                                        title="This is the formula of the objective function. For example, Cost / Importance">
+                                        placement="top"
+                                        title="This is the formula of the objective function. For example, Cost / Importance"
+                                    >
                                         <FormControl sx={{m: 1, minWidth: 300}} fullWidth>
-                                            <InputLabel id="demo-multiple-chip-label">Expression</InputLabel>
-                                            <Select
-                                                labelId="demo-multiple-chip-label"
-                                                className={styles.Select}
-                                                id="demo-multiple-chip"
+                                            <Autocomplete
                                                 multiple
-
-                                                value={obj.calculate.expression}
-                                                onChange={event => ctx.changeExpression(index, event.target.value, ctx.state)}
-                                                input={<OutlinedInput id="select-multiple-chip" label="Chip"/>}
-                                                renderValue={(selected) => (
-                                                    <Box sx={{
-                                                        display: 'flex',
-                                                        flexWrap: 'wrap',
-                                                        gap: 0,
-                                                        height: '10px'
-                                                    }}>
-                                                        {selected.map((value) => (
-                                                            <Chip key={value} label={value}/>
-                                                        ))}
-                                                    </Box>
+                                                freeSolo
+                                                id="expression-autocomplete"
+                                                options={ctx.expressionItems(obj.calculate.expression)} // ✅ Provides selectable options
+                                                value={Array.isArray(obj.calculate.expression) ? obj.calculate.expression : []} // ✅ Ensures correct format
+                                                onChange={(event, newValue, reason, details) => ctx.changeExpression(index, newValue, ctx.state, reason, details)} // ✅ Calls updated function
+                                                renderTags={(selected, getTagProps) =>
+                                                    selected.map((option, index) => {
+                                                        return (
+                                                            <Chip
+                                                                key={`${option}-${index}`} // ✅ Ensures duplicate values can exist
+                                                                label={option}
+                                                                {...getTagProps({index})} // ✅ Spread props correctly
+                                                            />
+                                                        );
+                                                    })
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField {...params} label="Expression" variant="outlined"/>
                                                 )}
-                                                MenuProps={{
-                                                    PaperProps: {
-                                                        style: {
-                                                            maxHeight: 225,
-                                                            width: 250,
-                                                        },
-                                                    },
-                                                }}
-                                            >
-                                                {ctx.expressionItems(obj.calculate.expression)
-                                                    .map((name) => (
-                                                        <MenuItem
-                                                            key={name}
-                                                            value={name}
-                                                        >
-                                                            {name}
-                                                        </MenuItem>
-                                                    ))}
-                                            </Select>
+                                            />
                                         </FormControl>
+
+
                                     </Tooltip>
                                 </Grid>
                                 {/*<Grid xs={4}>*/}
@@ -474,7 +458,7 @@ class Generator extends Component {
                         "incrementWith": '1'
                     },
                     "calculate": {
-                        "expression": ['sum', '/', 'Requirement'],
+                        "expression": ['sum', '/', 'Solution'],
                         "type": "/",
                         "invert": "true"
                     }
@@ -496,23 +480,55 @@ class Generator extends Component {
     }
 
     expressionItems = (currentExpression) => {
+        console.log("expressionItems", currentExpression)
         let vars = this.state.generate.objectives.map((option) => option.name + "")
-            .concat([this.state.generate.element.name, this.state.generate.solution.name, 'sum']);
+            .concat(['Solution', 'Element', 'sum']);
         let operators = ['+', '-', '*', '/'];
-        if (currentExpression.length === 0 || this.isMathOperator(currentExpression[currentExpression.length - 1]))
+        if (!currentExpression || currentExpression.length <= 0)
+            return ['-'].concat(vars);
+        else if (this.isMathOperator(currentExpression[currentExpression.length - 1]))
             return vars;
         else return operators;
     }
+
+    handleRemoveChip = (chipToDelete) => {
+        console.log("----__", chipToDelete)
+    };
 
     isMathOperator(str) {
         return ['+', '-', '*', '/'].includes(str);
     }
 
-    changeExpression = (index, value, state) => {
-        state.generate.objectives[index].calculate.expression = value instanceof String ? value.split(',') : value
-        this.setState(state)
-        console.log("---------------------", this.state, value)
-    }
+    changeExpression = (index, value, state, reason, details) => {
+        let current = state.generate.objectives[index].calculate.expression;
+        if (!Array.isArray(state.generate.objectives[index].calculate.expression)) {
+            state.generate.objectives[index].calculate.expression = []; // Ensure it's an array
+        }
+        if (current[current.length - 1] === details.option) {
+            state.generate.objectives[index].calculate.expression = value
+            this.setState(state);
+            return
+        }
+
+        // ✅ Allow duplicates by appending the new value instead of replacing the array
+        const newExpressions = [...state.generate.objectives[index].calculate.expression];
+
+        // if (Array.isArray(value)) {
+        //     newExpressions.push(value[value.length - 1]); // ✅ Append only the last selected value
+        // } else if (typeof value === "string") {
+        // }
+        newExpressions.push(details.option); // ✅ Append string values if manually typed
+
+        state.generate.objectives[index].calculate.expression = newExpressions;
+
+        this.setState(state);
+        console.log("---------------------", this.state, newExpressions);
+
+        // console.log("---------------------", index, value)
+        // state.generate.objectives[index].calculate.expression = value instanceof String ? value.split(',') : value
+        // this.setState(state)
+    };
+
 
     updateState = (event) => {
         console.log("<<<<<<<<<<<<<<", event)

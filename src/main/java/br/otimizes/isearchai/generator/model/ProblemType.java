@@ -354,6 +354,10 @@ public enum ProblemType implements IProblemType {
             "        return numberOfVariables;\n" +
             "    }" +
             "\n\n" +
+            "\tpublic int getSumOfElement() {\n" +
+            "        return numberOfVariables;\n" +
+            "    }" +
+            "\n\n" +
             "\t$element.geti" +
             "\n\n" +
             "\t$element.getters" +
