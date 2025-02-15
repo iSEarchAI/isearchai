@@ -1,73 +1,112 @@
 {
     "problem": {
-        "type": "INTEGER"
+        "type": "BINARY"
     },
     "searchAlgorithm": {
-        "runner": "NSGAII"
+        "runner": "NSGAIII"
     },
     "objectives": [
         {
-            "name": "Cost",
+            "name": "Costs",
             "type": "double",
             "process": {
-                "incrementWith": "Cost"
+                "incrementWith": "Costs"
             },
-            "maximize": false,
             "calculate": {
-                "expression": ["sum","/","Cost"]
+                "type": "/",
+                "expression": [
+                    "sum",
+                    "/",
+                    "Costs"
+                ]
             }
         },
         {
-            "name": "Importance",
+            "name": "Importancea",
             "type": "double",
-            "maximize": false,
             "process": {
-                "incrementWith": "Importance"
+                "incrementWith": "Importancea"
             },
             "calculate": {
-                "invert": "true",
-                "expression": ["sum", "/", "Importance"]
+                "expression": [
+                    "sum",
+                    "/",
+                    "Importancea"
+                ],
+                "type": "/",
+                "invert": "true"
             }
         },
         {
-            "name": "Profit",
+            "name": "Profita",
             "type": "double",
-            "maximize": false,
             "process": {
-                "incrementWith": "Profit"
+                "incrementWith": "Profita"
             },
             "calculate": {
-                "invert": "true",
-                "expression": ["sum","/","Profit"]
+                "expression": [
+                    "sum",
+                    "/",
+                    "Profita"
+                ],
+                "type": "/",
+                "invert": "true"
             }
         },
         {
-            "name": "Size",
+            "name": "Sizea",
             "type": "int",
-            "maximize": false,
+            "process": {
+                "incrementWith": "1"
+            },
+            "calculate": {
+                "expression": [
+                    "sum",
+                    "/",
+                    "Solution"
+                ],
+                "type": "/",
+                "invert": "true"
+            }
+        },
+        {
+            "name": "NewObjectiveFunctiasd",
+            "type": "int",
             "process": {
                 "incrementWith": 1
             },
             "calculate": {
-                "expression": ["sum","/","Solution"],
-                "invert": "true"
+                "type": "/",
+                "invert": "true",
+                "a": {
+                    "value": "sum"
+                },
+                "b": {
+                    "value": "Solution"
+                },
+                "expression": [
+                    "-",
+                    "Importancea",
+                    "*",
+                    "Profita"
+                ]
             }
         }
     ],
     "element": {
-        "name": "Task",
+        "name": "Tasks",
         "objectives": [
-            "Cost",
+            "Costs",
             "Profit",
             "Importance"
         ]
     },
     "solution": {
-        "name": "Requirement"
+        "name": "Requirements"
     },
     "interaction": {
-        "max": 4,
-        "interval": 5,
-        "first": 6
+        "max": "5",
+        "first": "4",
+        "interval": 3
     }
 }

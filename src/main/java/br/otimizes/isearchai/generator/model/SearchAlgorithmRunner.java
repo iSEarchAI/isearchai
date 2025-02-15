@@ -14,5 +14,11 @@ public enum SearchAlgorithmRunner implements ISearchAlgorithmRunner {
         public Class runner() {
             return MLNSGAIIRunner.class;
         }
+    },
+    NSGAIII {
+        @Override
+        public Class runner() {
+            return MLNSGAIIRunner.class;
+        }
     }
 }

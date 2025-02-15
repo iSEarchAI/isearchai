@@ -161,27 +161,39 @@ const steps = [
                         <div className={styles.Label}>{obj.name}</div>
                         <br/><br/>
                         <Grid container spacing={2} columns={16}>
-                            <Grid xs={12} sm={4} md={4} sx={{pb: 2}}>
-                                <TextField id="outlined-basic" label="Name"
-                                           fullWidth
-                                           style={{'marginLeft': '15px'}}
-                                           InputProps={{
-                                               endAdornment: (<InputAdornment position={"end"}><Tooltip
-                                                   title="Put a name without spaces and uppercase at beginning"><InfoIcon/></Tooltip></InputAdornment>)
-                                           }}
-                                           variant="outlined" value={obj.name}/>
+                            <Grid item xs={12} sm={4} md={4} sx={{pb: 2}}>
+                                <TextField
+                                    id={`obj-fn-name-${index}`} // ✅ Unique but stable ID
+                                    label="Name"
+                                    fullWidth
+                                    style={{marginLeft: '15px'}}
+                                    // InputProps={{
+                                    //     endAdornment: (
+                                    //         <InputAdornment position="end">
+                                    //             <Tooltip title="Put a name without spaces and uppercase at beginning">
+                                    //                 <InfoIcon />
+                                    //             </Tooltip>
+                                    //         </InputAdornment>
+                                    //     ),
+                                    // }}
+                                    onChange={(event) => ctx.changeObjectiveType('name', index, event, obj.name)} // ✅ Calls updated function
+                                    variant="outlined"
+                                    value={obj.name}
+                                />
                             </Grid>
+
                             <Grid xs={12} sm={4} md={4} sx={{pb: 2, pl: 2}}>
-                                <Tooltip title="Use Double for no integer objective functions" placement={'top'}>
+                                <Tooltip title="Use Double for no integer objective functions" placement="top">
                                     <FormControl fullWidth>
-                                        <InputLabel id="obj-type-label">Type</InputLabel>
+                                        <InputLabel id={`obj-type-label-${index}`}>Type</InputLabel>
                                         <Select
                                             fullWidth
-                                            labelId="obj-type-label"
+                                            labelId={`obj-type-label-${index}`}
                                             className={styles.Select}
                                             value={obj.type}
                                             label="Type"
                                             variant="outlined"
+                                            onChange={(event) => ctx.changeObjectiveType('type', index, event)} // ✅ Added onChange
                                         >
                                             <MenuItem value="double">Double</MenuItem>
                                             <MenuItem value="int">Int</MenuItem>
@@ -189,6 +201,7 @@ const steps = [
                                     </FormControl>
                                 </Tooltip>
                             </Grid>
+
                             <Grid xs={12} sm={4} md={4} sx={{pb: 2, pl: 2}}>
                                 <Tooltip title="Select what you will use to increment the objective function value ">
                                     <Autocomplete
@@ -278,51 +291,6 @@ const steps = [
 
                                     </Tooltip>
                                 </Grid>
-                                {/*<Grid xs={4}>*/}
-                                {/*    <Tooltip*/}
-                                {/*        title="The first part of the formula. Remember that 'sum' represents the objective function itself.">*/}
-                                {/*        <Autocomplete*/}
-                                {/*            id="free-solo-demo"*/}
-                                {/*            freeSolo*/}
-                                {/*            value={obj.calculate.a.value}*/}
-                                {/*            options={ctx.state.generate.objectives.map((option) => option.name + "").concat([ctx.state.generate.element.name, ctx.state.generate.solution.name, 'sum'])}*/}
-                                {/*            renderInput={(params) => <TextField {...params}*/}
-                                {/*                                                label="First part of formula"/>}*/}
-                                {/*        />*/}
-                                {/*    </Tooltip>*/}
-                                {/*</Grid>*/}
-                                {/*<Grid xs={2}>*/}
-                                {/*    <Tooltip*/}
-                                {/*        title="The operator used in the middle of the formula (A [operator] B).">*/}
-                                {/*        <FormControl size="small">*/}
-                                {/*            <InputLabel id="obj-type-label">Type</InputLabel>*/}
-                                {/*            <Select*/}
-                                {/*                labelId="obj-type-label"*/}
-                                {/*                value={obj.calculate.type}*/}
-                                {/*                label="Type"*/}
-                                {/*                variant="outlined"*/}
-                                {/*            >*/}
-                                {/*                <MenuItem value="/">Divide (/)</MenuItem>*/}
-                                {/*                <MenuItem value="*">Multiple (*)</MenuItem>*/}
-                                {/*                <MenuItem value="*">Sum (+)</MenuItem>*/}
-                                {/*                <MenuItem value="*">Reduce (-)</MenuItem>*/}
-                                {/*            </Select>*/}
-                                {/*        </FormControl>*/}
-                                {/*    </Tooltip>*/}
-                                {/*</Grid>*/}
-                                {/*<Grid xs={4}>*/}
-                                {/*    <Tooltip*/}
-                                {/*        title="The second part of the formula. Remember that 'sum' represents the objective function itself.">*/}
-                                {/*        <Autocomplete*/}
-                                {/*            id="free-solo-demo"*/}
-                                {/*            freeSolo*/}
-                                {/*            value={obj.calculate.b.value}*/}
-                                {/*            options={ctx.state.generate.objectives.map((option) => option.name + "").concat([ctx.state.generate.element.name, ctx.state.generate.solution.name])}*/}
-                                {/*            renderInput={(params) => <TextField {...params}*/}
-                                {/*                                                label="Second part of formula"/>}*/}
-                                {/*        />*/}
-                                {/*    </Tooltip>*/}
-                                {/*</Grid>*/}
 
                             </Grid>
                         </div>
@@ -479,8 +447,53 @@ class Generator extends Component {
         }
     }
 
+    changeObjectiveType = (field, index, event, previous) => {
+        const value = event.target.value;
+        previous = previous + "";
+        this.setState(prevState => {
+            // Criamos um novo array para manter a imutabilidade e evitar recriação desnecessária do componente
+            const updatedObjectives = [...prevState.generate.objectives];
+            updatedObjectives[index] = {...updatedObjectives[index], [field]: value};
+            for (let i = 0; i < updatedObjectives.length; i++) {
+                if (updatedObjectives[i].process.incrementWith === previous)
+                    updatedObjectives[i].process.incrementWith = value;
+                if (updatedObjectives[i]?.calculate?.expression)
+                    for (let j = 0; j < updatedObjectives[i].calculate.expression.length; j++) {
+                        if (updatedObjectives[i].calculate.expression[j] === previous) {
+                            updatedObjectives[i].calculate.expression[j] = value;
+                        }
+                    }
+
+            }
+
+            console.log("updateObjecte", prevState)
+
+
+            // Retornamos o novo estado garantindo que a referência do array pai não seja recriada
+            return {
+                ...prevState,
+                generate: {
+                    ...prevState.generate,
+                    objectives: updatedObjectives,
+                    element: {
+                        ...prevState.generate.element,
+                        objectives: prevState.generate.element.objectives.map(elem => {
+                            if (elem === previous) {
+                                elem = value
+                            }
+                            return elem
+                        })
+                    }
+                }
+            };
+        }, () => {
+            // 🔥 Forçar o React a manter o foco no input
+            document.getElementById(`obj-fn-name-${index}`).focus();
+        });
+    };
+
+
     expressionItems = (currentExpression) => {
-        console.log("expressionItems", currentExpression)
         let vars = this.state.generate.objectives.map((option) => option.name + "")
             .concat(['Solution', 'Element', 'sum']);
         let operators = ['+', '-', '*', '/'];
@@ -492,7 +505,6 @@ class Generator extends Component {
     }
 
     handleRemoveChip = (chipToDelete) => {
-        console.log("----__", chipToDelete)
     };
 
     isMathOperator(str) {
@@ -500,7 +512,8 @@ class Generator extends Component {
     }
 
     changeExpression = (index, value, state, reason, details) => {
-        let current = state.generate.objectives[index].calculate.expression;
+        let current = state.generate.objectives[index].calculate.expression || [];
+        current = current instanceof String ? current.split(',') : current
         if (!Array.isArray(state.generate.objectives[index].calculate.expression)) {
             state.generate.objectives[index].calculate.expression = []; // Ensure it's an array
         }
@@ -522,7 +535,6 @@ class Generator extends Component {
         state.generate.objectives[index].calculate.expression = newExpressions;
 
         this.setState(state);
-        console.log("---------------------", this.state, newExpressions);
 
         // console.log("---------------------", index, value)
         // state.generate.objectives[index].calculate.expression = value instanceof String ? value.split(',') : value
@@ -531,7 +543,6 @@ class Generator extends Component {
 
 
     updateState = (event) => {
-        console.log("<<<<<<<<<<<<<<", event)
         let path = event.target.name;
         let value = event.target.value;
         this.updateStateAt(path, value);
