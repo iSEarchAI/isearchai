@@ -21,9 +21,10 @@ class App extends Component {
                 <Card className='CardGenerate Header' style={{'padding': '20px'}}>
                     <img src="https://isearchai.github.io/logo/logo.png" alt="" height='48'/>
                     <div>
-                        <Button variant="outlined" startIcon={<GitHubIcon/>}>Repository</Button>
-                        <Button variant="outlined" startIcon={<DescriptionIcon/>}>Thesis</Button>
-                        <Button variant="outlined" startIcon={<GroupIcon/>}>Team</Button>
+                        <Button variant="outlined" onClick={() => window.open('https://github.com/isearchai/isearchai','_blank')} startIcon={<GitHubIcon/>}>Repository</Button>
+                        <Button variant="outlined" onClick={() => window.open('https://github.com/isearchai/isearchai','_blank')} startIcon={<DescriptionIcon/>}>Thesis</Button>
+                        <Button variant="outlined" onClick={() => window.open('https://otimizes.github.io' +
+                            '','_blank')} startIcon={<GroupIcon/>}>Team</Button>
                     </div>
                 </Card>
                 <Card className='CardGenerate'>
