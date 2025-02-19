@@ -18,7 +18,7 @@ public class MavenUtils {
     public static void cleanInstall(String folder) {
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.directory(new File(folder));
-        processBuilder.command("/home/wmfsystem/.sdkman/candidates/maven/3.9.8/bin/mvn", "clean", "install", "-DskipTests");
+        processBuilder.command("mvn", "clean", "install", "-DskipTests");
 
         try {
             Process process = processBuilder.start();
